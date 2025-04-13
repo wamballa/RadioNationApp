@@ -1,1 +1,0 @@
-adb logcat -v time | python logcat_unity.py

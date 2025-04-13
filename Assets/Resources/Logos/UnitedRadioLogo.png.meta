@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      UnitedRadioLogo_0: -4701289479786046978
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

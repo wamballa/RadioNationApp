@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      All_Adults_Animated_Background_0: 7347973459436070293
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
