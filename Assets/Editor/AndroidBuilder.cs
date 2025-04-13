@@ -66,7 +66,17 @@ public class AndroidBuilder
             if (!string.IsNullOrEmpty(commitMessage))
             {
                 CommitAndPushToGit(version, code, commitMessage);
+
+                if (format == "aab")
+                {
+                    string tag = $"v{version}";
+                    string tagMessage = $"Release build {version} (code {code})";
+                    RunGitCommand($"tag -a {tag} -m \"{tagMessage}\"");
+                    RunGitCommand($"push origin {tag}");
+                    Debug.Log($"🏷️ Git tag created and pushed: {tag}");
+                }
             }
+
         }
         else
         {
