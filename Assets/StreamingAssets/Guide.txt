@@ -1,0 +1,201 @@
+﻿🔑 1. SSH into your Oracle instance
+
+	From your terminal:
+	
+	ssh -i "D:/Documents/Unity/U_Radio_4/ReverseProxy/ssh-key-2025-03-23.key" opc@wamballa.com
+	
+	Replace [your-private-key].pem with the path to your actual SSH key file.
+
+📂 2. Switch to root
+
+	sudo su
+
+📝 3. Open and edit the NGINX config
+
+	sudo nano /etc/nginx/nginx.conf
+
+	Scroll to the map $arg_station $upstream_stream { section.
+
+	Replace it with the content from your newly generated nginx_map.txt.
+
+	Press Ctrl+O to save, Enter to confirm, then Ctrl+X to exit.
+
+🔁 4. Restart NGINX
+
+	sudo nginx -t && sudo systemctl reload nginx
+	sudo nginx -t && sudo systemctl restart nginx
+
+
+	Then check it's working:
+
+	sudo systemctl status nginx
+
+	Look for "active (running)".
+
+🐍 5. Update the Python proxy
+
+	nano /home/opc/metadata-proxy.py
+
+	Scroll to the station_map = { section.
+
+	Replace it with the content from your new station_map.py.
+
+	Save and exit (Ctrl+O, Enter, Ctrl+X).
+
+🚀 6. Restart the Python metadata proxy
+
+	If you already made it a service:
+
+	sudo systemctl restart metadata-proxy
+
+	If not, run it manually for now:
+
+	python3 /home/opc/metadata-proxy.py &
+
+7. Test a station from console
+
+	curl -IL --http1.1 "https://wamballa.com/stream/?station=jazzfm"
+
+
+Create a new service:
+
+Check services running: systemctl list-units --type=service --state=running
+
+Get service detail: cat /etc/systemd/system/metadata-proxy.service
+
+Create the systemd service: sudo nano /etc/systemd/system/hls-proxy.service
+
+Paste config:
+
+	[Unit]
+	Description=HLS Proxy Service
+	After=network.target
+
+	[Service]
+	ExecStart=/usr/bin/python3 /home/opc/hls_proxy/hls_proxy.py
+	WorkingDirectory=/home/opc/hls_proxy
+	Restart=always
+	User=opc
+	Environment=PYTHONUNBUFFERED=1
+
+	[Install]
+	WantedBy=multi-user.target
+
+Enable it
+
+	sudo systemctl daemon-reexec
+	sudo systemctl daemon-reload
+	sudo systemctl enable hls-proxy.service
+	sudo systemctl start hls-proxy.service
+
+Check status: systemctl status hls-proxy.service
+
+Check error logs: journalctl -u hls-proxy.service --no-pager --since "5 minutes ago"
+
+
+
+
+nginx.conf
+HTTP Block
+
+DNS Resolver: The resolver directive sets Google's DNS servers (8.8.8.8 and 1.1.1.1) for DNS resolution.
+
+Maps:
+
+$upstream_stream: A map of radio stations to their stream URLs. Some use http, others https.
+
+$custom_host: A map to redirect specific stations to different hosts.
+
+Server Block:
+
+SSL Configuration: The server block listens on port 443 (HTTPS) and uses SSL certificates for wamballa.com from Let’s Encrypt.
+
+HLS Chunking and Proxy: The /hls/chunk and /hlsproxy/ locations are set to handle chunked HLS requests. Requests are proxied to the FastAPI server on port 5006.
+
+Stream Handling (/stream/): The /stream/ location proxies requests to the upstream stream based on the station. If the station is bbcasiannetwork, it rewrites the request to a custom HLS stream.
+
+Metadata (/metadata/): Proxies metadata requests to the FastAPI server at 127.0.0.1:5005.
+
+Main Functions:
+
+The configuration uses proxying to ensure that requests for .m3u8 playlists and audio chunks are redirected correctly.
+
+The HLS chunks are served from 127.0.0.1:5006 (your FastAPI server), and metadata is fetched from 127.0.0.1:5005.
+
+metadata-proxy.py (Flask-based)
+This Python script uses Flask to act as a metadata proxy for radio streams.
+
+Station URLs:
+
+It maps each station name to its stream URL (e.g., bbcasiannetwork, bbcradio1, etc.).
+
+Some URLs use HLS or MP3 streams.
+
+Metadata Route (/metadata):
+
+This route listens for requests with the station parameter and fetches metadata from the corresponding stream URL.
+
+It uses the Icy-MetaData header to request metadata.
+
+The script processes the ICY metadata (e.g., song name) from the stream by skipping the audio data and parsing the metadata portion.
+
+The response includes various metadata like icy-metaint, icy-name, icy-description, and the song name (if available).
+
+Error Handling:
+
+If the metadata is unavailable or an error occurs, the script returns an error message with a 500 status code.
+
+main.py (FastAPI-based)
+This Python script uses FastAPI to serve HLS streams via a proxy.
+
+HLS Map (HLS_MAP):
+
+Maps station names to HLS stream URLs (e.g., bbc_6music, bbc_asian_network).
+
+These URLs are for BBC stations and other popular UK radio stations.
+
+HLS Playlist Route (/hls/{station}.m3u8):
+
+This route fetches the playlist (.m3u8) for the requested station.
+
+The playlist is modified to rewrite chunk references, pointing them to the /hls/chunk proxy endpoint for fetching the actual .ts video chunks.
+
+The response returns a StreamingResponse with the modified playlist.
+
+HLS Chunk Route (/hls/chunk):
+
+This route fetches the individual HLS chunks (.ts files) for the requested station.
+
+It constructs the URL for the chunk and streams it back to the client.
+
+FastAPI Setup:
+
+The app listens on port 5006 for HLS requests, and the uvicorn server is used to run the FastAPI app.
+
+How They Work Together
+Nginx Proxying:
+
+Requests to https://wamballa.com/stream/?station=<station> are routed by Nginx.
+
+For stations like bbcasiannetwork, the request is rewritten and proxied to http://127.0.0.1:5006/hlsproxy/bbc_asian_network.m3u8.
+
+Nginx handles proxying the HLS requests to the FastAPI server (/hls/{station}.m3u8 and /hls/chunk).
+
+Nginx also handles metadata requests by forwarding them to the Flask-based metadata proxy at http://127.0.0.1:5005/metadata.
+
+FastAPI (HLS Proxy):
+
+The FastAPI app acts as a proxy for the HLS playlist and chunk requests.
+
+It fetches the actual playlist and chunk data from the source, rewrites the chunk URLs, and returns them as streaming responses.
+
+Flask (Metadata Proxy):
+
+The Flask app serves metadata for the streams, extracting and parsing song information (using ICY headers) from the audio streams.
+
+Issues & Suggestions
+Mix of HTTP and HTTPS URLs: Some streams in your nginx.conf are still using HTTP, which may need to be updated to HTTPS for consistent security (especially for the mobile app's Play Store submission).
+
+Error Handling: Ensure both FastAPI and Flask handle edge cases gracefully (e.g., what happens if metadata parsing fails or if an HLS stream is unavailable?).
+
+Performance Considerations: Streaming audio and video content can be resource-intensive. Monitor server performance and possibly add caching for metadata and playlist data to reduce load.

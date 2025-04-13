@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: e60bbb237f335a840be79c6132f1631d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 134131
+  packageName: Nested UI scroll view with snap
+  packageVersion: 1.1
+  assetPath: Assets/NestedSnapScrollView/Scripts/UI/NestedScrollView.cs
+  uploadId: 393166

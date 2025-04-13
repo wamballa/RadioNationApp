@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: d7c4699780f974a43921a62b1d96945c
+timeCreated: 1544170250
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 134131
+  packageName: Nested UI scroll view with snap
+  packageVersion: 1.1
+  assetPath: Assets/NestedSnapScrollView/Prefab/ScrollView/ExternScrollView.prefab
+  uploadId: 393166

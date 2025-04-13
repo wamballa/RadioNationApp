@@ -1,0 +1,464 @@
+{
+    "stations": [
+        {
+            "stationuuid": "absolute70s",
+            "name": "Absolute 70s",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/absolute70s.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=absolute70s",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "absolute80s",
+            "name": "Absolute 80s",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/absolute80s.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=absolute80s",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "absolute90s",
+            "name": "Absolute 90s",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/absolute90s.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=absolute90s",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "absoluteclassicrock",
+            "name": "Absolute Classic Rock",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/absoluteclassicrock.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=absoluteclassicrock",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "absoluteradio",
+            "name": "Absolute Radio",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/absoluteradio.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=absoluteradio",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "bbcasiannetwork",
+            "name": "BBC Asian Network",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/bbcasiannetwork.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=bbcasiannetwork",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "bbcradio1",
+            "name": "BBC Radio 1",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/bbcradio1.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=bbcradio1",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "bbcradio1xtra",
+            "name": "BBC Radio 1Xtra",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/bbcradio1xtra.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=bbcradio1xtra",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "bbcradio2",
+            "name": "BBC Radio 2",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/bbcradio2.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=bbcradio2",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "bbcradio3",
+            "name": "BBC Radio 3",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/bbcradio3.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=bbcradio3",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "bbcradio4",
+            "name": "BBC Radio 4",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/bbcradio4.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=bbcradio4",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "bbcradio4extra",
+            "name": "BBC Radio 4 Extra",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/bbcradio4extra.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=bbcradio4extra",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "bbcradio5live",
+            "name": "BBC Radio 5 Live",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/bbcradio5live.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=bbcradio5live",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "bbcradio5livesportsextra",
+            "name": "BBC Radio 5 Live Sports Extra",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/bbcradio5livesportsextra.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=bbcradio5livesportsextra",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "bbcradio6music",
+            "name": "BBC 6 Music",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/bbcradio6music.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=bbcradio6music",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "bbcradioscotland",
+            "name": "BBC Radio Scotland",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/bbcradioscotland.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=bbcradioscotland",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "bbcradioworldservice",
+            "name": "BBC Radio World Service",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/bbcradioworldservice.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=bbcradioworldservice",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "capitaluk",
+            "name": "Capital UK",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/capitaluk.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=capitaluk",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "capitalxtra",
+            "name": "Capital XTRA",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/capitalxtra.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=capitalxtra",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "classicfm",
+            "name": "Classic FM",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/classicfm.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=classicfm",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "goldfm",
+            "name": "Gold FM",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/goldfm.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=goldfm",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "greatesthits",
+            "name": "Greatest Hits Radio",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/greatesthits.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=greatesthits",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "heart",
+            "name": "Heart Radio",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/heart.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=heart",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "heart80s",
+            "name": "Heart 80s",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/heart80s.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=heart80s",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "heat",
+            "name": "Heat Radio",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/heat.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=heat",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "hitsradio",
+            "name": "HITS Radio",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/hitsradio.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=hitsradio",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "jazzfm",
+            "name": "Jazz FM",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/jazzfm.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=jazzfm",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "kerrang",
+            "name": "Kerrang! Radio",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/kerrang.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=kerrang",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "kisstory",
+            "name": "KISSTORY",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/kisstory.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=kisstory",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "kissfresh",
+            "name": "KISS Fresh",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/kissfresh.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=kissfresh",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "lbc",
+            "name": "LBC 97.3",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/lbc.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=lbc",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "magicchilled",
+            "name": "Magic CHILLED",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/magicchilled.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=magicchilled",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "magicfm",
+            "name": "Magic FM",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/magicfm.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=magicfm",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "magicsoul",
+            "name": "Magic SOUL",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/magicsoul.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=magicsoul",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "mellowmagic",
+            "name": "Mellow Magic",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/mellowmagic.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=mellowmagic",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "planetoldies",
+            "name": "Planet Oldies",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/planetoldies.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=planetoldies",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "planetrock",
+            "name": "Planet Rock",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/planetrock.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=planetrock",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "radiox",
+            "name": "Radio X",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/radiox.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=radiox",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "smooth",
+            "name": "Smooth Radio",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/smooth.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=smooth",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "smoothextra",
+            "name": "Smooth Extra",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/smoothextra.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=smoothextra",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "sunrise",
+            "name": "SUNRISE RADIO",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/sunrise.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=sunrise",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "talkradio",
+            "name": "talk RADIO",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/talkradio.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=talkradio",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "talksport",
+            "name": "talkSPORT",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/talksport.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=talksport",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "talksport2",
+            "name": "talkSPORT2",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/talksport2.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=talksport2",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "timesradio",
+            "name": "Times Radio",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/timesradio.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=timesradio",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        },
+        {
+            "stationuuid": "virgin",
+            "name": "Virgin Radio",
+            "ranking": "",
+            "favicon": "Assets/Resources/Favicon/virgin.jpg",
+            "streaming_url": "https://wamballa.com/stream/?station=virgin",
+            "tags": "",
+            "genre": "",
+            "faviconBGColour": "#000000"
+        }
+    ]
+}

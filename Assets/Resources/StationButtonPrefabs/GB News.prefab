@@ -1,0 +1,139 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &3455763031268179790
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1271205768536852634, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1271205768536852634, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1271205768536852634, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2465581122836478038, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_Name
+      value: GB News
+      objectReference: {fileID: 0}
+    - target: {fileID: 4406801612928040320, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_fontSize
+      value: 72
+      objectReference: {fileID: 0}
+    - target: {fileID: 5292811368516262476, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5441903293179039657, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -8261188516335778860, guid: 0f776ca0ea77bc249aeca770ab31a413, type: 3}
+    - target: {fileID: 7116064582438532265, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_text
+      value: GB News
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7695385130561154634, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: stationName
+      value: GB News
+      objectReference: {fileID: 0}
+    - target: {fileID: 7695385130561154634, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: stationUUID
+      value: gb_news
+      objectReference: {fileID: 0}
+    - target: {fileID: 7695385130561154634, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: streamingUrl
+      value: https://wamballa.com/stream/?station=gbnews
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}

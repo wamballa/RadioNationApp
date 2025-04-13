@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8f2fc3f7e6d0f784391dfa5c0b0b5012
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 134131
+  packageName: Nested UI scroll view with snap
+  packageVersion: 1.1
+  assetPath: Assets/NestedSnapScrollView/Animation/Demo/Contacts/Image - Call.controller
+  uploadId: 393166

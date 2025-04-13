@@ -1,0 +1,93 @@
+{
+  "stations": [
+    {
+      "stationuuid": "2",
+      "name": "Heart FM",
+      "favicon": "Assets/Resources/Favicon/heart_fm.jpg",
+      "streaming_url": "https://wamballa.com/stream/?station=heart",
+      "tags": "pop, top 40",
+      "faviconBGColour": "#FF0000"
+    },
+    {
+      "stationuuid": "3",
+      "name": "Absolute 80s",
+      "favicon": "Assets/Resources/Favicon/absolute_80s.jpg",
+      "streaming_url": "https://wamballa.com/stream/?station=absolute80s",
+      "tags": "pop, top 40",
+      "faviconBGColour": "#FF0000"
+    },
+    {
+      "stationuuid": "4",
+      "name": "BBC Radio 2",
+      "favicon": "Assets/Resources/Favicon/bbc_radio_2.jpg",
+      "streaming_url": "https://wamballa.com/stream/?station=absolute80s",
+      "tags": "pop, top 40",
+      "faviconBGColour": "#FF0000"
+    },
+    {
+      "stationuuid": "5",
+      "name": "Heart 80s",
+      "favicon": "Assets/Resources/Favicon/heart_80s.jpg",
+      "streaming_url": "https://wamballa.com/stream/?station=heart80s",
+      "tags": "variety, adult contemporary",
+      "faviconBGColour": "#FF0000"
+    },
+    {
+      "stationuuid": "6",
+      "name": "Heart Radio",
+      "favicon": "Assets/Resources/Favicon/heart_radio.jpg",
+      "streaming_url": "https://wamballa.com/stream/?station=heart80s",
+      "tags": "variety, adult contemporary",
+      "faviconBGColour": "#FF0000"
+    },
+    {
+      "stationuuid": "6",
+      "name": "Capital FM",
+      "favicon": "Assets/Resources/Favicon/capital_fm.jpg",
+      "streaming_url": "https://wamballa.com/stream/?station=capitaluk",
+      "tags": "variety, adult contemporary",
+      "faviconBGColour": "#FF0000"
+    },
+    {
+      "stationuuid": "6",
+      "name": "Classic FM",
+      "favicon": "Assets/Resources/Favicon/classic_fm.jpg",
+      "streaming_url": "https://wamballa.com/stream/?station=classicfm",
+      "tags": "variety, adult contemporary",
+      "faviconBGColour": "#FF0000"
+    },
+    {
+      "stationuuid": "6",
+      "name": "Magic FM",
+      "favicon": "Assets/Resources/Favicon/magic_radio.jpg",
+      "streaming_url": "https://wamballa.com/stream/?station=magicfm",
+      "tags": "variety, adult contemporary",
+      "faviconBGColour": "#FF0000"
+    },
+    {
+      "stationuuid": "6",
+      "name": "Kiss FM",
+      "favicon": "Assets/Resources/Favicon/kiss_fm.jpg",
+      "streaming_url": "https://wamballa.com/stream/?station=kissfm",
+      "tags": "variety, adult contemporary",
+      "faviconBGColour": "#FF0000"
+    },
+    {
+      "stationuuid": "6",
+      "name": "Greatest Hits Radio",
+      "favicon": "Assets/Resources/Favicon/ghr.jpg",
+      "streaming_url": "https://wamballa.com/stream/?station=greatesthits",
+      "tags": "variety, adult contemporary",
+      "faviconBGColour": "#FF0000"
+    },
+    {
+      "stationuuid": "6",
+      "name": "LBC 97.3",
+      "favicon": "Assets/Resources/Favicon/lbc_973.jpg",
+      "streaming_url": "https://wamballa.com/stream/?station=lbc",
+      "tags": "variety, adult contemporary",
+      "faviconBGColour": "#FF0000"
+    }
+
+  ]
+}

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f8ffbcf830469874dbf20f564635c5b2
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 134131
+  packageName: Nested UI scroll view with snap
+  packageVersion: 1.1
+  assetPath: Assets/NestedSnapScrollView/Animation/Demo/Hint/FingerSwipeHorizontal.anim
+  uploadId: 393166

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d6e95d24e2952374aab5581757939a5e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 134131
+  packageName: Nested UI scroll view with snap
+  packageVersion: 1.1
+  assetPath: Assets/NestedSnapScrollView/Scripts/ScriptableObject/NestedPrefabsContainer.asset
+  uploadId: 393166

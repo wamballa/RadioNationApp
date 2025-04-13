@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3e885726b778981468debfc7e3a6f574
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 134131
+  packageName: Nested UI scroll view with snap
+  packageVersion: 1.1
+  assetPath: Assets/NestedSnapScrollView/Animation/Demo/Hint/Panel - Finger Hint.controller
+  uploadId: 393166

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 32395837a6972ea4c83483969a428299
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 134131
+  packageName: Nested UI scroll view with snap
+  packageVersion: 1.1
+  assetPath: Assets/NestedSnapScrollView/Scenes/SnapScrollDemo.unity
+  uploadId: 393166
