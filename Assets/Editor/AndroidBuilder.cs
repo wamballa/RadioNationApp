@@ -16,6 +16,14 @@ public class AndroidBuilder
 
     private static void Build(string format)
     {
+        // 🔒 Prevent build if keystore passwords are not set
+        if (!AreKeystorePasswordsSet())
+        {
+            Debug.LogError("❌ Keystore passwords not set. Aborting build.");
+            EditorUtility.DisplayDialog("Build Aborted", "Keystore passwords are not set in Player Settings.\nPlease set them before building.", "OK");
+            return;
+        }
+
         // ✅ Bump patch version before build
         VersionBumper.BumpPatch();
 
@@ -182,5 +190,11 @@ public class AndroidBuilder
             if (!string.IsNullOrEmpty(error)) Debug.LogError(error);
         }
     }
+    private static bool AreKeystorePasswordsSet()
+    {
+        var keystorePass = PlayerSettings.Android.keystorePass;
+        var keyaliasPass = PlayerSettings.Android.keyaliasPass;
 
+        return !string.IsNullOrWhiteSpace(keystorePass) && !string.IsNullOrWhiteSpace(keyaliasPass);
+    }
 }
