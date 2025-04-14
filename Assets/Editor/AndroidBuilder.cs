@@ -55,8 +55,8 @@ public class AndroidBuilder
             scenes = new[] { "Assets/Scenes/RadioApp.unity" },
             locationPathName = outputPath,
             target = BuildTarget.Android,
-            options = BuildOptions.None
-            //options = (format == "apk") ? BuildOptions.AutoRunPlayer : BuildOptions.None
+            //options = BuildOptions.None
+            options = (format == "apk") ? BuildOptions.AutoRunPlayer : BuildOptions.None
         };
 
         // Run build
@@ -67,16 +67,30 @@ public class AndroidBuilder
 
             if (!string.IsNullOrEmpty(commitMessage))
             {
-                CommitAndPushToGit(version, code, commitMessage);
-
-                if (format == "aab")
+                // 🔁 Delay Git commit/push so it runs AFTER Unity finishes Build & Run
+                EditorApplication.delayCall += () =>
                 {
-                    string tag = $"v{version}";
-                    string tagMessage = $"Release build {version} (code {code})";
-                    RunGitCommand($"tag -a {tag} -m \"{tagMessage}\"");
-                    RunGitCommand($"push origin {tag}");
-                    Debug.Log($"🏷️ Git tag created and pushed: {tag}");
-                }
+                    CommitAndPushToGit(version, code, commitMessage);
+
+                    if (format == "aab")
+                    {
+                        string tag = $"v{version}";
+                        string tagMessage = $"Release build {version} (code {code})";
+                        RunGitCommand($"tag -a {tag} -m \"{tagMessage}\"");
+                        RunGitCommand($"push origin {tag}");
+                        Debug.Log($"🏷️ Git tag created and pushed: {tag}");
+                    }
+                };
+            //    CommitAndPushToGit(version, code, commitMessage);
+
+            //    if (format == "aab")
+            //    {
+            //        string tag = $"v{version}";
+            //        string tagMessage = $"Release build {version} (code {code})";
+            //        RunGitCommand($"tag -a {tag} -m \"{tagMessage}\"");
+            //        RunGitCommand($"push origin {tag}");
+            //        Debug.Log($"🏷️ Git tag created and pushed: {tag}");
+            //    }
             }
 
         }
