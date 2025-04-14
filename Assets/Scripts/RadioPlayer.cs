@@ -59,9 +59,7 @@ public class RadioPlayer : MonoBehaviour
     private string lastPlayedStationUrl;
 
     // Private variables
-    private bool hasHandledError = false;
-
-    public string androidState;
+    private string androidState;
 
     #endregion
 
@@ -256,7 +254,7 @@ public class RadioPlayer : MonoBehaviour
         if (currentStationText != null) currentStationText.text = name;
         if (backgroundBufferingImage != null) backgroundBufferingImage.fillAmount = bufferingPercent / 100;
         if (faviconImage != null && _faviconSprite != null) faviconImage.sprite = _faviconSprite;
-
+        if (durationText != null) durationText.text = androidRadioLauncher.GetPlaybackTime();
         if (isPlayingText != null) isPlayingText.text = isPlaying;
 
     }

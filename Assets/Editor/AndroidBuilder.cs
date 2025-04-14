@@ -45,7 +45,8 @@ public class AndroidBuilder
         if (result == 0)
         {
             // Fallback default commit message
-            commitMessage = $"Auto-commit from Unity build: {version} ({code})";
+            string buildType = format == "aab" ? "STORE/AAB" : "DEV/APK";
+            commitMessage = $"Auto-commit from Unity build ({buildType}): {version} ({code})";
         }
 
         // Build options
@@ -59,7 +60,7 @@ public class AndroidBuilder
 
         // Run build
         var report = BuildPipeline.BuildPlayer(options);
-        if (report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
+        if (report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded && File.Exists(outputPath))
         {
             Debug.Log($"✅ Build succeeded: {outputPath}");
 

@@ -7,6 +7,7 @@ using Unity.VisualScripting;
 public class AndroidRadioLauncher : MonoBehaviour
 {
     public bool logToConsole = true;
+    private float playbackTime;
 
     void Start()
     {
@@ -32,7 +33,25 @@ public class AndroidRadioLauncher : MonoBehaviour
 
     private void Update()
     {
+        string state = CheckAndroidPlaybackState();
 
+#if UNITY_ANDROID && !UNITY_EDITOR
+
+        if (state == "PLAYING")
+        {
+            playbackTime += Time.deltaTime;
+        }
+        else if (state == "STOPPED" || state == "ERROR" || state == "BUFFERING")
+        {
+            playbackTime = 0;
+        }
+#endif
+    }
+
+    public string GetPlaybackTime()
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(playbackTime);
+        return (string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
     }
 
     void OnApplicationFocus(bool hasFocus)
@@ -198,7 +217,7 @@ public class AndroidRadioLauncher : MonoBehaviour
     void Log(object message)
     {
         if (logToConsole)
-            Debug.Log("[AndroidRadioLauncher] "+message);
+            Debug.Log("[AndroidRadioLauncher] " + message);
     }
 
     void LogError(object message)
