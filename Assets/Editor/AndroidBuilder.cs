@@ -55,7 +55,8 @@ public class AndroidBuilder
             scenes = new[] { "Assets/Scenes/RadioApp.unity" },
             locationPathName = outputPath,
             target = BuildTarget.Android,
-            options = (format == "apk") ? BuildOptions.AutoRunPlayer : BuildOptions.None
+            options = BuildOptions.None
+            //options = (format == "apk") ? BuildOptions.AutoRunPlayer : BuildOptions.None
         };
 
         // Run build
