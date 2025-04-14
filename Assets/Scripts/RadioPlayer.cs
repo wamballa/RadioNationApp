@@ -241,17 +241,17 @@ public class RadioPlayer : MonoBehaviour
 
     private void UpdateRadioPlayerDetails(string isPlaying, string _playerState, float buffering, string nowPlayingMeta, string name, Sprite _faviconSprite)
     {
-        if (durationText != null)
-        {
-            //float timeInSeconds = vlcPlayer.GetPlaybackTime;
-            //TimeSpan timeSpan = TimeSpan.FromSeconds(timeInSeconds);
-            //durationText.text = string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
-        }
-
         if (playerStateText != null) playerStateText.text = _playerState;
-        //if (bufferingText != null) bufferingText.text = $"{buffering:0.##}%";
         if (nowPlayingMetaText != null) nowPlayingMetaText.text = nowPlayingMeta;
-        if (currentStationText != null) currentStationText.text = name;
+
+        if (currentStationText != null)
+        {
+            if (_playerState == "PLAYING")
+                currentStationText.text = $"<color=red>Live: </color>{name}";
+            else
+                currentStationText.text = name;
+        }
+        //if (currentStationText != null) currentStationText.text = name;
         if (backgroundBufferingImage != null) backgroundBufferingImage.fillAmount = bufferingPercent / 100;
         if (faviconImage != null && _faviconSprite != null) faviconImage.sprite = _faviconSprite;
         if (durationText != null) durationText.text = androidRadioLauncher.GetPlaybackTime();
