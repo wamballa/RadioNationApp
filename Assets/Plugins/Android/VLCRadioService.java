@@ -363,7 +363,7 @@ public class VLCRadioService extends Service {
                 nowPlayingText = "Player stopped!";
 
                 // SHOULD THIS BE NULL?
-                //lastStreamUrl = null;
+                lastStreamUrl = null;
 
 
                 showOrUpdateNotification();
