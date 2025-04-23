@@ -65,8 +65,6 @@ public class iOSRadioLauncher : MonoBehaviour
 #endif
     }
 
-    [DllImport("__Internal")]
-    private static extern void StartStream(string url);
 
     [DllImport("__Internal")]
     private static extern void StartStreamWithArtwork(string url, string stationName, byte[] artwork, int length);
@@ -77,7 +75,7 @@ public class iOSRadioLauncher : MonoBehaviour
 #if UNITY_IOS && !UNITY_EDITOR
         byte[] bytes = favicon.EncodeToPNG();
         StartStreamWithArtwork(url, stationName, bytes, bytes.Length);
-        // StartStream(url);
+
 #endif
     }
 
