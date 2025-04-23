@@ -130,8 +130,7 @@ extern "C" void StartStreamWithArtwork(const char* url, const char* station, con
         NSData *data = [NSData dataWithBytes:imageData length:length];
         UIImage *image = [UIImage imageWithData:data];
         // Save for lockscreen display
-        currentFavicon = [image retain];
-        //currentFavicon = image;
+        currentFavicon = image;
 
         NSString *urlStr = [NSString stringWithUTF8String:url];
         lastStreamUrl = urlStr;
@@ -150,10 +149,7 @@ extern "C" void StopStream()
         player = nil;
         playerItem = nil;
     }
-    if (currentFavicon) {
-    [currentFavicon release];
     currentFavicon = nil;
-}
     lastStreamUrl = nil;
      updatePlayerState(StateStopped);
 }
