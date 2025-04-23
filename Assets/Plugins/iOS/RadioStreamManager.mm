@@ -128,7 +128,10 @@ extern "C" void StartStreamWithArtwork(const char* url, const char* station, voi
 {
     @autoreleasepool {
         NSData *data = [NSData dataWithBytes:imageData length:length];
+
         UIImage *image = [UIImage imageWithData:data];
+        NSLog(@"Decoded image size: %@", NSStringFromCGSize(image.size));
+
         // Save for lockscreen display
         currentFavicon = image;
 
@@ -138,6 +141,11 @@ extern "C" void StartStreamWithArtwork(const char* url, const char* station, voi
 
         StartStream(url); // Reuse existing logic
     }
+}
+
+extern "C" void StartStreamWithArtwork_Internal(const char* url, const char* station, void* imageData, int length)
+{
+    StartStreamWithArtwork(url, station, imageData, length);
 }
 
 
