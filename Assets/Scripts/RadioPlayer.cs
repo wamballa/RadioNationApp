@@ -79,7 +79,8 @@ public class RadioPlayer : MonoBehaviour
         if (playStopButton != null)
         {
             playStopButton.onClick.AddListener(HandlePlayStopButtonPress);
-        }else
+        }
+        else
         {
             LogError("[RADIOPLAYER] Error; no playstop button found!");
         }
@@ -320,7 +321,11 @@ public class RadioPlayer : MonoBehaviour
         currentFaviconSprite = _faviconImage.sprite;
         if (currentFaviconSprite == null) Debug.LogError("currentFaviconImage NULL");
 
+#if UNITY_ANDROID && !UNITY_EDITOR
         AndroidRadioLauncher.StartNativeVLC(currentStreamingURL, currentStation, currentFaviconSprite.texture);
+#elif UNITY_IOS && !UNITY_EDITOR
+        iOSRadioLauncher.StartNativeStream(currentStreamingURL);
+#endif
         //vlcPlayer.PlayStation(streamURL);
         // SetPlayerState(PlayerState.Stopped);
         //playerState = PlayerState.Stopped;
@@ -333,7 +338,7 @@ public class RadioPlayer : MonoBehaviour
         backgroundBufferingImage.fillAmount = 0.0f;
     }
 
- 
+
 
     void Log(object message)
     {
