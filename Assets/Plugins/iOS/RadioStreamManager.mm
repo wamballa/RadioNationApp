@@ -137,24 +137,12 @@ extern "C" const char* GetPlaybackState()
 }
 
 // Set now playing info (title + optional artwork)
-extern "C" void UpdateNowPlaying(const char* title, const char* artist, const char* artworkPath)
+extern "C" void UpdateNowPlaying(const char* title, const char* artist)
 {
     @autoreleasepool {
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
         if (title) [info setObject:[NSString stringWithUTF8String:title] forKey:MPMediaItemPropertyTitle];
         if (artist) [info setObject:[NSString stringWithUTF8String:artist] forKey:MPMediaItemPropertyArtist];
-
-        if (artworkPath) {
-            NSString *path = [NSString stringWithUTF8String:artworkPath];
-            UIImage *img = [UIImage imageWithContentsOfFile:path];
-            if (img) {
-                MPMediaItemArtwork *art = [[MPMediaItemArtwork alloc] initWithBoundsSize:img.size requestHandler:^UIImage* _Nonnull(CGSize size) {
-                    return img;
-                }];
-                [info setObject:art forKey:MPMediaItemPropertyArtwork];
-            }
-        }
-
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
 }

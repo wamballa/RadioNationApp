@@ -36,12 +36,12 @@ public static class iOSRadioLauncher
     }
 
     [DllImport("__Internal")]
-    private static extern void UpdateNowPlaying(string title, string artist, string artworkPath);
+    private static extern void UpdateNowPlaying(string title, string artist);
 
-    public static void SetNowPlaying(string title, string artist = null, string artworkPath = null)
+    public static void SetNowPlaying(string title, string artist = null)
     {
 #if UNITY_IOS && !UNITY_EDITOR
-    UpdateNowPlaying(title, artist, artworkPath);
+    UpdateNowPlaying(title, artist);
 #endif
     }
 
