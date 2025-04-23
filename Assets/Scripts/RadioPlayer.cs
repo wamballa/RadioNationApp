@@ -284,7 +284,7 @@ public class RadioPlayer : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
         AndroidRadioLauncher.StartNativeVLC(currentStreamingURL, currentStation, currentFaviconSprite.texture);
 #elif UNITY_IOS && !UNITY_EDITOR
-        iOSRadioLauncher.StartNativeStream(currentStreamingURL, currentStation, currentFaviconSprite.texture);
+        // iOSRadioLauncher.StartNativeStream(currentStreamingURL, currentStation, currentFaviconSprite.texture);
 #endif
                 }
                 break;
@@ -329,7 +329,7 @@ public class RadioPlayer : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
         AndroidRadioLauncher.StartNativeVLC(currentStreamingURL, currentStation, currentFaviconSprite.texture);
 #elif UNITY_IOS && !UNITY_EDITOR
-        iOSRadioLauncher.StartNativeStream(currentStreamingURL, currentStation, currentFaviconSprite.texture);
+        // iOSRadioLauncher.StartNativeStream(currentStreamingURL, currentStation, currentFaviconSprite.texture);
 #endif
         //vlcPlayer.PlayStation(streamURL);
         // SetPlayerState(PlayerState.Stopped);
