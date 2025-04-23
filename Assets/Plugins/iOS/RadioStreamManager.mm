@@ -9,6 +9,8 @@ bool IsNetworkReachable(void);
 void setupRemoteCommands(void);
 void setupNetworkMonitor(void);
 //extern "C" void StartStream(const char* url);  // ✅ CORRECT
+// extern "C" void StartStream(const char* url);
+
 
 
 // --- State tracking ---å
@@ -83,22 +85,6 @@ extern "C" float GetBufferingPercent() {
     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
 }
 
-extern "C" void StartStreamWithArtwork(const char* url, const char* station, const uint8_t* imageData, int length)
-{
-    @autoreleasepool {
-        NSData *data = [NSData dataWithBytes:imageData length:length];
-        UIImage *image = [UIImage imageWithData:data];
-        // Save for lockscreen display
-        currentFavicon = image;
-
-        NSString *urlStr = [NSString stringWithUTF8String:url];
-        lastStreamUrl = urlStr;
-        currentStationName = [NSString stringWithUTF8String:station];
-
-        StartStream(url); // Reuse existing logic
-    }
-}
-
 extern "C" void StartStream(const char* url)
 {
     @autoreleasepool {
@@ -137,6 +123,24 @@ extern "C" void StartStream(const char* url)
         setupNetworkMonitor();
     }
 }
+
+extern "C" void StartStreamWithArtwork(const char* url, const char* station, const uint8_t* imageData, int length)
+{
+    @autoreleasepool {
+        NSData *data = [NSData dataWithBytes:imageData length:length];
+        UIImage *image = [UIImage imageWithData:data];
+        // Save for lockscreen display
+        currentFavicon = image;
+
+        NSString *urlStr = [NSString stringWithUTF8String:url];
+        lastStreamUrl = urlStr;
+        currentStationName = [NSString stringWithUTF8String:station];
+
+        StartStream(url); // Reuse existing logic
+    }
+}
+
+
 
 extern "C" void StopStream()
 {
