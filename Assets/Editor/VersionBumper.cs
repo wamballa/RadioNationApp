@@ -84,7 +84,16 @@ public class VersionBumper
 
         string newVersion = $"{major}.{minor}.{patch}";
         PlayerSettings.bundleVersion = newVersion;
-        PlayerSettings.Android.bundleVersionCode++;
+        
+#if UNITY_ANDROID
+    PlayerSettings.Android.bundleVersionCode++;
+#endif
+
+#if UNITY_IOS
+        int build = 1;
+        int.TryParse(PlayerSettings.iOS.buildNumber, out build);
+        PlayerSettings.iOS.buildNumber = (build + 1).ToString();
+#endif
 
         Debug.Log($"✅ Updated to version {newVersion}, versionCode: {PlayerSettings.Android.bundleVersionCode}");
     }
