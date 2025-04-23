@@ -59,7 +59,7 @@ public class RadioPlayer : MonoBehaviour
     private string lastPlayedStationUrl;
 
     // Private variables
-    private string androidState;
+    private string currentState;
 
     #endregion
 
@@ -85,7 +85,8 @@ public class RadioPlayer : MonoBehaviour
             LogError("[RADIOPLAYER] Error; no playstop button found!");
         }
 
-        androidState = "INITIAL";
+        currentState = "INITIAL";
+
         ChangePlaybackImages();
     }
 
@@ -108,15 +109,17 @@ public class RadioPlayer : MonoBehaviour
     private void HandleStates()
     {
 #if UNITY_ANDROID && !UNITY_EDITOR
-        androidState = AndroidRadioLauncher.CheckAndroidPlaybackState();
+    currentState = AndroidRadioLauncher.CheckAndroidPlaybackState();
+#elif UNITY_IOS && !UNITY_EDITOR
+    currentState = iOSRadioLauncher.CheckiOSPlaybackState();
 #endif
-        switch (androidState)
+        switch (currentState)
         {
             case "STOPPED":
                 //Log("[RadioPlayer] State = Stopped");
                 UpdateRadioPlayerDetails(
                     "",
-                    androidState,
+                    currentState,
                     0,
                     "",
                     currentStation,
@@ -130,7 +133,7 @@ public class RadioPlayer : MonoBehaviour
                 bufferingPercent = AndroidRadioLauncher.GetAndroidBufferingPercent();
                 UpdateRadioPlayerDetails(
                     "",
-                    androidState,
+                    currentState,
                     bufferingPercent,
                     "buffering",
                     currentStation,
@@ -144,7 +147,7 @@ public class RadioPlayer : MonoBehaviour
 
                 UpdateRadioPlayerDetails(
                     "vlcPlayer.IsPlaying.ToString()",
-                    androidState,
+                    currentState,
                     1,
                     AndroidRadioLauncher.CheckAndroidMeta(),
                     currentStation,
@@ -156,7 +159,7 @@ public class RadioPlayer : MonoBehaviour
                 //Log("[RadioPlayer]  State = Unavailble ");
                 UpdateRadioPlayerDetails(
                     "Unavailable",
-                    androidState,
+                    currentState,
                     0,
                     "This station is not available in your region or the link is broken.",
                     currentStation,
@@ -169,7 +172,7 @@ public class RadioPlayer : MonoBehaviour
                 //Log("[RadioPlayer] State = Offline");
                 UpdateRadioPlayerDetails(
                     "No Internet",
-                    androidState,
+                    currentState,
                     0,
                     "No internet connection.",
                     currentStation,
@@ -184,7 +187,7 @@ public class RadioPlayer : MonoBehaviour
 
     private void ChangePlaybackImages()
     {
-        switch (androidState)
+        switch (currentState)
         {
             case "PLAYING":
                 faviconImage.sprite = currentFaviconSprite;
@@ -262,7 +265,7 @@ public class RadioPlayer : MonoBehaviour
 
     private void HandlePlayStopButtonPress()
     {
-        switch (androidState)
+        switch (currentState)
         {
             case "PLAYING":
                 Log("&&&&&&&&&& [RadioPlayer] STOP BUTTON PRESSED");
