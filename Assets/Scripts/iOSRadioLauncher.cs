@@ -72,6 +72,7 @@ public class iOSRadioLauncher : MonoBehaviour
 
     public static void StartNativeStream(string url, string stationName, Texture2D favicon)
     {
+        Debug.Log("StartNativeStream called");
 #if UNITY_IOS && !UNITY_EDITOR
         byte[] bytes = favicon.EncodeToPNG();
         GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
