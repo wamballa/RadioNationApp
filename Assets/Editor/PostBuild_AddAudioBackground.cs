@@ -29,7 +29,13 @@ public class PostBuild_AddAudioBackground
         plist.ReadFromFile(plistPath);
 
         string bundleId = "com.wamballa.radioapp";
-        proj.SetBuildProperty(targetGUID, "PRODUCT_BUNDLE_IDENTIFIER", bundleId);
+
+        string mainTarget = proj.GetUnityMainTargetGuid();
+        string frameworkTarget = proj.GetUnityFrameworkTargetGuid();
+
+        proj.SetBuildProperty(mainTarget, "PRODUCT_BUNDLE_IDENTIFIER", bundleId);
+        proj.SetBuildProperty(frameworkTarget, "PRODUCT_BUNDLE_IDENTIFIER", bundleId);
+
         plist.root.SetString("CFBundleIdentifier", bundleId);
 
         PlistElementArray bgModes = plist.root["UIBackgroundModes"] as PlistElementArray;
