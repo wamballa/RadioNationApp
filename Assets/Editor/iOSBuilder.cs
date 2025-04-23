@@ -23,11 +23,15 @@ public class iOSBuilder
         // ✅ Bump patch version
         VersionBumper.BumpPatch();
 
+        string outputPath = "Builds/iOS/Export";
+
         string version = PlayerSettings.bundleVersion;
         string build = PlayerSettings.iOS.buildNumber;
         if (string.IsNullOrEmpty(build)) build = "1";
 
-        string outputPath = $"Builds/iOS/RadioNation_{version}({build})";
+        // Optional cleanup to avoid stale native code/scripts
+        DeleteIfExists(Path.Combine(outputPath, "Libraries"));
+        DeleteIfExists(Path.Combine(outputPath, "Data"));
 
         Directory.CreateDirectory(outputPath);
 
@@ -59,6 +63,15 @@ public class iOSBuilder
         else
         {
             Debug.LogError("❌ iOS build failed.");
+        }
+    }
+
+    private static void DeleteIfExists(string path)
+    {
+        if (Directory.Exists(path))
+        {
+            Directory.Delete(path, true);
+            Debug.Log($"🧹 Deleted: {path}");
         }
     }
 
