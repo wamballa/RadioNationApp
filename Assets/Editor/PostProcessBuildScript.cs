@@ -15,16 +15,13 @@ public static class PostProcessBuildScript
         proj.ReadFromFile(projPath);
 
 #if UNITY_2020_1_OR_NEWER
-        string targetGuid = proj.GetUnityMainTargetGuid();
+        string frameworkTargetGuid = proj.TargetGuidByName("UnityFramework");
 #else
-        string targetGuid = proj.TargetGuidByName("Unity-iPhone");
+        string frameworkTargetGuid = proj.TargetGuidByName("UnityFramework");
 #endif
 
-        proj.AddFrameworkToProject(targetGuid, "MediaPlayer.framework", false);
-        proj.AddFrameworkToProject(targetGuid, "Network.framework", false);
-
-        // Enable Obj-C exceptions (needed for MPRemoteCommandCenter + QAVRouteChangeNotification edge cases)
-        proj.AddBuildProperty(targetGuid, "GCC_ENABLE_OBJC_EXCEPTIONS", "YES");
+        proj.AddFrameworkToProject(frameworkTargetGuid, "MediaPlayer.framework", false);
+        proj.AddFrameworkToProject(frameworkTargetGuid, "Network.framework", false);
 
         proj.WriteToFile(projPath);
     }
