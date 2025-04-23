@@ -8,10 +8,10 @@ void fetchNowPlaying(NSString *urlStr);
 bool IsNetworkReachable(void);
 void setupRemoteCommands(void);
 void setupNetworkMonitor(void);
-void StartStream(const char* url);  // Forward declaration to fix compiler error
+extern "C" void StartStream(const char* url);  // ✅ CORRECT
 
 
-// --- State tracking ---
+// --- State tracking ---å
 typedef NS_ENUM(NSInteger, PlaybackState) {
     StateInitial,
     StateStopped,
@@ -82,8 +82,6 @@ void fetchNowPlaying(NSString *urlStr) {
 extern "C" float GetBufferingPercent() {
     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
 }
-
-extern "C" void StartStream(const char* url); 
 
 extern "C" void StartStreamWithArtwork(const char* url, const char* station, const uint8_t* imageData, int length)
 {
