@@ -4,6 +4,11 @@
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <Network/Network.h>
 
+void fetchNowPlaying(NSString *urlStr);
+bool IsNetworkReachable(void);
+void setupRemoteCommands(void);
+void setupNetworkMonitor(void);
+
 // --- State tracking ---
 typedef NS_ENUM(NSInteger, PlaybackState) {
     StateInitial,
@@ -98,17 +103,7 @@ extern "C" void StartStream(const char* url)
         [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemFailedToPlayToEndTimeNotification object:playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
             updatePlayerState(StateError);
         }];
-
-        [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionRouteChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
-            NSDictionary *info = note.userInfo;
-            AVAudioSessionRouteChangeReason reason = [info[AVAudioSessionRouteChangeReasonKey] unsignedIntegerValue];
-            if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
-                if (player) {
-                    [player pause];
-                    updatePlayerState(StateStopped);
-                }
-            }
-        }];
+        
 
         [player play];
 
@@ -164,7 +159,39 @@ extern "C" void UpdateNowPlaying(const char* title, const char* artist, const ch
     }
 }
 
-void setupNetworkMonitor()
+void setupRemoteCommands(void) {
+    MPRemoteCommandCenter *remote = [MPRemoteCommandCenter sharedCommandCenter];
+    [remote.playCommand setEnabled:YES];
+    [remote.pauseCommand setEnabled:YES];
+
+    [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+        if (player) [player play];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+
+    [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+        if (player) [player pause];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+
+    [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionRouteChangeNotification
+                                                        object:nil
+                                                        queue:[NSOperationQueue mainQueue]
+                                                    usingBlock:^(NSNotification * _Nonnull note) {
+        NSDictionary *info = note.userInfo;
+        NSUInteger rawReason = [info[AVAudioSessionRouteChangeReasonKey] unsignedIntegerValue];
+        AVAudioSessionRouteChangeReason reason = (AVAudioSessionRouteChangeReason)rawReason;
+
+        if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
+            if (player) {
+                [player pause];
+                updatePlayerState(StateStopped);
+            }
+        }
+    }];
+}
+
+void setupNetworkMonitor(void)
 {
     if (pathMonitor != nil) return;
 
@@ -184,7 +211,7 @@ void setupNetworkMonitor()
     nw_path_monitor_start(pathMonitor);
 }
 
-bool IsNetworkReachable()
+bool IsNetworkReachable(void)
 {
     NSURL *url = [NSURL URLWithString:@"https://apple.com"];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:5.0];
