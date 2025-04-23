@@ -26,6 +26,9 @@ static NSString *lastStreamUrl = nil;
 static nw_path_monitor_t pathMonitor = nil;
 static NSTimer *metadataTimer = nil;
 static NSString *nowPlayingText = @"Ready to go...";
+static UIImage *currentFavicon = nil;
+static NSString *currentStationName = @"";
+
 
 #pragma mark - Playback Control
 
@@ -72,6 +75,27 @@ void fetchNowPlaying(NSString *urlStr) {
         [info setObject:title forKey:MPMediaItemPropertyTitle];
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }] resume];
+}
+
+extern "C" float GetBufferingPercent() {
+    return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
+}
+
+
+extern "C" void StartStreamWithArtwork(const char* url, const char* station, const uint8_t* imageData, int length)
+{
+    @autoreleasepool {
+        NSData *data = [NSData dataWithBytes:imageData length:length];
+        UIImage *image = [UIImage imageWithData:data];
+        // Save for lockscreen display
+        currentFavicon = image;
+
+        NSString *urlStr = [NSString stringWithUTF8String:url];
+        lastStreamUrl = urlStr;
+        currentStationName = [NSString stringWithUTF8String:station];
+
+        StartStream(url); // Reuse existing logic
+    }
 }
 
 extern "C" void StartStream(const char* url)
@@ -137,8 +161,7 @@ extern "C" const char* GetPlaybackState()
 }
 
 // Set now playing info (title + optional artwork)
-extern "C" void UpdateNowPlaying(const char* title)
-{
+extern "C" void UpdateNowPlaying(const char* title) {
     @autoreleasepool {
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
 
@@ -146,11 +169,17 @@ extern "C" void UpdateNowPlaying(const char* title)
             NSString *titleStr = [NSString stringWithUTF8String:title];
             if (titleStr && titleStr.length > 0) {
                 [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
-            
+            }
         }
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
 }
+
+extern "C" const char* GetMetaAsString()
+{
+    return [nowPlayingText UTF8String];
+}
+
 
 void setupRemoteCommands(void) {
     MPRemoteCommandCenter *remote = [MPRemoteCommandCenter sharedCommandCenter];

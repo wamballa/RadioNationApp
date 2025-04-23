@@ -1,8 +1,46 @@
+using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-public static class iOSRadioLauncher
+public class iOSRadioLauncher : MonoBehaviour
 {
+    private float playbackTime;
+
+    void Update()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+        string state = iOSRadioLauncher.CheckiOSPlaybackState();
+
+        if (state == "PLAYING")
+        {
+            playbackTime += Time.deltaTime;
+        }
+        else if (state == "STOPPED" || state == "BUFFERING" || state == "ERROR")
+        {
+            playbackTime = 0f;
+        }
+#endif
+    }
+
+    public string GetiOSPlaybackTime()
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(playbackTime);
+        return string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+    }
+
+    [DllImport("__Internal")]
+    private static extern float GetBufferingPercent();
+
+    public static float GetiOSBufferingPercent()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+    return GetBufferingPercent();
+#else
+        return 0f;
+#endif
+    }
+
+
     [DllImport("__Internal")]
     private static extern string GetPlaybackState();
 
@@ -15,18 +53,10 @@ public static class iOSRadioLauncher
 #endif
     }
 
-    [DllImport("__Internal")]
-    private static extern void StartStream(string url);
+
 
     [DllImport("__Internal")]
     private static extern void StopStream();
-
-    public static void StartNativeStream(string url)
-    {
-#if UNITY_IOS && !UNITY_EDITOR
-        StartStream(url);
-#endif
-    }
 
     public static void StopNativeStream()
     {
@@ -36,12 +66,44 @@ public static class iOSRadioLauncher
     }
 
     [DllImport("__Internal")]
-    private static extern void UpdateNowPlaying(string title, string artist);
+    private static extern void StartStream(string url);
 
-    public static void SetNowPlaying(string title, string artist = null)
+    [DllImport("__Internal")]
+    private static extern void StartStreamWithArtwork(string url, string stationName, byte[] artwork, int length);
+
+
+    public static void StartNativeStream(string url, string stationName, Texture2D favicon)
     {
 #if UNITY_IOS && !UNITY_EDITOR
-    UpdateNowPlaying(title, artist);
+        byte[] bytes = favicon.EncodeToPNG();
+        StartStreamWithArtwork(url, stationName, bytes, bytes.Length);
+        // StartStream(url);
+#endif
+    }
+
+
+
+    [DllImport("__Internal")]
+    private static extern string GetMetaAsString();
+
+    public static string CheckiOSMeta()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+    return GetMetaAsString();
+#else
+        return "";
+#endif
+    }
+
+
+
+    [DllImport("__Internal")]
+    private static extern void UpdateNowPlaying(string title);
+
+    public static void SetNowPlaying(string title)
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+    UpdateNowPlaying(title);
 #endif
     }
 

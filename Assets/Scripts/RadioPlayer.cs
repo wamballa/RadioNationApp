@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using TMPro;
-using System.Collections;
-using UnityEngine.Networking;
-
+using UnityEngine.Events;
 
 public class RadioPlayer : MonoBehaviour
 {
@@ -17,7 +12,8 @@ public class RadioPlayer : MonoBehaviour
     [Header("Engine Variables")]
     //public VLCPlayer vlcPlayer;
     //public MetadataHandler metadataHandler;
-    public AndroidRadioLauncher androidRadioLauncher;
+    public iOSRadioLauncher iosRadioLauncher;
+    // public AndroidRadioLauncher androidRadioLauncher;
 
     [Header("Text")]
     public TMP_Text durationText;
@@ -112,6 +108,9 @@ public class RadioPlayer : MonoBehaviour
     currentState = AndroidRadioLauncher.CheckAndroidPlaybackState();
 #elif UNITY_IOS && !UNITY_EDITOR
     currentState = iOSRadioLauncher.CheckiOSPlaybackState();
+    bufferingPercent = iOSRadioLauncher.GetiOSBufferingPercent();
+#else
+        bufferingPercent = 0;
 #endif
         switch (currentState)
         {
@@ -130,7 +129,6 @@ public class RadioPlayer : MonoBehaviour
 
             case "BUFFERING":
                 //Log("[RadioPlayer]  State = Buffering" );
-                bufferingPercent = AndroidRadioLauncher.GetAndroidBufferingPercent();
                 UpdateRadioPlayerDetails(
                     "",
                     currentState,
@@ -149,7 +147,7 @@ public class RadioPlayer : MonoBehaviour
                     "vlcPlayer.IsPlaying.ToString()",
                     currentState,
                     1,
-                    AndroidRadioLauncher.CheckAndroidMeta(),
+                    iOSRadioLauncher.CheckiOSMeta(),
                     currentStation,
                     currentFaviconSprite
                     );
@@ -258,7 +256,7 @@ public class RadioPlayer : MonoBehaviour
         //if (currentStationText != null) currentStationText.text = name;
         if (backgroundBufferingImage != null) backgroundBufferingImage.fillAmount = bufferingPercent / 100;
         if (faviconImage != null && _faviconSprite != null) faviconImage.sprite = _faviconSprite;
-        if (durationText != null) durationText.text = androidRadioLauncher.GetPlaybackTime();
+        if (durationText != null) durationText.text = iosRadioLauncher.GetiOSPlaybackTime();
         if (isPlayingText != null) isPlayingText.text = isPlaying;
 
     }
@@ -270,10 +268,11 @@ public class RadioPlayer : MonoBehaviour
             case "PLAYING":
                 Log("&&&&&&&&&& [RadioPlayer] STOP BUTTON PRESSED");
                 ChangePlaybackImages();
-                AndroidRadioLauncher.StopRadioService();
-                //vlcPlayer.Stop();
-                //SetPlayerState(PlayerState.Stopping);
-                //playerState = PlayerState.Stopping;
+#if UNITY_ANDROID && !UNITY_EDITOR
+            AndroidRadioLauncher.StopRadioService();
+#elif UNITY_IOS && !UNITY_EDITOR
+            iOSRadioLauncher.StopNativeStream();
+#endif
                 break;
 
             case "STOPPED":
@@ -282,8 +281,11 @@ public class RadioPlayer : MonoBehaviour
                 {
                     Log("&&&&&&&&&& [RadioPlayer] PLAY BUTTON PRESSED");
 
-                    AndroidRadioLauncher.StartNativeVLC(currentStreamingURL, currentStation, currentFaviconSprite.texture);
-                    //vlcPlayer.PlayStation(currentStreamingURL);
+#if UNITY_ANDROID && !UNITY_EDITOR
+        AndroidRadioLauncher.StartNativeVLC(currentStreamingURL, currentStation, currentFaviconSprite.texture);
+#elif UNITY_IOS && !UNITY_EDITOR
+        iOSRadioLauncher.StartNativeStream(currentStreamingURL, currentStation, currentFaviconSprite.texture);
+#endif
                 }
                 break;
         }
@@ -327,7 +329,7 @@ public class RadioPlayer : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
         AndroidRadioLauncher.StartNativeVLC(currentStreamingURL, currentStation, currentFaviconSprite.texture);
 #elif UNITY_IOS && !UNITY_EDITOR
-        iOSRadioLauncher.StartNativeStream(currentStreamingURL);
+        iOSRadioLauncher.StartNativeStream(currentStreamingURL, currentStation, currentFaviconSprite.texture);
 #endif
         //vlcPlayer.PlayStation(streamURL);
         // SetPlayerState(PlayerState.Stopped);

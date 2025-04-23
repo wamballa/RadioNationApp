@@ -1,16 +1,31 @@
-using UnityEngine;
+using UnityEditor;
+using UnityEditor.Callbacks;
+using UnityEditor.iOS.Xcode;
+using System.IO;
 
-public class PostProcessBuildScript : MonoBehaviour
+public static class PostProcessBuildScript
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [PostProcessBuild]
+    public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject)
     {
-        
-    }
+        if (target != BuildTarget.iOS) return;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        string projPath = PBXProject.GetPBXProjectPath(pathToBuiltProject);
+        PBXProject proj = new PBXProject();
+        proj.ReadFromFile(projPath);
+
+#if UNITY_2020_1_OR_NEWER
+        string targetGuid = proj.GetUnityMainTargetGuid();
+#else
+        string targetGuid = proj.TargetGuidByName("Unity-iPhone");
+#endif
+
+        proj.AddFrameworkToProject(targetGuid, "MediaPlayer.framework", false);
+        proj.AddFrameworkToProject(targetGuid, "Network.framework", false);
+
+        // Enable Obj-C exceptions (needed for MPRemoteCommandCenter + QAVRouteChangeNotification edge cases)
+        proj.AddBuildProperty(targetGuid, "GCC_ENABLE_OBJC_EXCEPTIONS", "YES");
+
+        proj.WriteToFile(projPath);
     }
 }
