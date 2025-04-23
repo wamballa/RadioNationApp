@@ -8,7 +8,7 @@ void fetchNowPlaying(NSString *urlStr);
 bool IsNetworkReachable(void);
 void setupRemoteCommands(void);
 void setupNetworkMonitor(void);
-extern "C" void StartStream(const char* url);  // ✅ CORRECT
+//extern "C" void StartStream(const char* url);  // ✅ CORRECT
 
 
 // --- State tracking ---å
