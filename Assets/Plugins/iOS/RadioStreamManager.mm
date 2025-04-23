@@ -124,7 +124,7 @@ extern "C" void StartStream(const char* url)
     }
 }
 
-extern "C" void StartStreamWithArtwork(const char* url, const char* station, const uint8_t* imageData, int length)
+extern "C" void StartStreamWithArtwork(const char* url, const char* station, void* imageData, int length)
 {
     @autoreleasepool {
         NSData *data = [NSData dataWithBytes:imageData length:length];
