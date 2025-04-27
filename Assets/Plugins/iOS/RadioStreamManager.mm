@@ -38,25 +38,29 @@ static NSString *currentStationName = @"";
 
 #pragma mark - Playback Control
 
+/*
+Who         | Does What
+Unity C#    | Calls iOSRadioLauncher.FetchNowPlayingMeta(stationId) via API
+Unity C#    | Updates your UI based on now_playing text
+Unity C#    | Calls iOSRadioLauncher.UpdateLockscreenMeta(string title) to push text to lockscreen
+iOS Obj-C   | Only accepts updated metadata and shows it
+*/
+
 void updatePlayerState(PlaybackState newState) {
     currentState = newState;
 
+    if (metadataTimer) {
+        [metadataTimer invalidate];
+        metadataTimer = nil;
+    }
+
     if (newState == StatePlaying) {
-        if (metadataTimer) [metadataTimer invalidate];
-        metadataTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
-            if (lastStreamUrl != nil) {
-                NSString *stationId = [[NSURL URLWithString:lastStreamUrl] query];
-                if (stationId) {
-                    NSString *metaUrl = [NSString stringWithFormat:@"https://wamballa.com/metadata/?%@", stationId];
-                    fetchNowPlaying(metaUrl);
-                }
+        metadataTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+            if (currentStationName != nil && currentStationName.length > 0) {
+                // C# side will be responsible for fetching metadata now.
+                NSLog(@"✅ iOS: Timer tick - C# will fetch now_playing via API.");
             }
         }];
-    } else {
-        if (metadataTimer) {
-            [metadataTimer invalidate];
-            metadataTimer = nil;
-        }
     }
 
     if (newState == StateStopped || newState == StateOffline || newState == StateError) {
@@ -64,24 +68,38 @@ void updatePlayerState(PlaybackState newState) {
     }
 }
 
-void fetchNowPlaying(NSString *urlStr) {
-    NSURL *url = [NSURL URLWithString:urlStr];
-    if (!url) return;
 
-    [[[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *res, NSError *error) {
-        if (error) return;
-        NSError *jsonError;
-        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
-        if (jsonError) return;
-
-        NSString *title = json[@"now_playing"] ?: @"Streaming...";
-        nowPlayingText = title;
+extern "C" void UpdateNowPlayingText(const char* text)
+{
+    @autoreleasepool {
+        NSString *nowPlaying = [NSString stringWithUTF8String:text];
+        nowPlayingText = nowPlaying;
 
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
-        [info setObject:title forKey:MPMediaItemPropertyTitle];
+        [info setObject:nowPlaying forKey:MPMediaItemPropertyTitle];
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
-    }] resume];
+    }
 }
+
+
+// void fetchNowPlaying(NSString *urlStr) {
+//     NSURL *url = [NSURL URLWithString:urlStr];
+//     if (!url) return;
+
+//     [[[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *res, NSError *error) {
+//         if (error) return;
+//         NSError *jsonError;
+//         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+//         if (jsonError) return;
+
+//         NSString *title = json[@"now_playing"] ?: @"Streaming...";
+//         nowPlayingText = title;
+
+//         NSMutableDictionary *info = [NSMutableDictionary dictionary];
+//         [info setObject:title forKey:MPMediaItemPropertyTitle];
+//         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
+//     }] resume];
+// }
 
 extern "C" float GetBufferingPercent() {
     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
@@ -252,27 +270,27 @@ extern "C" void UpdateNowPlaying(const char* title) {
     }
 }
 
-extern "C" const char* GetMetaAsString()
-{
-    static char buffer[512];
+// extern "C" const char* GetMetaAsString()
+// {
+//     static char buffer[512];
 
-    if (!nowPlayingText || nowPlayingText.length == 0) {
-        strncpy(buffer, "Streaming...", sizeof(buffer) - 1);
-        buffer[sizeof(buffer) - 1] = '\0';
-        return buffer;
-    }
+//     if (!nowPlayingText || nowPlayingText.length == 0) {
+//         strncpy(buffer, "Streaming...", sizeof(buffer) - 1);
+//         buffer[sizeof(buffer) - 1] = '\0';
+//         return buffer;
+//     }
 
-    const char* utf8 = [nowPlayingText UTF8String];
-    if (!utf8) {
-        strncpy(buffer, "Streaming...", sizeof(buffer) - 1);
-        buffer[sizeof(buffer) - 1] = '\0';
-        return buffer;
-    }
+//     const char* utf8 = [nowPlayingText UTF8String];
+//     if (!utf8) {
+//         strncpy(buffer, "Streaming...", sizeof(buffer) - 1);
+//         buffer[sizeof(buffer) - 1] = '\0';
+//         return buffer;
+//     }
 
-    strncpy(buffer, utf8, sizeof(buffer) - 1);
-    buffer[sizeof(buffer) - 1] = '\0';
-    return buffer;
-}
+//     strncpy(buffer, utf8, sizeof(buffer) - 1);
+//     buffer[sizeof(buffer) - 1] = '\0';
+//     return buffer;
+// }
 
 
 

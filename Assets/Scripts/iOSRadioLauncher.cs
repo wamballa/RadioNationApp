@@ -1,10 +1,13 @@
 using System;
+using System.Collections;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class iOSRadioLauncher : MonoBehaviour
 {
     private float playbackTime = 0;
+    private static string cachedNowPlaying = "Streaming...";
 
     private void Start()
     {
@@ -59,9 +62,6 @@ public class iOSRadioLauncher : MonoBehaviour
 #endif
     }
 
-
-
-
     [DllImport("__Internal")]
     private static extern void StopStream();
 
@@ -72,17 +72,74 @@ public class iOSRadioLauncher : MonoBehaviour
 #endif
     }
 
-    [DllImport("__Internal")]
-    private static extern string GetMetaAsString();
 
-    public static string CheckiOSMeta()
+
+    [DllImport("__Internal")]
+    private static extern void UpdateNowPlayingText(string text);
+
+    public void FetchAndUpdateMeta(string stationName)
     {
-#if UNITY_IOS && !UNITY_EDITOR
-        return GetMetaAsString();
-#else
-        return "";
-#endif
+        string url = $"https://www.wamballa.com/metadata/?station={stationName}";
+        StartCoroutine(FetchMetaCoroutine(url));
     }
+
+    private IEnumerator FetchMetaCoroutine(string url)
+    {
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            string json = request.downloadHandler.text;
+            string nowPlaying = ExtractNowPlayingFromJson(json);
+            cachedNowPlaying = nowPlaying;
+#if UNITY_IOS && !UNITY_EDITOR
+            UpdateNowPlayingText(nowPlaying);
+#endif
+        }
+        else
+        {
+            Debug.LogError("Failed to fetch metadata: " + request.error);
+        }
+    }
+
+    private string ExtractNowPlayingFromJson(string json)
+    {
+        try
+        {
+            var wrapper = JsonUtility.FromJson<NowPlayingWrapper>(json);
+            return wrapper?.now_playing ?? "Streaming...";
+        }
+        catch
+        {
+            return "Streaming...";
+        }
+    }
+
+    [Serializable]
+    private class NowPlayingWrapper
+    {
+        public string now_playing;
+    }
+
+    public string CheckiOSMeta()
+    {
+        return cachedNowPlaying;
+    }
+
+     //     [DllImport("__Internal")]
+    //     private static extern System.IntPtr GetMetaAsString();
+
+    //     public static string CheckiOSMeta()
+    //     {
+    // #if UNITY_IOS && !UNITY_EDITOR
+    //     IntPtr strPtr = GetMetaAsString();
+    //     if (strPtr == IntPtr.Zero) return "";
+    //     return Marshal.PtrToStringUTF8(strPtr);
+    // #else
+    //         return "";
+    // #endif
+    //     }
 
 
 
