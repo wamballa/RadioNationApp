@@ -255,8 +255,20 @@ extern "C" void UpdateNowPlaying(const char* title) {
 
 extern "C" const char* GetMetaAsString()
 {
-    return [nowPlayingText UTF8String];
+    if (nowPlayingText == nil) return "";
+
+    static char buffer[512]; // you can adjust size as needed
+    strncpy(buffer, [nowPlayingText UTF8String], sizeof(buffer));
+    buffer[sizeof(buffer) - 1] = '\0'; // make sure it's null-terminated
+
+    return buffer;
 }
+
+
+// extern "C" const char* GetMetaAsString()
+// {
+//     return [nowPlayingText UTF8String];
+// }
 
 
 void setupRemoteCommands(void) {
