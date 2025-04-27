@@ -3,6 +3,8 @@
 #import <UIKit/UIKit.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <Network/Network.h>
+#import "NSObject+KVOBlock.h"
+
 
 void fetchNowPlaying(NSString *urlStr);
 bool IsNetworkReachable(void);
