@@ -107,7 +107,7 @@ public class RadioPlayer : MonoBehaviour
     currentState = "STOPPED";
 #endif
 
-        string meta = "Temp"; //iOSRadioLauncher.CheckiOSMeta();
+        string meta = iOSRadioLauncher.CheckiOSMeta();
         if (string.IsNullOrEmpty(meta))
             meta = "Streaming..."; // fallback if somehow empty
 

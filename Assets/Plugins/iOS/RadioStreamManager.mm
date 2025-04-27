@@ -226,7 +226,6 @@ extern "C" const char* GetPlaybackState()
 
 static const char* state = "STOPPED"; // fallback
 
-
     switch (currentState) {
         case StateInitial:   return "INITIAL"; break;
         case StatePlaying:   return "PLAYING"; break;
