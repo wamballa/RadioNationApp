@@ -182,10 +182,14 @@ public class RadioPlayer : MonoBehaviour
 
     private void ChangePlaybackImages()
     {
+        Debug.Log("[RadioPlayer] ChangePlaybackImages");
+
+        Sprite favicon = currentFaviconSprite != null ? currentFaviconSprite : idleFaviconSprite;
+
         switch (currentState)
         {
             case "PLAYING":
-                faviconImage.sprite = currentFaviconSprite;
+                faviconImage.sprite = favicon;
                 backgroundStoppedImage.enabled = false;
                 backgroundPlayingImage.enabled = true;
                 backgroundBufferingImage.enabled = false;
@@ -205,7 +209,7 @@ public class RadioPlayer : MonoBehaviour
                 idleIconImage.enabled = true;
                 break;
             case "BUFFERING":
-                faviconImage.sprite = currentFaviconSprite;
+                faviconImage.sprite = favicon;
                 backgroundStoppedImage.enabled = false;
                 backgroundPlayingImage.enabled = false;
                 backgroundBufferingImage.enabled = true;
@@ -215,7 +219,7 @@ public class RadioPlayer : MonoBehaviour
                 idleIconImage.enabled = false;
                 break;
             case "STOPPED":
-                faviconImage.sprite = currentFaviconSprite;
+                faviconImage.sprite = favicon;
                 backgroundStoppedImage.enabled = true;
                 backgroundPlayingImage.enabled = false;
                 backgroundBufferingImage.enabled = false;
@@ -249,7 +253,6 @@ public class RadioPlayer : MonoBehaviour
         if (name == null) Debug.Log("name null");
         if (_faviconSprite == null) Debug.Log("_faviconSprite null");
 
-
         if (playerStateText != null) playerStateText.text = _playerState;
         if (nowPlayingMetaText != null) nowPlayingMetaText.text = nowPlayingMeta;
 
@@ -262,7 +265,10 @@ public class RadioPlayer : MonoBehaviour
         }
 
         if (backgroundBufferingImage != null) backgroundBufferingImage.fillAmount = bufferingPercent / 100;
-        if (faviconImage != null && _faviconSprite != null) faviconImage.sprite = _faviconSprite;
+        if (faviconImage != null) {
+            faviconImage.sprite = _faviconSprite != null ? _faviconSprite : idleFaviconSprite;
+
+        }
         if (durationText != null) durationText.text = iosRadioLauncher.GetiOSPlaybackTime();
         if (isPlayingText != null) isPlayingText.text = isPlaying;
 
@@ -323,6 +329,7 @@ public class RadioPlayer : MonoBehaviour
 
     private void ClearRadioPlayerDetails()
     {
+        Debug.Log("[RadioPlayer] ClearRadioPlayerDetails");
         UpdateRadioPlayerDetails("", "Stopped", 0, "", "", idleFaviconSprite);
         backgroundBufferingImage.fillAmount = 0.0f;
     }
