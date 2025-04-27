@@ -186,57 +186,36 @@ public class RadioPlayer : MonoBehaviour
 
         Sprite favicon = currentFaviconSprite != null ? currentFaviconSprite : idleFaviconSprite;
 
+        if (faviconImage != null)
+            faviconImage.sprite = favicon;
+
+        backgroundStoppedImage.enabled = false;
+        backgroundPlayingImage.enabled = false;
+        backgroundBufferingImage.enabled = false;
+        bufferingIconImage.enabled = false;
+        playIconImage.enabled = false;
+        stopIconImage.enabled = false;
+        idleIconImage.enabled = false;
+
         switch (currentState)
         {
             case "PLAYING":
-                faviconImage.sprite = favicon;
-                backgroundStoppedImage.enabled = false;
                 backgroundPlayingImage.enabled = true;
-                backgroundBufferingImage.enabled = false;
-                bufferingIconImage.enabled = false;
-                playIconImage.enabled = false;
                 stopIconImage.enabled = true;
-                idleIconImage.enabled = false;
                 break;
             case "INITIAL":
-                faviconImage.sprite = idleFaviconSprite;
-                backgroundStoppedImage.enabled = true;
-                backgroundPlayingImage.enabled = false;
-                backgroundBufferingImage.enabled = false;
-                bufferingIconImage.enabled = false;
-                playIconImage.enabled = false;
-                stopIconImage.enabled = false;
-                idleIconImage.enabled = true;
-                break;
-            case "BUFFERING":
-                faviconImage.sprite = favicon;
-                backgroundStoppedImage.enabled = false;
-                backgroundPlayingImage.enabled = false;
-                backgroundBufferingImage.enabled = true;
-                bufferingIconImage.enabled = true;
-                playIconImage.enabled = false;
-                stopIconImage.enabled = false;
-                idleIconImage.enabled = false;
-                break;
-            case "STOPPED":
-                faviconImage.sprite = favicon;
-                backgroundStoppedImage.enabled = true;
-                backgroundPlayingImage.enabled = false;
-                backgroundBufferingImage.enabled = false;
-                bufferingIconImage.enabled = false;
-                playIconImage.enabled = true;
-                stopIconImage.enabled = false;
-                idleIconImage.enabled = false;
-                break;
             case "OFFLINE":
                 faviconImage.sprite = idleFaviconSprite;
                 backgroundStoppedImage.enabled = true;
-                backgroundPlayingImage.enabled = false;
-                backgroundBufferingImage.enabled = false;
-                bufferingIconImage.enabled = false;
-                playIconImage.enabled = false;
-                stopIconImage.enabled = false;
                 idleIconImage.enabled = true;
+                break;
+            case "BUFFERING":
+                backgroundBufferingImage.enabled = true;
+                bufferingIconImage.enabled = true;
+                break;
+            case "STOPPED":
+                backgroundStoppedImage.enabled = true;
+                playIconImage.enabled = true;
                 break;
         }
 
@@ -246,16 +225,8 @@ public class RadioPlayer : MonoBehaviour
     {
         Debug.Log("[RadioPlayer] UpdateRadioPlayerDetails");
 
-        if (isPlaying == null) Debug.Log("IsPlaying null");
-        if (_playerState == null) Debug.Log("_playerState null");
-        if (buffering == null) Debug.Log("buffering null");
-        if (nowPlayingMeta == null) Debug.Log("nowPlayingMeta null");
-        if (name == null) Debug.Log("name null");
-        if (_faviconSprite == null) Debug.Log("_faviconSprite null");
-
-        if (playerStateText != null) playerStateText.text = _playerState;
-        if (nowPlayingMetaText != null) nowPlayingMetaText.text = nowPlayingMeta;
-
+        if (playerStateText != null) playerStateText.text = _playerState ?? "";
+        if (nowPlayingMetaText != null) nowPlayingMetaText.text = nowPlayingMeta ?? "";
         if (currentStationText != null)
         {
             if (_playerState == "PLAYING")
@@ -263,14 +234,13 @@ public class RadioPlayer : MonoBehaviour
             else
                 currentStationText.text = name;
         }
-
         if (backgroundBufferingImage != null) backgroundBufferingImage.fillAmount = bufferingPercent / 100;
-        if (faviconImage != null) {
-            faviconImage.sprite = _faviconSprite != null ? _faviconSprite : idleFaviconSprite;
 
-        }
-        if (durationText != null) durationText.text = iosRadioLauncher.GetiOSPlaybackTime();
-        if (isPlayingText != null) isPlayingText.text = isPlaying;
+        Sprite favicon = _faviconSprite != null ? _faviconSprite : idleFaviconSprite;
+        if (faviconImage != null && favicon != null) faviconImage.sprite = favicon;
+
+        if (durationText != null) durationText.text = iosRadioLauncher != null ? iosRadioLauncher.GetiOSPlaybackTime() : "";
+        if (isPlayingText != null) isPlayingText.text = isPlaying ?? "";
 
     }
 
