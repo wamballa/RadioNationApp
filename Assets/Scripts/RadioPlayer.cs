@@ -245,8 +245,7 @@ currentState = "PLAYING";
 
     private void UpdateRadioPlayerDetails(string isPlaying, string _playerState, float buffering, string nowPlayingMeta, string name, Sprite _faviconSprite)
     {
-return;
-
+        return;
         if (playerStateText != null) playerStateText.text = _playerState;
         if (nowPlayingMetaText != null) nowPlayingMetaText.text = nowPlayingMeta;
 
@@ -267,6 +266,7 @@ return;
 
     private void HandlePlayStopButtonPress()
     {
+        Debug.Log("HandlePlayStopButtonPress");
         switch (currentState)
         {
             case "PLAYING":
@@ -295,26 +295,6 @@ return;
         }
 
     }
-
-    //private void ChangeRadioStationByUUID(string stationUUID, string streamURL, string name, Image _faviconImage)
-    //{
-    //    Log("[RadioPlayer::ChangeRadioStationByUUID] faviconImage = " + _faviconImage.sprite.name);
-
-    //    ClearRadioPlayerDetails();
-
-    //    currentStation = name;
-    //    currentStreamingURL = streamURL;
-    //    lastPlayedStationUrl = streamURL; // ✅ Save the last played station
-
-    //    if (_faviconImage == null) Debug.LogError("Missing favicon");
-    //    currentFaviconSprite = _faviconImage.sprite;
-    //    if (currentFaviconSprite == null) Debug.LogError("currentFaviconImage NULL");
-
-    //    vlcPlayer.PlayStation(streamURL);
-    //    SetPlayerState(PlayerState.Stopped);
-    //    //playerState = PlayerState.Stopped;
-
-    //}
 
     private void ChangeNativeRadioStation(string stationUUID, string streamURL, string name, Image _faviconImage)
     {
