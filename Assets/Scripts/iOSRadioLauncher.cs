@@ -8,7 +8,7 @@ public class iOSRadioLauncher : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("[IOSRADIOLAUNCHER] Start: "+GetPlaybackState());
+        Debug.Log("[IOSRADIOLAUNCHER] Start: " + GetPlaybackState());
     }
     //     void Update()
     //     {
@@ -46,16 +46,18 @@ public class iOSRadioLauncher : MonoBehaviour
 
 
     [DllImport("__Internal")]
-    private static extern string GetPlaybackState();
+    private static extern System.IntPtr GetPlaybackState();
 
     public static string CheckiOSPlaybackState()
     {
 #if UNITY_IOS && !UNITY_EDITOR
-        return GetPlaybackState();
+    IntPtr strPtr = GetPlaybackState();
+    return Marshal.PtrToStringAnsi(strPtr);
 #else
         return "STOPPED";
 #endif
     }
+
 
 
 
@@ -116,8 +118,8 @@ public class iOSRadioLauncher : MonoBehaviour
 #endif
     }
 
-        [DllImport("__Internal")]
-        private static extern void StartStreamWithArtwork_Internal(string url, string stationName, IntPtr artwork, int length);
+    [DllImport("__Internal")]
+    private static extern void StartStreamWithArtwork_Internal(string url, string stationName, IntPtr artwork, int length);
 
 
 
