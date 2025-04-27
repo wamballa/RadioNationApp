@@ -6,21 +6,21 @@ public class iOSRadioLauncher : MonoBehaviour
 {
     private float playbackTime;
 
-    //     void Update()
-    //     {
-    // #if UNITY_IOS && !UNITY_EDITOR
-    //         string state = iOSRadioLauncher.CheckiOSPlaybackState();
+        void Update()
+        {
+    #if UNITY_IOS && !UNITY_EDITOR
+            string state = iOSRadioLauncher.CheckiOSPlaybackState();
 
-    //         if (state == "PLAYING")
-    //         {
-    //             playbackTime += Time.deltaTime;
-    //         }
-    //         else if (state == "STOPPED" || state == "BUFFERING" || state == "ERROR")
-    //         {
-    //             playbackTime = 0f;
-    //         }
-    // #endif
-    //     }
+            if (state == "PLAYING")
+            {
+                playbackTime += Time.deltaTime;
+            }
+            else if (state == "STOPPED" || state == "BUFFERING" || state == "ERROR")
+            {
+                playbackTime = 0f;
+            }
+    #endif
+        }
 
     public string GetiOSPlaybackTime()
     {
