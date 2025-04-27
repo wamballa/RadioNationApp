@@ -254,19 +254,26 @@ extern "C" void UpdateNowPlaying(const char* title) {
 
 extern "C" const char* GetMetaAsString()
 {
-    static char buffer[512]; // you can adjust size as needed
+    static char buffer[512];
 
-    if (nowPlayingText == nil) {
-        buffer[0] = '\0'; // <-- empty string
+    if (!nowPlayingText || nowPlayingText.length == 0) {
+        strncpy(buffer, "Streaming...", sizeof(buffer) - 1);
+        buffer[sizeof(buffer) - 1] = '\0';
         return buffer;
     }
 
-    
-    strncpy(buffer, [nowPlayingText UTF8String], sizeof(buffer)-1);
-    buffer[sizeof(buffer) - 1] = '\0'; 
+    const char* utf8 = [nowPlayingText UTF8String];
+    if (!utf8) {
+        strncpy(buffer, "Streaming...", sizeof(buffer) - 1);
+        buffer[sizeof(buffer) - 1] = '\0';
+        return buffer;
+    }
 
+    strncpy(buffer, utf8, sizeof(buffer) - 1);
+    buffer[sizeof(buffer) - 1] = '\0';
     return buffer;
 }
+
 
 
 // extern "C" const char* GetMetaAsString()
