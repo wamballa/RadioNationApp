@@ -275,7 +275,7 @@ return;
 #if UNITY_ANDROID && !UNITY_EDITOR
             AndroidRadioLauncher.StopRadioService();
 #elif UNITY_IOS && !UNITY_EDITOR
-            // iOSRadioLauncher.StopNativeStream();
+            iOSRadioLauncher.StopNativeStream();
 #endif
                 break;
 
@@ -288,7 +288,7 @@ return;
 #if UNITY_ANDROID && !UNITY_EDITOR
         AndroidRadioLauncher.StartNativeVLC(currentStreamingURL, currentStation, currentFaviconSprite.texture);
 #elif UNITY_IOS && !UNITY_EDITOR
-        // iOSRadioLauncher.StartNativeStream(currentStreamingURL, currentStation, currentFaviconSprite.texture);
+        iOSRadioLauncher.StartNativeStream(currentStreamingURL, currentStation, currentFaviconSprite.texture);
 #endif
                 }
                 break;
