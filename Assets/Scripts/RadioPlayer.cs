@@ -10,10 +10,8 @@ public class RadioPlayer : MonoBehaviour
     public bool logToConsole = false;
 
     [Header("Engine Variables")]
-    //public VLCPlayer vlcPlayer;
-    //public MetadataHandler metadataHandler;
     public iOSRadioLauncher iosRadioLauncher;
-    // public AndroidRadioLauncher androidRadioLauncher;
+
 
     [Header("Text")]
     public TMP_Text durationText;
@@ -107,8 +105,8 @@ public class RadioPlayer : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
     currentState = AndroidRadioLauncher.CheckAndroidPlaybackState();
 #elif UNITY_IOS && !UNITY_EDITOR
-    currentState = iOSRadioLauncher.CheckiOSPlaybackState();
-    bufferingPercent = iOSRadioLauncher.GetiOSBufferingPercent();
+    // currentState = iOSRadioLauncher.CheckiOSPlaybackState();
+    // bufferingPercent = iOSRadioLauncher.GetiOSBufferingPercent();
 #else
         bufferingPercent = 0;
 #endif
@@ -147,7 +145,8 @@ public class RadioPlayer : MonoBehaviour
                     "vlcPlayer.IsPlaying.ToString()",
                     currentState,
                     1,
-                    iOSRadioLauncher.CheckiOSMeta(),
+                    // iOSRadioLauncher.CheckiOSMeta(),
+                    "Meta data here",
                     currentStation,
                     currentFaviconSprite
                     );
@@ -253,7 +252,7 @@ public class RadioPlayer : MonoBehaviour
             else
                 currentStationText.text = name;
         }
-        //if (currentStationText != null) currentStationText.text = name;
+
         if (backgroundBufferingImage != null) backgroundBufferingImage.fillAmount = bufferingPercent / 100;
         if (faviconImage != null && _faviconSprite != null) faviconImage.sprite = _faviconSprite;
         if (durationText != null) durationText.text = iosRadioLauncher.GetiOSPlaybackTime();
@@ -271,7 +270,7 @@ public class RadioPlayer : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
             AndroidRadioLauncher.StopRadioService();
 #elif UNITY_IOS && !UNITY_EDITOR
-            iOSRadioLauncher.StopNativeStream();
+            // iOSRadioLauncher.StopNativeStream();
 #endif
                 break;
 

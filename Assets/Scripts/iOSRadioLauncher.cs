@@ -6,21 +6,21 @@ public class iOSRadioLauncher : MonoBehaviour
 {
     private float playbackTime;
 
-    void Update()
-    {
-#if UNITY_IOS && !UNITY_EDITOR
-        string state = iOSRadioLauncher.CheckiOSPlaybackState();
+//     void Update()
+//     {
+// #if UNITY_IOS && !UNITY_EDITOR
+//         string state = iOSRadioLauncher.CheckiOSPlaybackState();
 
-        if (state == "PLAYING")
-        {
-            playbackTime += Time.deltaTime;
-        }
-        else if (state == "STOPPED" || state == "BUFFERING" || state == "ERROR")
-        {
-            playbackTime = 0f;
-        }
-#endif
-    }
+//         if (state == "PLAYING")
+//         {
+//             playbackTime += Time.deltaTime;
+//         }
+//         else if (state == "STOPPED" || state == "BUFFERING" || state == "ERROR")
+//         {
+//             playbackTime = 0f;
+//         }
+// #endif
+//     }
 
     public string GetiOSPlaybackTime()
     {
@@ -41,33 +41,33 @@ public class iOSRadioLauncher : MonoBehaviour
     }
 
 
-    [DllImport("__Internal")]
-    private static extern string GetPlaybackState();
+//     [DllImport("__Internal")]
+//     private static extern string GetPlaybackState();
 
-    public static string CheckiOSPlaybackState()
-    {
-#if UNITY_IOS && !UNITY_EDITOR
-        return GetPlaybackState();
-#else
-        return "STOPPED";
-#endif
-    }
-
-
-
-    [DllImport("__Internal")]
-    private static extern void StopStream();
-
-    public static void StopNativeStream()
-    {
-#if UNITY_IOS && !UNITY_EDITOR
-        StopStream();
-#endif
-    }
+//     public static string CheckiOSPlaybackState()
+//     {
+// #if UNITY_IOS && !UNITY_EDITOR
+//         return GetPlaybackState();
+// #else
+//         return "STOPPED";
+// #endif
+//     }
 
 
-    // [DllImport("__Internal")]
-    // private static extern void StartStreamWithArtwork(string url, string stationName, byte[] artwork, int length);
+
+//     [DllImport("__Internal")]
+//     private static extern void StopStream();
+
+//     public static void StopNativeStream()
+//     {
+// #if UNITY_IOS && !UNITY_EDITOR
+//         StopStream();
+// #endif
+//     }
+
+
+//     // [DllImport("__Internal")]
+//     // private static extern void StartStreamWithArtwork(string url, string stationName, byte[] artwork, int length);
 
 
 //     public static void StartNativeStream(string url, string stationName, Texture2D favicon)
@@ -94,29 +94,29 @@ public class iOSRadioLauncher : MonoBehaviour
 
 
 
-    [DllImport("__Internal")]
-    private static extern string GetMetaAsString();
+//     [DllImport("__Internal")]
+//     private static extern string GetMetaAsString();
 
-    public static string CheckiOSMeta()
-    {
-#if UNITY_IOS && !UNITY_EDITOR
-    return GetMetaAsString();
-#else
-        return "";
-#endif
-    }
+//     public static string CheckiOSMeta()
+//     {
+// #if UNITY_IOS && !UNITY_EDITOR
+//     return GetMetaAsString();
+// #else
+//         return "";
+// #endif
+//     }
 
 
 
-    [DllImport("__Internal")]
-    private static extern void UpdateNowPlaying(string title);
+//     [DllImport("__Internal")]
+//     private static extern void UpdateNowPlaying(string title);
 
-    public static void SetNowPlaying(string title)
-    {
-#if UNITY_IOS && !UNITY_EDITOR
-    UpdateNowPlaying(title);
-#endif
-    }
+//     public static void SetNowPlaying(string title)
+//     {
+// #if UNITY_IOS && !UNITY_EDITOR
+//     UpdateNowPlaying(title);
+// #endif
+//     }
 
 }
 
