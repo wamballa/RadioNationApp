@@ -6,6 +6,10 @@ public class iOSRadioLauncher : MonoBehaviour
 {
     private float playbackTime = 0;
 
+    private void Start()
+    {
+        Debug.Log("[IOSRADIOLAUNCHER] Start: "+GetPlaybackState());
+    }
     //     void Update()
     //     {
     // #if UNITY_IOS && !UNITY_EDITOR
