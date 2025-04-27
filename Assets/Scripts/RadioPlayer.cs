@@ -103,12 +103,7 @@ public class RadioPlayer : MonoBehaviour
     currentState = AndroidRadioLauncher.CheckAndroidPlaybackState();
 #elif UNITY_IOS && !UNITY_EDITOR
 
-// ERROR IN CheckiOSPlaybackState
-    // currentState = iOSRadioLauncher.CheckiOSPlaybackState();
-
-currentState = "PLAYING";
-
-
+    currentState = iOSRadioLauncher.CheckiOSPlaybackState();
     // bufferingPercent = iOSRadioLauncher.GetiOSBufferingPercent();
 #else
         bufferingPercent = 0;

@@ -8,23 +8,24 @@ public class iOSRadioLauncher : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("[IOSRADIOLAUNCHER] Start: " + GetPlaybackState());
+        Debug.Log("[IOSRADIOLAUNCHER] Start: " + CheckiOSPlaybackState());
     }
-    //     void Update()
-    //     {
-    // #if UNITY_IOS && !UNITY_EDITOR
-    //         string state = iOSRadioLauncher.CheckiOSPlaybackState();
 
-    //         if (state == "PLAYING")
-    //         {
-    //             playbackTime += Time.deltaTime;
-    //         }
-    //         else if (state == "STOPPED" || state == "BUFFERING" || state == "ERROR")
-    //         {
-    //             playbackTime = 0f;
-    //         }
-    // #endif
-    //     }
+    void Update()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+            string state = iOSRadioLauncher.CheckiOSPlaybackState();
+
+            if (state == "PLAYING")
+            {
+                playbackTime += Time.deltaTime;
+            }
+            else if (state == "STOPPED" || state == "BUFFERING" || state == "ERROR")
+            {
+                playbackTime = 0f;
+            }
+#endif
+    }
 
     public string GetiOSPlaybackTime()
     {
