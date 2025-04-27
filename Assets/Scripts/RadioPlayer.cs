@@ -60,9 +60,6 @@ public class RadioPlayer : MonoBehaviour
 
     void Start()
     {
-        //VLC Event Handlers
-        //Because many Unity functions can only be used on the main thread, they will fail in VLC event handlers
-        //A simple way around this is to set flag variables which cause functions to be called on the next Update
 
         currentStationText.maxVisibleLines = 2;
 
@@ -105,7 +102,13 @@ public class RadioPlayer : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
     currentState = AndroidRadioLauncher.CheckAndroidPlaybackState();
 #elif UNITY_IOS && !UNITY_EDITOR
+
+// ERROR IN CheckiOSPlaybackState
     // currentState = iOSRadioLauncher.CheckiOSPlaybackState();
+
+currentState = "PLAYING";
+
+
     // bufferingPercent = iOSRadioLauncher.GetiOSBufferingPercent();
 #else
         bufferingPercent = 0;
@@ -328,12 +331,8 @@ public class RadioPlayer : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
         AndroidRadioLauncher.StartNativeVLC(currentStreamingURL, currentStation, currentFaviconSprite.texture);
 #elif UNITY_IOS && !UNITY_EDITOR
-        // iOSRadioLauncher.StartNativeStream(currentStreamingURL, currentStation, currentFaviconSprite.texture);
+        iOSRadioLauncher.StartNativeStream(currentStreamingURL, currentStation, currentFaviconSprite.texture);
 #endif
-        //vlcPlayer.PlayStation(streamURL);
-        // SetPlayerState(PlayerState.Stopped);
-        //playerState = PlayerState.Stopped;
-
     }
 
     private void ClearRadioPlayerDetails()
