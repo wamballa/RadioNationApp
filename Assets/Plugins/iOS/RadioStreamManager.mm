@@ -87,6 +87,7 @@ extern "C" float GetBufferingPercent() {
 
 extern "C" void StartStream(const char* url)
 {
+    NSLog(@"✅ StartStream called");
     @autoreleasepool {
         NSString *urlStr = [NSString stringWithUTF8String:url];
         lastStreamUrl = urlStr;
@@ -146,6 +147,7 @@ extern "C" void StartStreamWithArtwork(const char* url, const char* station, voi
 
 extern "C" void StartStreamWithArtwork_Internal(const char* url, const char* station, void* imageData, int length)
 {
+    NSLog(@"✅ StartStreamWithArtwork_Internal called");
     StartStreamWithArtwork(url, station, imageData, length);
 }
 
