@@ -102,82 +102,94 @@ public class RadioPlayer : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
     currentState = AndroidRadioLauncher.CheckAndroidPlaybackState();
 #elif UNITY_IOS && !UNITY_EDITOR
-
     currentState = iOSRadioLauncher.CheckiOSPlaybackState();
-    // bufferingPercent = iOSRadioLauncher.GetiOSBufferingPercent();
 #else
-        bufferingPercent = 0;
+    currentState = "STOPPED";
 #endif
-        switch (currentState)
+
+        var details = currentState switch
         {
-            case "STOPPED":
-                //Log("[RadioPlayer] State = Stopped");
-                UpdateRadioPlayerDetails(
-                    "",
-                    currentState,
-                    0,
-                    "",
-                    currentStation,
-                    currentFaviconSprite
-                    );
-                ChangePlaybackImages();
-                break;
+            "STOPPED" => ("", currentState, 0f, "", currentStation, idleFaviconSprite),
+            "BUFFERING" => ("", currentState, bufferingPercent, "Buffering...", currentStation, currentFaviconSprite),
+            "PLAYING" => ("true", currentState, 1f, "Playing", currentStation, currentFaviconSprite),
+            "UNAVAILABLE" => ("Unavailable", currentState, 0f, "This station is not available.", currentStation, currentFaviconSprite),
+            "OFFLINE" => ("No Internet", currentState, 0f, "No internet connection.", currentStation, currentFaviconSprite),
+            _ => ("", "STOPPED", 0f, "", currentStation, idleFaviconSprite)
+        };
 
-            case "BUFFERING":
-                //Log("[RadioPlayer]  State = Buffering" );
-                UpdateRadioPlayerDetails(
-                    "",
-                    currentState,
-                    bufferingPercent,
-                    "buffering",
-                    currentStation,
-                    currentFaviconSprite
-                    );
-                ChangePlaybackImages();
-                break;
+        UpdateRadioPlayerDetails(details.Item1, details.Item2, details.Item3, details.Item4, details.Item5, details.Item6);
+        ChangePlaybackImages();
 
-            case "PLAYING":
-                ChangePlaybackImages();
+        // switch (currentState)
+        // {
+        //     case "STOPPED":
+        //         //Log("[RadioPlayer] State = Stopped");
+        //         UpdateRadioPlayerDetails(
+        //             "",
+        //             currentState,
+        //             0,
+        //             "",
+        //             currentStation,
+        //             currentFaviconSprite
+        //             );
+        //         ChangePlaybackImages();
+        //         break;
 
-                UpdateRadioPlayerDetails(
-                    "vlcPlayer.IsPlaying.ToString()",
-                    currentState,
-                    1,
-                    // iOSRadioLauncher.CheckiOSMeta(),
-                    "Meta data here",
-                    currentStation,
-                    currentFaviconSprite
-                    );
-                break;
+        //     case "BUFFERING":
+        //         //Log("[RadioPlayer]  State = Buffering" );
+        //         UpdateRadioPlayerDetails(
+        //             "",
+        //             currentState,
+        //             bufferingPercent,
+        //             "buffering",
+        //             currentStation,
+        //             currentFaviconSprite
+        //             );
+        //         ChangePlaybackImages();
+        //         break;
 
-            case "UNAVAILABLE":
-                //Log("[RadioPlayer]  State = Unavailble ");
-                UpdateRadioPlayerDetails(
-                    "Unavailable",
-                    currentState,
-                    0,
-                    "This station is not available in your region or the link is broken.",
-                    currentStation,
-                    currentFaviconSprite
-                );
-                ChangePlaybackImages();
-                break;
+        //     case "PLAYING":
+        //         ChangePlaybackImages();
 
-            case "OFFLINE":
-                //Log("[RadioPlayer] State = Offline");
-                UpdateRadioPlayerDetails(
-                    "No Internet",
-                    currentState,
-                    0,
-                    "No internet connection.",
-                    currentStation,
-                    currentFaviconSprite
-                );
+        //         UpdateRadioPlayerDetails(
+        //             "vlcPlayer.IsPlaying.ToString()",
+        //             currentState,
+        //             1,
+        //             iOSRadioLauncher.CheckiOSMeta(),
+        //             // "Meta data here",
+        //             currentStation,
+        //             currentFaviconSprite
+        //             );
+        //         break;
 
-                ChangePlaybackImages();
+        //     case "UNAVAILABLE":
+        //         //Log("[RadioPlayer]  State = Unavailble ");
+        //         UpdateRadioPlayerDetails(
+        //             "Unavailable",
+        //             currentState,
+        //             0,
+        //             "This station is not available in your region or the link is broken.",
+        //             currentStation,
+        //             currentFaviconSprite
+        //         );
+        //         ChangePlaybackImages();
+        //         break;
 
-                break;
-        }
+        //     case "OFFLINE":
+        //         //Log("[RadioPlayer] State = Offline");
+        //         UpdateRadioPlayerDetails(
+        //             "No Internet",
+        //             currentState,
+        //             0,
+        //             "No internet connection.",
+        //             currentStation,
+        //             currentFaviconSprite
+        //         );
+
+        //         ChangePlaybackImages();
+
+        //         break;
+        // }
     }
 
     private void ChangePlaybackImages()

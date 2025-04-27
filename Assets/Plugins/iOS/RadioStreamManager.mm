@@ -88,6 +88,7 @@ extern "C" float GetBufferingPercent() {
 extern "C" void StartStream(const char* url)
 {
     NSLog(@"✅ StartStream called");
+
     @autoreleasepool {
         NSString *urlStr = [NSString stringWithUTF8String:url];
         lastStreamUrl = urlStr;
@@ -103,27 +104,80 @@ extern "C" void StartStream(const char* url)
         playerItem = [AVPlayerItem playerItemWithURL:streamURL];
         player = [AVPlayer playerWithPlayerItem:playerItem];
 
+        // Observe player item status
+        [playerItem addObserverForKeyPath:@"status"
+                                   options:NSKeyValueObservingOptionNew
+                                   context:nil
+                                  usingBlock:^(id _Nonnull object, NSDictionary<NSKeyValueChangeKey,id> * _Nonnull change) {
+            AVPlayerItem *item = (AVPlayerItem *)object;
+            if (item.status == AVPlayerItemStatusReadyToPlay) {
+                if (currentState == StateBuffering) {
+                    updatePlayerState(StatePlaying);
+                }
+            } else if (item.status == AVPlayerItemStatusFailed) {
+                updatePlayerState(StateError);
+            }
+        }];
+
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
         [[AVAudioSession sharedInstance] setActive:YES error:nil];
 
-        [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemNewAccessLogEntryNotification object:playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
-        if (currentState == StateBuffering) {
-            updatePlayerState(StatePlaying);
-        }
-        }];
-
-        [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemFailedToPlayToEndTimeNotification object:playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+        [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemFailedToPlayToEndTimeNotification
+                                                           object:playerItem
+                                                            queue:[NSOperationQueue mainQueue]
+                                                       usingBlock:^(NSNotification * _Nonnull note) {
             updatePlayerState(StateError);
         }];
-        
 
         [player play];
 
-        // Setup remote commands
+        // Setup remote commands and network monitoring
         setupRemoteCommands();
         setupNetworkMonitor();
     }
 }
+
+
+// extern "C" void StartStream(const char* url)
+// {
+//     NSLog(@"✅ StartStream called");
+
+//     @autoreleasepool {
+//         NSString *urlStr = [NSString stringWithUTF8String:url];
+//         lastStreamUrl = urlStr;
+
+//         if (!IsNetworkReachable()) {
+//             updatePlayerState(StateOffline);
+//             return;
+//         }
+
+//         updatePlayerState(StateBuffering);
+
+//         NSURL *streamURL = [NSURL URLWithString:urlStr];
+//         playerItem = [AVPlayerItem playerItemWithURL:streamURL];
+//         player = [AVPlayer playerWithPlayerItem:playerItem];
+
+//         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+//         [[AVAudioSession sharedInstance] setActive:YES error:nil];
+
+//         [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemNewAccessLogEntryNotification object:playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+//         if (currentState == StateBuffering) {
+//             updatePlayerState(StatePlaying);
+//         }
+//         }];
+
+//         [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemFailedToPlayToEndTimeNotification object:playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+//             updatePlayerState(StateError);
+//         }];
+        
+
+//         [player play];
+
+//         // Setup remote commands
+//         setupRemoteCommands();
+//         setupNetworkMonitor();
+//     }
+// }
 
 extern "C" void StartStreamWithArtwork(const char* url, const char* station, void* imageData, int length)
 {
