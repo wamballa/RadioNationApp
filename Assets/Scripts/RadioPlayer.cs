@@ -118,7 +118,7 @@ public class RadioPlayer : MonoBehaviour
                     0,
                     "",
                     currentStation,
-                    null
+                    idleFaviconSprite
                     );
                 ChangePlaybackImages();
                 break;
@@ -240,7 +240,16 @@ public class RadioPlayer : MonoBehaviour
 
     private void UpdateRadioPlayerDetails(string isPlaying, string _playerState, float buffering, string nowPlayingMeta, string name, Sprite _faviconSprite)
     {
-   
+        Debug.Log("[RadioPlayer] UpdateRadioPlayerDetails");
+
+        if (isPlaying == null) Debug.Log("IsPlaying null");
+        if (_playerState == null) Debug.Log("_playerState null");
+        if (buffering == null) Debug.Log("buffering null");
+        if (nowPlayingMeta == null) Debug.Log("nowPlayingMeta null");
+        if (name == null) Debug.Log("name null");
+        if (_faviconSprite == null) Debug.Log("_faviconSprite null");
+
+
         if (playerStateText != null) playerStateText.text = _playerState;
         if (nowPlayingMetaText != null) nowPlayingMetaText.text = nowPlayingMeta;
 
