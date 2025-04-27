@@ -245,7 +245,7 @@ currentState = "PLAYING";
 
     private void UpdateRadioPlayerDetails(string isPlaying, string _playerState, float buffering, string nowPlayingMeta, string name, Sprite _faviconSprite)
     {
-        return;
+   
         if (playerStateText != null) playerStateText.text = _playerState;
         if (nowPlayingMetaText != null) nowPlayingMetaText.text = nowPlayingMeta;
 

@@ -167,14 +167,19 @@ extern "C" void StopStream()
 
 extern "C" const char* GetPlaybackState()
 {
+
+static const char* state = "STOPPED"; // fallback
+
+
     switch (currentState) {
-        case StateInitial:   return "INITIAL";
-        case StatePlaying:   return "PLAYING";
-        case StateBuffering: return "BUFFERING";
-        case StateStopped:   return "STOPPED";
-        case StateError:     return "ERROR";
-        default:             return "STOPPED";
+        case StateInitial:   return "INITIAL"; break;
+        case StatePlaying:   return "PLAYING"; break;
+        case StateBuffering: return "BUFFERING"; break;
+        case StateStopped:   return "STOPPED"; break;
+        case StateError:     return "ERROR"; break;
+        default:             return "STOPPED"; break;
     }
+    return state;
 }
 
 // Set now playing info (title + optional artwork)
