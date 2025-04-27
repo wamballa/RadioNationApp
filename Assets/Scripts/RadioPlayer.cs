@@ -107,11 +107,15 @@ public class RadioPlayer : MonoBehaviour
     currentState = "STOPPED";
 #endif
 
+        string meta = iOSRadioLauncher.CheckiOSMeta();
+        if (string.IsNullOrEmpty(meta))
+            meta = "Streaming..."; // fallback if somehow empty
+
         var details = currentState switch
         {
             "STOPPED" => ("", currentState, 0f, "", currentStation, idleFaviconSprite),
             "BUFFERING" => ("", currentState, bufferingPercent, "Buffering...", currentStation, currentFaviconSprite),
-            "PLAYING" => ("true", currentState, 1f, "iOSRadioLauncher.CheckiOSMeta()", currentStation, currentFaviconSprite),
+            "PLAYING" => ("true", currentState, 1f, meta, currentStation, currentFaviconSprite),
             "UNAVAILABLE" => ("Unavailable", currentState, 0f, "This station is not available.", currentStation, currentFaviconSprite),
             "OFFLINE" => ("No Internet", currentState, 0f, "No internet connection.", currentStation, currentFaviconSprite),
             _ => ("", "STOPPED", 0f, "", currentStation, idleFaviconSprite)
