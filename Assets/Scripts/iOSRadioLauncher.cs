@@ -65,6 +65,29 @@ public class iOSRadioLauncher : MonoBehaviour
 #endif
     }
 
+    [DllImport("__Internal")]
+    private static extern string GetMetaAsString();
+
+    public static string CheckiOSMeta()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+        return GetMetaAsString();
+#else
+        return "";
+#endif
+    }
+
+
+
+    [DllImport("__Internal")]
+    private static extern void UpdateNowPlaying(string title);
+
+    public static void SetNowPlaying(string title)
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+        UpdateNowPlaying(title);
+#endif
+    }
 
     //     // [DllImport("__Internal")]
     //     // private static extern void StartStreamWithArtwork(string url, string stationName, byte[] artwork, int length);
@@ -94,29 +117,7 @@ public class iOSRadioLauncher : MonoBehaviour
 
 
 
-    //     [DllImport("__Internal")]
-    //     private static extern string GetMetaAsString();
 
-    //     public static string CheckiOSMeta()
-    //     {
-    // #if UNITY_IOS && !UNITY_EDITOR
-    //     return GetMetaAsString();
-    // #else
-    //         return "";
-    // #endif
-    //     }
-
-
-
-    //     [DllImport("__Internal")]
-    //     private static extern void UpdateNowPlaying(string title);
-
-    //     public static void SetNowPlaying(string title)
-    //     {
-    // #if UNITY_IOS && !UNITY_EDITOR
-    //     UpdateNowPlaying(title);
-    // #endif
-    //     }
 
 }
 
