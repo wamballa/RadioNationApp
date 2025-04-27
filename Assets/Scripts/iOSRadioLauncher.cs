@@ -41,17 +41,17 @@ public class iOSRadioLauncher : MonoBehaviour
     }
 
 
-//     [DllImport("__Internal")]
-//     private static extern string GetPlaybackState();
+    [DllImport("__Internal")]
+    private static extern string GetPlaybackState();
 
-//     public static string CheckiOSPlaybackState()
-//     {
-// #if UNITY_IOS && !UNITY_EDITOR
-//         return GetPlaybackState();
-// #else
-//         return "STOPPED";
-// #endif
-//     }
+    public static string CheckiOSPlaybackState()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+        return GetPlaybackState();
+#else
+        return "STOPPED";
+#endif
+    }
 
 
 
