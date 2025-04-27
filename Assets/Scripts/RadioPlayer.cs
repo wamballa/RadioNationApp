@@ -118,7 +118,7 @@ public class RadioPlayer : MonoBehaviour
                     0,
                     "",
                     currentStation,
-                    idleFaviconSprite
+                    currentFaviconSprite
                     );
                 ChangePlaybackImages();
                 break;
@@ -323,7 +323,7 @@ public class RadioPlayer : MonoBehaviour
 
     private void ClearRadioPlayerDetails()
     {
-        UpdateRadioPlayerDetails("", "Stopped", 0, "", "", null);
+        UpdateRadioPlayerDetails("", "Stopped", 0, "", "", idleFaviconSprite);
         backgroundBufferingImage.fillAmount = 0.0f;
     }
 
