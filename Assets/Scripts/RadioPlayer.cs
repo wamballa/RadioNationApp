@@ -255,7 +255,7 @@ if (currentState == "PLAYING" && iosRadioLauncher != null)
 
     private void UpdateRadioPlayerDetails(string isPlaying, string _playerState, float buffering, string nowPlayingMeta, string name, Sprite _faviconSprite)
     {
-        Debug.Log("[RadioPlayer] UpdateRadioPlayerDetails");
+        // Debug.Log("[RadioPlayer] UpdateRadioPlayerDetails");
 
         if (playerStateText != null) playerStateText.text = _playerState ?? "";
         if (nowPlayingMetaText != null) nowPlayingMetaText.text = nowPlayingMeta ?? "";

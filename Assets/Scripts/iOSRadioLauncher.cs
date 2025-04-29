@@ -33,6 +33,7 @@ public class iOSRadioLauncher : MonoBehaviour
 
     public void FetchAndUpdateMeta(string stationName)
     {
+        Debug.Log("[iOSRadioLauncher] FetchAndUpdateMeta+ "+stationName);
         string url = $"https://www.wamballa.com/metadata/?station={stationName}";
         StartCoroutine(FetchMetaCoroutine(url));
     }
@@ -46,6 +47,7 @@ public class iOSRadioLauncher : MonoBehaviour
         {
             string json = request.downloadHandler.text;
             string nowPlaying = ExtractNowPlayingFromJson(json);
+            Debug.Log($"[iOSRadioLauncher] FetchMetaCoroutine: {nowPlaying} + {Time.time}");
             cachedNowPlaying = nowPlaying;  // Store it for later use
 #if UNITY_IOS && !UNITY_EDITOR
             UpdateNowPlayingText(nowPlaying);  // Update iOS lock screen with the new metadata
