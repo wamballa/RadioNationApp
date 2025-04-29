@@ -31,14 +31,27 @@ public class iOSRadioLauncher : MonoBehaviour
 #endif
     }
 
-    public static void FetchAndUpdateMeta(string stationName)
+    public static void FetchAndUpdateMeta(string streamingUrl)
     {
 
-        string url = $"https://www.wamballa.com/metadata/?station={stationName}";
-        Debug.Log("[iOSRadioLauncher] FetchAndUpdateMeta+ "+url);
-        RadioPlayer.Instance.StartCoroutine(iOSRadioLauncher.FetchMetaCoroutine(url));
+        // Extract the station name from the streaming URL
+        string stationName = ExtractStationNameFromUrl(streamingUrl);
+
+        string metaUrl = $"https://www.wamballa.com/metadata/?station={stationName}";
+        Debug.Log("[iOSRadioLauncher] FetchAndUpdateMeta+ "+metaUrl);
+        RadioPlayer.Instance.StartCoroutine(iOSRadioLauncher.FetchMetaCoroutine(metaUrl));
 
     }
+
+    private static string ExtractStationNameFromUrl(string streamingUrl)
+{
+    // Find the part of the URL after the "=" sign
+    Uri uri = new Uri(streamingUrl);
+    var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+    string stationName = queryParams["station"];  // Extract the "station" query parameter
+
+    return stationName;
+}
 
     private static IEnumerator FetchMetaCoroutine(string url)
     {
