@@ -5,6 +5,21 @@ using UnityEngine.Events;
 
 public class RadioPlayer : MonoBehaviour
 {
+
+    public static RadioPlayer Instance { get; private set; }  // Singleton pattern for easy access to RadioPlayer methods
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;  // Set the instance when RadioPlayer is first initialized
+        }
+        else
+        {
+            Destroy(gameObject);  // Ensure only one instance exists
+        }
+    }
+
     #region Variables
     [Header("Debug Settings")]
     public bool logToConsole = false;
@@ -112,10 +127,10 @@ public class RadioPlayer : MonoBehaviour
     if (currentState == "PLAYING" && string.IsNullOrEmpty(iOSRadioLauncher.cachedNowPlaying))
     {
         // Fetch metadata from the API based on the current station
-        iosRadioLauncher.FetchAndUpdateMeta(currentStationUUID); // This triggers the API call to update metadata
+        iOSRadioLauncher.FetchAndUpdateMeta(currentStationUUID); // This triggers the API call to update metadata
     }
 
-        string meta = iosRadioLauncher.CheckiOSMeta();
+        string meta = iOSRadioLauncher.CheckiOSMeta();
         if (string.IsNullOrEmpty(meta))
             meta = "Streaming..."; // fallback if somehow empty
 

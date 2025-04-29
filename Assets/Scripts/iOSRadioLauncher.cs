@@ -31,14 +31,15 @@ public class iOSRadioLauncher : MonoBehaviour
 #endif
     }
 
-    public void FetchAndUpdateMeta(string stationName)
+    public static void FetchAndUpdateMeta(string stationName)
     {
-        Debug.Log("[iOSRadioLauncher] FetchAndUpdateMeta+ "+stationName);
+
         string url = $"https://www.wamballa.com/metadata/?station={stationName}";
-        StartCoroutine(FetchMetaCoroutine(url));
+        RadioPlayer.Instance.StartCoroutine(iOSRadioLauncher.FetchMetaCoroutine(url));
+        Debug.Log("[iOSRadioLauncher] FetchAndUpdateMeta+ "+stationName);
     }
 
-    private IEnumerator FetchMetaCoroutine(string url)
+    private static IEnumerator FetchMetaCoroutine(string url)
     {
         UnityWebRequest request = UnityWebRequest.Get(url);
         yield return request.SendWebRequest();
@@ -59,7 +60,7 @@ public class iOSRadioLauncher : MonoBehaviour
         }
     }
 
-    private string ExtractNowPlayingFromJson(string json)
+    private static string ExtractNowPlayingFromJson(string json)
     {
         try
         {
@@ -72,7 +73,7 @@ public class iOSRadioLauncher : MonoBehaviour
         }
     }
 
-    public string CheckiOSMeta()
+    public static string CheckiOSMeta()
     {
         return cachedNowPlaying;
     }
@@ -160,7 +161,7 @@ public class iOSRadioLauncher : MonoBehaviour
 
     public static void StartNativeStream(string url, string stationName, Texture2D favicon)
     {
-        Debug.Log("StartNativeStream called");
+        Debug.Log("[iOSRadioLauncher] StartNativeStream called");
 #if UNITY_IOS && !UNITY_EDITOR
             byte[] bytes = favicon.EncodeToPNG();
             GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
