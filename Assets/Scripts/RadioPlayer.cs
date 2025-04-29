@@ -54,6 +54,7 @@ public class RadioPlayer : MonoBehaviour
 
     // Private variables
     private string currentState;
+    private string currentStationUUID;
 
     #endregion
 
@@ -104,8 +105,15 @@ public class RadioPlayer : MonoBehaviour
 #elif UNITY_IOS && !UNITY_EDITOR
     currentState = iOSRadioLauncher.CheckiOSPlaybackState();
 #else
-    currentState = "STOPPED";
+        currentState = "STOPPED";
 #endif
+
+    // If the state is "PLAYING" and the metadata is not already cached, fetch it
+    if (currentState == "PLAYING" && string.IsNullOrEmpty(iOSRadioLauncher.cachedNowPlaying))
+    {
+        // Fetch metadata from the API based on the current station
+        iosRadioLauncher.FetchAndUpdateMeta(currentStationUUID); // This triggers the API call to update metadata
+    }
 
         string meta = iosRadioLauncher.CheckiOSMeta();
         if (string.IsNullOrEmpty(meta))
@@ -124,77 +132,85 @@ public class RadioPlayer : MonoBehaviour
         UpdateRadioPlayerDetails(details.Item1, details.Item2, details.Item3, details.Item4, details.Item5, details.Item6);
         ChangePlaybackImages();
 
-        // switch (currentState)
-        // {
-        //     case "STOPPED":
-        //         //Log("[RadioPlayer] State = Stopped");
-        //         UpdateRadioPlayerDetails(
-        //             "",
-        //             currentState,
-        //             0,
-        //             "",
-        //             currentStation,
-        //             currentFaviconSprite
-        //             );
-        //         ChangePlaybackImages();
-        //         break;
+#if UNITY_IOS && !UNITY_EDITOR
+if (currentState == "PLAYING" && iosRadioLauncher != null)
+{
+    iosRadioLauncher.UpdateLockscreenMeta(details.Item4); // details.Item4 = meta
+}
+#endif
 
-        //     case "BUFFERING":
-        //         //Log("[RadioPlayer]  State = Buffering" );
-        //         UpdateRadioPlayerDetails(
-        //             "",
-        //             currentState,
-        //             bufferingPercent,
-        //             "buffering",
-        //             currentStation,
-        //             currentFaviconSprite
-        //             );
-        //         ChangePlaybackImages();
-        //         break;
-
-        //     case "PLAYING":
-        //         ChangePlaybackImages();
-
-        //         UpdateRadioPlayerDetails(
-        //             "vlcPlayer.IsPlaying.ToString()",
-        //             currentState,
-        //             1,
-        //             iOSRadioLauncher.CheckiOSMeta(),
-        //             // "Meta data here",
-        //             currentStation,
-        //             currentFaviconSprite
-        //             );
-        //         break;
-
-        //     case "UNAVAILABLE":
-        //         //Log("[RadioPlayer]  State = Unavailble ");
-        //         UpdateRadioPlayerDetails(
-        //             "Unavailable",
-        //             currentState,
-        //             0,
-        //             "This station is not available in your region or the link is broken.",
-        //             currentStation,
-        //             currentFaviconSprite
-        //         );
-        //         ChangePlaybackImages();
-        //         break;
-
-        //     case "OFFLINE":
-        //         //Log("[RadioPlayer] State = Offline");
-        //         UpdateRadioPlayerDetails(
-        //             "No Internet",
-        //             currentState,
-        //             0,
-        //             "No internet connection.",
-        //             currentStation,
-        //             currentFaviconSprite
-        //         );
-
-        //         ChangePlaybackImages();
-
-        //         break;
-        // }
     }
+    // switch (currentState)
+    // {
+    //     case "STOPPED":
+    //         //Log("[RadioPlayer] State = Stopped");
+    //         UpdateRadioPlayerDetails(
+    //             "",
+    //             currentState,
+    //             0,
+    //             "",
+    //             currentStation,
+    //             currentFaviconSprite
+    //             );
+    //         ChangePlaybackImages();
+    //         break;
+
+    //     case "BUFFERING":
+    //         //Log("[RadioPlayer]  State = Buffering" );
+    //         UpdateRadioPlayerDetails(
+    //             "",
+    //             currentState,
+    //             bufferingPercent,
+    //             "buffering",
+    //             currentStation,
+    //             currentFaviconSprite
+    //             );
+    //         ChangePlaybackImages();
+    //         break;
+
+    //     case "PLAYING":
+    //         ChangePlaybackImages();
+
+    //         UpdateRadioPlayerDetails(
+    //             "vlcPlayer.IsPlaying.ToString()",
+    //             currentState,
+    //             1,
+    //             iOSRadioLauncher.CheckiOSMeta(),
+    //             // "Meta data here",
+    //             currentStation,
+    //             currentFaviconSprite
+    //             );
+    //         break;
+
+    //     case "UNAVAILABLE":
+    //         //Log("[RadioPlayer]  State = Unavailble ");
+    //         UpdateRadioPlayerDetails(
+    //             "Unavailable",
+    //             currentState,
+    //             0,
+    //             "This station is not available in your region or the link is broken.",
+    //             currentStation,
+    //             currentFaviconSprite
+    //         );
+    //         ChangePlaybackImages();
+    //         break;
+
+    //     case "OFFLINE":
+    //         //Log("[RadioPlayer] State = Offline");
+    //         UpdateRadioPlayerDetails(
+    //             "No Internet",
+    //             currentState,
+    //             0,
+    //             "No internet connection.",
+    //             currentStation,
+    //             currentFaviconSprite
+    //         );
+
+    //         ChangePlaybackImages();
+
+    //         break;
+    // }
+
 
     private void ChangePlaybackImages()
     {
@@ -298,6 +314,7 @@ public class RadioPlayer : MonoBehaviour
 
         ClearRadioPlayerDetails();
 
+        currentStationUUID = stationUUID;
         currentStation = name;
         currentStreamingURL = streamURL;
         lastPlayedStationUrl = streamURL; // ✅ Save the last played station

@@ -7,7 +7,8 @@ using UnityEngine.Networking;
 public class iOSRadioLauncher : MonoBehaviour
 {
     private float playbackTime = 0;
-    private static string cachedNowPlaying = "Streaming...";
+    public static string cachedNowPlaying = "Streaming...";
+
 
     private void Start()
     {
@@ -30,53 +31,6 @@ public class iOSRadioLauncher : MonoBehaviour
 #endif
     }
 
-    public string GetiOSPlaybackTime()
-    {
-        TimeSpan timeSpan = TimeSpan.FromSeconds(playbackTime);
-        return string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
-    }
-
-    [DllImport("__Internal")]
-    private static extern float GetBufferingPercent();
-
-    public static float GetiOSBufferingPercent()
-    {
-#if UNITY_IOS && !UNITY_EDITOR
-    return GetBufferingPercent();
-#else
-        return 0f;
-#endif
-    }
-
-
-    [DllImport("__Internal")]
-    private static extern System.IntPtr GetPlaybackState();
-
-    public static string CheckiOSPlaybackState()
-    {
-#if UNITY_IOS && !UNITY_EDITOR
-    IntPtr strPtr = GetPlaybackState();
-    return Marshal.PtrToStringAnsi(strPtr);
-#else
-        return "STOPPED";
-#endif
-    }
-
-    [DllImport("__Internal")]
-    private static extern void StopStream();
-
-    public static void StopNativeStream()
-    {
-#if UNITY_IOS && !UNITY_EDITOR
-            StopStream();
-#endif
-    }
-
-
-
-    [DllImport("__Internal")]
-    private static extern void UpdateNowPlayingText(string text);
-
     public void FetchAndUpdateMeta(string stationName)
     {
         string url = $"https://www.wamballa.com/metadata/?station={stationName}";
@@ -92,9 +46,9 @@ public class iOSRadioLauncher : MonoBehaviour
         {
             string json = request.downloadHandler.text;
             string nowPlaying = ExtractNowPlayingFromJson(json);
-            cachedNowPlaying = nowPlaying;
+            cachedNowPlaying = nowPlaying;  // Store it for later use
 #if UNITY_IOS && !UNITY_EDITOR
-            UpdateNowPlayingText(nowPlaying);
+            UpdateNowPlayingText(nowPlaying);  // Update iOS lock screen with the new metadata
 #endif
         }
         else
@@ -116,18 +70,63 @@ public class iOSRadioLauncher : MonoBehaviour
         }
     }
 
+    public string CheckiOSMeta()
+    {
+        return cachedNowPlaying;
+    }
+
+    [DllImport("__Internal")]
+    private static extern void UpdateNowPlayingText(string text);
+
+    [DllImport("__Internal")]
+    private static extern void UpdateNowPlayingLockscreen(string title);
+
+    public void UpdateLockscreenMeta(string title)
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+    if (!string.IsNullOrEmpty(title))
+        UpdateNowPlayingLockscreen(title);
+#endif
+    }
+
+
+//     public void FetchAndUpdateMeta(string stationName)
+//     {
+//         string url = $"https://www.wamballa.com/metadata/?station={stationName}";
+//         StartCoroutine(FetchMetaCoroutine(url));
+//     }
+
+//     private IEnumerator FetchMetaCoroutine(string url)
+//     {
+//         UnityWebRequest request = UnityWebRequest.Get(url);
+//         yield return request.SendWebRequest();
+
+//         if (request.result == UnityWebRequest.Result.Success)
+//         {
+//             string json = request.downloadHandler.text;
+//             string nowPlaying = ExtractNowPlayingFromJson(json);
+//             cachedNowPlaying = nowPlaying;
+// #if UNITY_IOS && !UNITY_EDITOR
+//             UpdateNowPlayingText(nowPlaying);
+// #endif
+//         }
+//         else
+//         {
+//             Debug.LogError("Failed to fetch metadata: " + request.error);
+//         }
+//     }
+
+
+
     [Serializable]
     private class NowPlayingWrapper
     {
         public string now_playing;
     }
 
-    public string CheckiOSMeta()
-    {
-        return cachedNowPlaying;
-    }
 
-     //     [DllImport("__Internal")]
+
+    //     [DllImport("__Internal")]
     //     private static extern System.IntPtr GetMetaAsString();
 
     //     public static string CheckiOSMeta()
@@ -179,6 +178,47 @@ public class iOSRadioLauncher : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void StartStreamWithArtwork_Internal(string url, string stationName, IntPtr artwork, int length);
 
+    [DllImport("__Internal")]
+    private static extern float GetBufferingPercent();
+
+    public static float GetiOSBufferingPercent()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+    return GetBufferingPercent();
+#else
+        return 0f;
+#endif
+    }
+
+    public string GetiOSPlaybackTime()
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(playbackTime);
+        return string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+    }
+
+
+    [DllImport("__Internal")]
+    private static extern System.IntPtr GetPlaybackState();
+
+    public static string CheckiOSPlaybackState()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+    IntPtr strPtr = GetPlaybackState();
+    return Marshal.PtrToStringAnsi(strPtr);
+#else
+        return "STOPPED";
+#endif
+    }
+
+    [DllImport("__Internal")]
+    private static extern void StopStream();
+
+    public static void StopNativeStream()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+            StopStream();
+#endif
+    }
 
 
 

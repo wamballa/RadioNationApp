@@ -73,6 +73,9 @@ extern "C" void UpdateNowPlayingText(const char* text)
 {
     @autoreleasepool {
         NSString *nowPlaying = [NSString stringWithUTF8String:text];
+        if (nowPlaying == nil || nowPlaying.length == 0) {
+            nowPlaying = @"Streaming..."; // Default text
+        }
         nowPlayingText = nowPlaying;
 
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
@@ -81,6 +84,41 @@ extern "C" void UpdateNowPlayingText(const char* text)
     }
 }
 
+extern "C" void UpdateNowPlayingLockscreen(const char* title) {
+    @autoreleasepool {
+        if (title == NULL) return;
+
+        NSString *titleStr = [NSString stringWithUTF8String:title];
+        if (!titleStr || titleStr.length == 0) return;
+
+        NSMutableDictionary *info = [NSMutableDictionary dictionary];
+        [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
+
+        if (currentFavicon) {
+            MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
+                return currentFavicon;
+            }];
+            [info setObject:artwork forKey:MPMediaItemPropertyArtwork];
+        }
+
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
+    }
+}
+
+// Set now playing info (title + optional artwork)
+extern "C" void UpdateNowPlaying(const char* title) {
+    @autoreleasepool {
+        NSMutableDictionary *info = [NSMutableDictionary dictionary];
+
+        if (title) {
+            NSString *titleStr = [NSString stringWithUTF8String:title];
+            if (titleStr && titleStr.length > 0) {
+                [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
+            }
+        }
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
+    }
+}
 
 // void fetchNowPlaying(NSString *urlStr) {
 //     NSURL *url = [NSURL URLWithString:urlStr];
@@ -255,20 +293,7 @@ static const char* state = "STOPPED"; // fallback
     return state;
 }
 
-// Set now playing info (title + optional artwork)
-extern "C" void UpdateNowPlaying(const char* title) {
-    @autoreleasepool {
-        NSMutableDictionary *info = [NSMutableDictionary dictionary];
 
-        if (title) {
-            NSString *titleStr = [NSString stringWithUTF8String:title];
-            if (titleStr && titleStr.length > 0) {
-                [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
-            }
-        }
-        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
-    }
-}
 
 // extern "C" const char* GetMetaAsString()
 // {
