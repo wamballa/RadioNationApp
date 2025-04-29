@@ -36,7 +36,7 @@ public class iOSRadioLauncher : MonoBehaviour
 
         string url = $"https://www.wamballa.com/metadata/?station={stationName}";
         RadioPlayer.Instance.StartCoroutine(iOSRadioLauncher.FetchMetaCoroutine(url));
-        Debug.Log("[iOSRadioLauncher] FetchAndUpdateMeta+ "+stationName);
+        Debug.Log("[iOSRadioLauncher] FetchAndUpdateMeta+ "+url);
     }
 
     private static IEnumerator FetchMetaCoroutine(string url)
