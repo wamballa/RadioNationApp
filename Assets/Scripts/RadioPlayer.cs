@@ -214,7 +214,7 @@ if (currentState == "PLAYING" && iosRadioLauncher != null)
 
     private void ChangePlaybackImages()
     {
-        Debug.Log("[RadioPlayer] ChangePlaybackImages");
+        // Debug.Log("[RadioPlayer] ChangePlaybackImages");
 
         Sprite favicon = currentFaviconSprite != null ? currentFaviconSprite : idleFaviconSprite;
 
