@@ -124,7 +124,7 @@ public class RadioPlayer : MonoBehaviour
 #endif
 
     // If the state is "PLAYING" and the metadata is not already cached, fetch it
-    if (currentState == "PLAYING" && string.IsNullOrEmpty(iOSRadioLauncher.cachedNowPlaying))
+    if (currentState == "PLAYING" )//&& string.IsNullOrEmpty(iOSRadioLauncher.cachedNowPlaying))
     {
         // Fetch metadata from the API based on the current station
         iOSRadioLauncher.FetchAndUpdateMeta(currentStationUUID); // This triggers the API call to update metadata
