@@ -328,18 +328,23 @@ static const char* state = "STOPPED"; // fallback
 void setupRemoteCommands(void) {
     MPRemoteCommandCenter *remote = [MPRemoteCommandCenter sharedCommandCenter];
     [remote.playCommand setEnabled:YES];
-    [remote.pauseCommand setEnabled:YES];
+    [remote.pauseCommand setEnabled:NO]; // No need for a pause button
 
+    // Handle play command (toggle between play and stop)
     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-        if (player) [player play];
+        if (player) {
+            if (currentState == StatePlaying) {
+                [player pause];  // Stop playing if already playing
+                updatePlayerState(StateStopped);  // Update state to stopped
+            } else {
+                [player play];  // Start playing if currently stopped
+                updatePlayerState(StatePlaying);  // Update state to playing
+            }
+        }
         return MPRemoteCommandHandlerStatusSuccess;
     }];
 
-    [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-        if (player) [player pause];
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
-
+    // Handle stop when Bluetooth is disconnected or the button is pressed
     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionRouteChangeNotification
                                                         object:nil
                                                         queue:[NSOperationQueue mainQueue]
@@ -350,12 +355,13 @@ void setupRemoteCommands(void) {
 
         if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
             if (player) {
-                [player pause];
-                updatePlayerState(StateStopped);
+                [player pause];  // Pause playback when Bluetooth headset is disconnected
+                updatePlayerState(StateStopped);  // Update state to stopped
             }
         }
     }];
 }
+
 
 void setupNetworkMonitor(void)
 {

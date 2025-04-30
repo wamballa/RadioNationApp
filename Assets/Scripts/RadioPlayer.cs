@@ -123,12 +123,12 @@ public class RadioPlayer : MonoBehaviour
         currentState = "STOPPED";
 #endif
 
-    // If the state is "PLAYING" and the metadata is not already cached, fetch it
-    if (currentState == "PLAYING" )//&& string.IsNullOrEmpty(iOSRadioLauncher.cachedNowPlaying))
-    {
-        // Fetch metadata from the API based on the current station
-        iOSRadioLauncher.FetchAndUpdateMeta(currentStreamingURL); // This triggers the API call to update metadata
-    }
+        // If the state is "PLAYING" and the metadata is not already cached, fetch it
+        if (currentState == "PLAYING")//&& string.IsNullOrEmpty(iOSRadioLauncher.cachedNowPlaying))
+        {
+            // Fetch metadata from the API based on the current station
+            iOSRadioLauncher.FetchAndUpdateMeta(currentStreamingURL); // This triggers the API call to update metadata
+        }
 
         string meta = iOSRadioLauncher.CheckiOSMeta();
         if (string.IsNullOrEmpty(meta))
