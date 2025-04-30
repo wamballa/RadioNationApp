@@ -20,9 +20,29 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2228345766425008063, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 4b0b36b5293790a43ae1226549551cc7, type: 2}
+    - target: {fileID: 2445693386968196272, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 4b0b36b5293790a43ae1226549551cc7, type: 2}
     - target: {fileID: 2465581122836478038, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
       propertyPath: m_Name
       value: Heart Radio
+      objectReference: {fileID: 0}
+    - target: {fileID: 4229333326508020444, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4406801612928040320, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_text
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4406801612928040320, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: m_fontSize
+      value: 72
       objectReference: {fileID: 0}
     - target: {fileID: 5292811368516262476, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
       propertyPath: m_Material
@@ -50,7 +70,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
       propertyPath: m_AnchorMin.x
@@ -58,11 +78,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1172.768
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
       propertyPath: m_SizeDelta.y
@@ -98,11 +118,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 586.384
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -1065.98
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7238183354849667975, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -127,6 +147,10 @@ PrefabInstance:
     - target: {fileID: 7695385130561154634, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
       propertyPath: streamingUrl
       value: https://wamballa.com/stream/?station=heart
+      objectReference: {fileID: 0}
+    - target: {fileID: 7695385130561154634, guid: cb5a393fd34d8f44cad733b04fa72d6a, type: 3}
+      propertyPath: rankingNumber
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
