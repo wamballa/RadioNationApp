@@ -105,40 +105,6 @@ extern "C" void UpdateNowPlayingLockscreen(const char* title) {
     }
 }
 
-// Set now playing info (title + optional artwork)
-extern "C" void UpdateNowPlaying(const char* title) {
-    @autoreleasepool {
-        NSMutableDictionary *info = [NSMutableDictionary dictionary];
-
-        if (title) {
-            NSString *titleStr = [NSString stringWithUTF8String:title];
-            if (titleStr && titleStr.length > 0) {
-                [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
-            }
-        }
-        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
-    }
-}
-
-// void fetchNowPlaying(NSString *urlStr) {
-//     NSURL *url = [NSURL URLWithString:urlStr];
-//     if (!url) return;
-
-//     [[[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *res, NSError *error) {
-//         if (error) return;
-//         NSError *jsonError;
-//         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
-//         if (jsonError) return;
-
-//         NSString *title = json[@"now_playing"] ?: @"Streaming...";
-//         nowPlayingText = title;
-
-//         NSMutableDictionary *info = [NSMutableDictionary dictionary];
-//         [info setObject:title forKey:MPMediaItemPropertyTitle];
-//         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
-//     }] resume];
-// }
-
 extern "C" float GetBufferingPercent() {
     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
 }
@@ -195,73 +161,31 @@ extern "C" void StartStream(const char* url)
     }
 }
 
-
-// extern "C" void StartStream(const char* url)
+// extern "C" void StartStreamWithArtwork(const char* url, const char* station, void* imageData, int length)
 // {
-//     NSLog(@"✅ StartStream called");
-
+//     NSLog(@"✅ StartStreamWithArtwork_Internal called");
 //     @autoreleasepool {
+//         NSData *data = [NSData dataWithBytes:imageData length:length];
+
+//         UIImage *image = [UIImage imageWithData:data];
+//         NSLog(@"Decoded image size: %@", NSStringFromCGSize(image.size));
+
+//         // Save for lockscreen display
+//         currentFavicon = image;
+
 //         NSString *urlStr = [NSString stringWithUTF8String:url];
 //         lastStreamUrl = urlStr;
+//         currentStationName = [NSString stringWithUTF8String:station];
 
-//         if (!IsNetworkReachable()) {
-//             updatePlayerState(StateOffline);
-//             return;
-//         }
-
-//         updatePlayerState(StateBuffering);
-
-//         NSURL *streamURL = [NSURL URLWithString:urlStr];
-//         playerItem = [AVPlayerItem playerItemWithURL:streamURL];
-//         player = [AVPlayer playerWithPlayerItem:playerItem];
-
-//         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-//         [[AVAudioSession sharedInstance] setActive:YES error:nil];
-
-//         [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemNewAccessLogEntryNotification object:playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
-//         if (currentState == StateBuffering) {
-//             updatePlayerState(StatePlaying);
-//         }
-//         }];
-
-//         [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemFailedToPlayToEndTimeNotification object:playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
-//             updatePlayerState(StateError);
-//         }];
-        
-
-//         [player play];
-
-//         // Setup remote commands
-//         setupRemoteCommands();
-//         setupNetworkMonitor();
+//         StartStream(url); // Reuse existing logic
 //     }
 // }
 
-extern "C" void StartStreamWithArtwork(const char* url, const char* station, void* imageData, int length)
-{
-    NSLog(@"✅ StartStreamWithArtwork_Internal called");
-    @autoreleasepool {
-        NSData *data = [NSData dataWithBytes:imageData length:length];
-
-        UIImage *image = [UIImage imageWithData:data];
-        NSLog(@"Decoded image size: %@", NSStringFromCGSize(image.size));
-
-        // Save for lockscreen display
-        currentFavicon = image;
-
-        NSString *urlStr = [NSString stringWithUTF8String:url];
-        lastStreamUrl = urlStr;
-        currentStationName = [NSString stringWithUTF8String:station];
-
-        StartStream(url); // Reuse existing logic
-    }
-}
-
-extern "C" void StartStreamWithArtwork_Internal(const char* url, const char* station, void* imageData, int length)
-{
-    NSLog(@"✅ StartStreamWithArtwork_Internal called");
-    StartStreamWithArtwork(url, station, imageData, length);
-}
+// extern "C" void StartStreamWithArtwork_Internal(const char* url, const char* station, void* imageData, int length)
+// {
+//     NSLog(@"✅ StartStreamWithArtwork_Internal called");
+//     StartStreamWithArtwork(url, station, imageData, length);
+// }
 
 
 
@@ -293,53 +217,26 @@ static const char* state = "STOPPED"; // fallback
     return state;
 }
 
-
-
-// extern "C" const char* GetMetaAsString()
-// {
-//     static char buffer[512];
-
-//     if (!nowPlayingText || nowPlayingText.length == 0) {
-//         strncpy(buffer, "Streaming...", sizeof(buffer) - 1);
-//         buffer[sizeof(buffer) - 1] = '\0';
-//         return buffer;
-//     }
-
-//     const char* utf8 = [nowPlayingText UTF8String];
-//     if (!utf8) {
-//         strncpy(buffer, "Streaming...", sizeof(buffer) - 1);
-//         buffer[sizeof(buffer) - 1] = '\0';
-//         return buffer;
-//     }
-
-//     strncpy(buffer, utf8, sizeof(buffer) - 1);
-//     buffer[sizeof(buffer) - 1] = '\0';
-//     return buffer;
-// }
-
-
-
-// extern "C" const char* GetMetaAsString()
-// {
-//     return [nowPlayingText UTF8String];
-// }
-
-
 void setupRemoteCommands(void) {
     MPRemoteCommandCenter *remote = [MPRemoteCommandCenter sharedCommandCenter];
     [remote.playCommand setEnabled:YES];
-    [remote.pauseCommand setEnabled:YES];
+    [remote.pauseCommand setEnabled:NO]; // No pause button, only play/stop
 
+    // Handle play command (toggle between play and stop)
     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-        if (player) [player play];
+        if (player) {
+            if (currentState == StatePlaying) {
+                [player pause];  // Stop playing if already playing
+                updatePlayerState(StateStopped);  // Update state to stopped
+            } else {
+                [player play];  // Start playing if currently stopped
+                updatePlayerState(StatePlaying);  // Update state to playing
+            }
+        }
         return MPRemoteCommandHandlerStatusSuccess;
     }];
 
-    [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-        if (player) [player pause];
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
-
+    // Handle stop when Bluetooth is disconnected or the button is pressed
     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionRouteChangeNotification
                                                         object:nil
                                                         queue:[NSOperationQueue mainQueue]
@@ -350,12 +247,45 @@ void setupRemoteCommands(void) {
 
         if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
             if (player) {
-                [player pause];
-                updatePlayerState(StateStopped);
+                [player pause];  // Pause playback when Bluetooth headset is disconnected
+                updatePlayerState(StateStopped);  // Update state to stopped
             }
         }
     }];
 }
+
+
+// void setupRemoteCommands(void) {
+//     MPRemoteCommandCenter *remote = [MPRemoteCommandCenter sharedCommandCenter];
+//     [remote.playCommand setEnabled:YES];
+//     [remote.pauseCommand setEnabled:YES];
+
+//     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+//         if (player) [player play];
+//         return MPRemoteCommandHandlerStatusSuccess;
+//     }];
+
+//     [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+//         if (player) [player pause];
+//         return MPRemoteCommandHandlerStatusSuccess;
+//     }];
+
+//     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionRouteChangeNotification
+//                                                         object:nil
+//                                                         queue:[NSOperationQueue mainQueue]
+//                                                     usingBlock:^(NSNotification * _Nonnull note) {
+//         NSDictionary *info = note.userInfo;
+//         NSUInteger rawReason = [info[AVAudioSessionRouteChangeReasonKey] unsignedIntegerValue];
+//         AVAudioSessionRouteChangeReason reason = (AVAudioSessionRouteChangeReason)rawReason;
+
+//         if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
+//             if (player) {
+//                 [player pause];
+//                 updatePlayerState(StateStopped);
+//             }
+//         }
+//     }];
+// }
 
 void setupNetworkMonitor(void)
 {
