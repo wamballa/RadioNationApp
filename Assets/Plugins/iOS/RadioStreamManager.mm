@@ -43,7 +43,7 @@ Who         | Does What
 Unity C#    | Calls iOSRadioLauncher.FetchNowPlayingMeta(stationId) via API
 Unity C#    | Updates your UI based on now_playing text
 Unity C#    | Calls iOSRadioLauncher.UpdateLockscreenMeta(string title) to push text to lockscreen
-iOS Obj-C   | Only accepts updated metadata and shows it
+iOS Obj-C | Only accepts updated metadata and shows it
 */
 
 void updatePlayerState(PlaybackState newState) {
@@ -73,9 +73,6 @@ extern "C" void UpdateNowPlayingText(const char* text)
 {
     @autoreleasepool {
         NSString *nowPlaying = [NSString stringWithUTF8String:text];
-        if (nowPlaying == nil || nowPlaying.length == 0) {
-            nowPlaying = @"Streaming..."; // Default text
-        }
         nowPlayingText = nowPlaying;
 
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
@@ -84,41 +81,6 @@ extern "C" void UpdateNowPlayingText(const char* text)
     }
 }
 
-extern "C" void UpdateNowPlayingLockscreen(const char* title) {
-    @autoreleasepool {
-        if (title == NULL) return;
-
-        NSString *titleStr = [NSString stringWithUTF8String:title];
-        if (!titleStr || titleStr.length == 0) return;
-
-        NSMutableDictionary *info = [NSMutableDictionary dictionary];
-        [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
-
-        if (currentFavicon) {
-            MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
-                return currentFavicon;
-            }];
-            [info setObject:artwork forKey:MPMediaItemPropertyArtwork];
-        }
-
-        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
-    }
-}
-
-// Set now playing info (title + optional artwork)
-extern "C" void UpdateNowPlaying(const char* title) {
-    @autoreleasepool {
-        NSMutableDictionary *info = [NSMutableDictionary dictionary];
-
-        if (title) {
-            NSString *titleStr = [NSString stringWithUTF8String:title];
-            if (titleStr && titleStr.length > 0) {
-                [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
-            }
-        }
-        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
-    }
-}
 
 // void fetchNowPlaying(NSString *urlStr) {
 //     NSURL *url = [NSURL URLWithString:urlStr];
@@ -293,7 +255,20 @@ static const char* state = "STOPPED"; // fallback
     return state;
 }
 
+// Set now playing info (title + optional artwork)
+extern "C" void UpdateNowPlaying(const char* title) {
+    @autoreleasepool {
+        NSMutableDictionary *info = [NSMutableDictionary dictionary];
 
+        if (title) {
+            NSString *titleStr = [NSString stringWithUTF8String:title];
+            if (titleStr && titleStr.length > 0) {
+                [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
+            }
+        }
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
+    }
+}
 
 // extern "C" const char* GetMetaAsString()
 // {
@@ -328,23 +303,18 @@ static const char* state = "STOPPED"; // fallback
 void setupRemoteCommands(void) {
     MPRemoteCommandCenter *remote = [MPRemoteCommandCenter sharedCommandCenter];
     [remote.playCommand setEnabled:YES];
-    [remote.pauseCommand setEnabled:NO]; // No need for a pause button
+    [remote.pauseCommand setEnabled:YES];
 
-    // Handle play command (toggle between play and stop)
     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-        if (player) {
-            if (currentState == StatePlaying) {
-                [player pause];  // Stop playing if already playing
-                updatePlayerState(StateStopped);  // Update state to stopped
-            } else {
-                [player play];  // Start playing if currently stopped
-                updatePlayerState(StatePlaying);  // Update state to playing
-            }
-        }
+        if (player) [player play];
         return MPRemoteCommandHandlerStatusSuccess;
     }];
 
-    // Handle stop when Bluetooth is disconnected or the button is pressed
+    [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+        if (player) [player pause];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+
     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionRouteChangeNotification
                                                         object:nil
                                                         queue:[NSOperationQueue mainQueue]
@@ -355,13 +325,12 @@ void setupRemoteCommands(void) {
 
         if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
             if (player) {
-                [player pause];  // Pause playback when Bluetooth headset is disconnected
-                updatePlayerState(StateStopped);  // Update state to stopped
+                [player pause];
+                updatePlayerState(StateStopped);
             }
         }
     }];
 }
-
 
 void setupNetworkMonitor(void)
 {
