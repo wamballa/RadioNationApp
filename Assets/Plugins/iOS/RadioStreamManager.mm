@@ -24,13 +24,10 @@ static NSString *nowPlayingText = @"Ready to go...";
 static UIImage *currentFavicon = nil;
 static NSString *currentStationName = @"";
 
-void updatePlayerState(PlaybackState newState) {
-    currentState = newState;
+// --- Method Declarations ---
 
-    if (newState == StateStopped || newState == StateOffline || newState == StateError) {
-        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
-    }
-}
+// Update now playing info on the lock screen
+extern "C" void updateNowPlayingLockscreen(NSString *title);
 
 // Stop stream
 extern "C" void StopStream() {
