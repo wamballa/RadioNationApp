@@ -161,31 +161,31 @@ extern "C" void StartStream(const char* url)
     }
 }
 
-// extern "C" void StartStreamWithArtwork(const char* url, const char* station, void* imageData, int length)
-// {
-//     NSLog(@"✅ StartStreamWithArtwork_Internal called");
-//     @autoreleasepool {
-//         NSData *data = [NSData dataWithBytes:imageData length:length];
+extern "C" void StartStreamWithArtwork(const char* url, const char* station, void* imageData, int length)
+{
+    NSLog(@"✅ StartStreamWithArtwork_Internal called");
+    @autoreleasepool {
+        NSData *data = [NSData dataWithBytes:imageData length:length];
 
-//         UIImage *image = [UIImage imageWithData:data];
-//         NSLog(@"Decoded image size: %@", NSStringFromCGSize(image.size));
+        UIImage *image = [UIImage imageWithData:data];
+        NSLog(@"Decoded image size: %@", NSStringFromCGSize(image.size));
 
-//         // Save for lockscreen display
-//         currentFavicon = image;
+        // Save for lockscreen display
+        currentFavicon = image;
 
-//         NSString *urlStr = [NSString stringWithUTF8String:url];
-//         lastStreamUrl = urlStr;
-//         currentStationName = [NSString stringWithUTF8String:station];
+        NSString *urlStr = [NSString stringWithUTF8String:url];
+        lastStreamUrl = urlStr;
+        currentStationName = [NSString stringWithUTF8String:station];
 
-//         StartStream(url); // Reuse existing logic
-//     }
-// }
+        StartStream(url); // Reuse existing logic
+    }
+}
 
-// extern "C" void StartStreamWithArtwork_Internal(const char* url, const char* station, void* imageData, int length)
-// {
-//     NSLog(@"✅ StartStreamWithArtwork_Internal called");
-//     StartStreamWithArtwork(url, station, imageData, length);
-// }
+extern "C" void StartStreamWithArtwork_Internal(const char* url, const char* station, void* imageData, int length)
+{
+    NSLog(@"✅ StartStreamWithArtwork_Internal called");
+    StartStreamWithArtwork(url, station, imageData, length);
+}
 
 
 
