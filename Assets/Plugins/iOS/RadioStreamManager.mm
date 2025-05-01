@@ -24,6 +24,19 @@ static NSString *nowPlayingText = @"Ready to go...";
 static UIImage *currentFavicon = nil;
 static NSString *currentStationName = @"";
 
+// --- Method Declarations ---
+
+// External method declarations (to ensure Unity can call them)
+extern "C" void updatePlayerState(PlaybackState newState);
+extern "C" void updateNowPlayingLockscreen(NSString *title);
+extern "C" void StopStream();
+extern "C" void StartStream(const char* url);
+extern "C" void TogglePlayback();
+extern "C" void HandleBluetoothDisconnection();
+
+// --- Method Implementations ---
+
+// Update player state
 extern "C" void updatePlayerState(PlaybackState newState) {
     currentState = newState;
 
@@ -33,7 +46,21 @@ extern "C" void updatePlayerState(PlaybackState newState) {
 }
 
 // Update now playing info on the lock screen
-extern "C" void updateNowPlayingLockscreen(NSString *title);
+extern "C" void updateNowPlayingLockscreen(NSString *title) {
+    @autoreleasepool {
+        NSMutableDictionary *info = [NSMutableDictionary dictionary];
+        [info setObject:title forKey:MPMediaItemPropertyTitle];
+
+        if (currentFavicon) {
+            MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
+                return currentFavicon;
+            }];
+            [info setObject:artwork forKey:MPMediaItemPropertyArtwork];
+        }
+
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
+    }
+}
 
 // Stop stream
 extern "C" void StopStream() {
@@ -107,23 +134,6 @@ extern "C" void HandleBluetoothDisconnection() {
         [player replaceCurrentItemWithPlayerItem:nil];  // Stop the stream completely
         updatePlayerState(StateStopped);  // Set state to stopped
         updateNowPlayingLockscreen(@"Disconnected");  // Update lock screen text
-    }
-}
-
-// Update now playing info on the lock screen
-extern "C" void updateNowPlayingLockscreen(NSString *title) {
-    @autoreleasepool {
-        NSMutableDictionary *info = [NSMutableDictionary dictionary];
-        [info setObject:title forKey:MPMediaItemPropertyTitle];
-
-        if (currentFavicon) {
-            MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
-                return currentFavicon;
-            }];
-            [info setObject:artwork forKey:MPMediaItemPropertyArtwork];
-        }
-
-        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
 }
 
