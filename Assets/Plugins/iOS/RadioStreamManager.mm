@@ -5,7 +5,17 @@
 #import <Network/Network.h>
 #import "NSObject+KVOBlock.h"
 
-// --- State tracking ---
+
+void fetchNowPlaying(NSString *urlStr);
+bool IsNetworkReachable(void);
+void setupRemoteCommands(void);
+void setupNetworkMonitor(void);
+//extern "C" void StartStream(const char* url);  // ✅ CORRECT
+// extern "C" void StartStream(const char* url);
+
+
+
+// --- State tracking ---å
 typedef NS_ENUM(NSInteger, PlaybackState) {
     StateInitial,
     StateStopped,
@@ -20,64 +30,96 @@ static AVPlayer *player = nil;
 static AVPlayerItem *playerItem = nil;
 static NSString *lastStreamUrl = nil;
 static nw_path_monitor_t pathMonitor = nil;
+static NSTimer *metadataTimer = nil;
 static NSString *nowPlayingText = @"Ready to go...";
 static UIImage *currentFavicon = nil;
 static NSString *currentStationName = @"";
 
-// --- Method Declarations ---
 
-// External method declarations (to ensure Unity can call them)
-extern "C" void updatePlayerState(PlaybackState newState);
-extern "C" void updateNowPlayingLockscreen(NSString *title);
-extern "C" void StopStream();
-extern "C" void StartStream(const char* url);
-extern "C" void TogglePlayback();
-extern "C" void HandleBluetoothDisconnection();
+#pragma mark - Playback Control
 
-// --- Method Implementations ---
+/*
+Who         | Does What
+Unity C#    | Calls iOSRadioLauncher.FetchNowPlayingMeta(stationId) via API
+Unity C#    | Updates your UI based on now_playing text
+Unity C#    | Calls iOSRadioLauncher.UpdateLockscreenMeta(string title) to push text to lockscreen
+iOS Obj-C   | Only accepts updated metadata and shows it
+*/
 
-// Update player state
-extern "C" void updatePlayerState(PlaybackState newState) {
+void updatePlayerState(PlaybackState newState) {
     currentState = newState;
+
+    if (metadataTimer) {
+        [metadataTimer invalidate];
+        metadataTimer = nil;
+    }
+
+    if (newState == StatePlaying) {
+        metadataTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+            if (currentStationName != nil && currentStationName.length > 0) {
+                // C# side will be responsible for fetching metadata now.
+                NSLog(@"✅ iOS: Timer tick - C# will fetch now_playing via API.");
+            }
+        }];
+    }
 
     if (newState == StateStopped || newState == StateOffline || newState == StateError) {
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
     }
 }
 
-// Update now playing info on the lock screen
-extern "C" void updateNowPlayingLockscreen(NSString *title) {
+
+extern "C" void UpdateNowPlayingText(const char* text)
+{
     @autoreleasepool {
+        NSString *nowPlaying = [NSString stringWithUTF8String:text];
+        nowPlayingText = nowPlaying;
+
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
-        [info setObject:title forKey:MPMediaItemPropertyTitle];
-
-        if (currentFavicon) {
-            MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
-                return currentFavicon;
-            }];
-            [info setObject:artwork forKey:MPMediaItemPropertyArtwork];
-        }
-
+        [info setObject:nowPlaying forKey:MPMediaItemPropertyTitle];
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
 }
 
-// Stop stream
-extern "C" void StopStream() {
-    if (player) {
-        [player pause];  // Pause if it's currently playing
-        [player replaceCurrentItemWithPlayerItem:nil]; // Stop the stream completely
-        updatePlayerState(StateStopped);  // Set state to stopped
-    }
+
+// void fetchNowPlaying(NSString *urlStr) {
+//     NSURL *url = [NSURL URLWithString:urlStr];
+//     if (!url) return;
+
+//     [[[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *res, NSError *error) {
+//         if (error) return;
+//         NSError *jsonError;
+//         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+//         if (jsonError) return;
+
+//         NSString *title = json[@"now_playing"] ?: @"Streaming...";
+//         nowPlayingText = title;
+
+//         NSMutableDictionary *info = [NSMutableDictionary dictionary];
+//         [info setObject:title forKey:MPMediaItemPropertyTitle];
+//         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
+//     }] resume];
+// }
+
+extern "C" float GetBufferingPercent() {
+    return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
 }
 
-// Start stream
-extern "C" void StartStream(const char* url) {
+extern "C" void StartStream(const char* url)
+{
     NSLog(@"✅ StartStream called");
 
     @autoreleasepool {
         NSString *urlStr = [NSString stringWithUTF8String:url];
-        lastStreamUrl = urlStr;  // Save for future play
+        lastStreamUrl = urlStr;
+
+        if (!IsNetworkReachable()) {
+            updatePlayerState(StateOffline);
+            return;
+        }
+
+        updatePlayerState(StateBuffering);
+
         NSURL *streamURL = [NSURL URLWithString:urlStr];
         playerItem = [AVPlayerItem playerItemWithURL:streamURL];
         player = [AVPlayer playerWithPlayerItem:playerItem];
@@ -100,56 +142,179 @@ extern "C" void StartStream(const char* url) {
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
         [[AVAudioSession sharedInstance] setActive:YES error:nil];
 
-        [player play];  // Start playback
+        [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemFailedToPlayToEndTimeNotification
+                                                           object:playerItem
+                                                            queue:[NSOperationQueue mainQueue]
+                                                       usingBlock:^(NSNotification * _Nonnull note) {
+            updatePlayerState(StateError);
+        }];
 
-        updatePlayerState(StateBuffering); // Indicate that buffering is in progress
+        [player play];
 
-        // Update lock screen metadata
-        updateNowPlayingLockscreen(nowPlayingText);
+        // Setup remote commands and network monitoring
+        setupRemoteCommands();
+        setupNetworkMonitor();
     }
 }
 
-// Handle play/pause button (toggle between play and stop)
-extern "C" void TogglePlayback() {
+
+// extern "C" void StartStream(const char* url)
+// {
+//     NSLog(@"✅ StartStream called");
+
+//     @autoreleasepool {
+//         NSString *urlStr = [NSString stringWithUTF8String:url];
+//         lastStreamUrl = urlStr;
+
+//         if (!IsNetworkReachable()) {
+//             updatePlayerState(StateOffline);
+//             return;
+//         }
+
+//         updatePlayerState(StateBuffering);
+
+//         NSURL *streamURL = [NSURL URLWithString:urlStr];
+//         playerItem = [AVPlayerItem playerItemWithURL:streamURL];
+//         player = [AVPlayer playerWithPlayerItem:playerItem];
+
+//         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+//         [[AVAudioSession sharedInstance] setActive:YES error:nil];
+
+//         [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemNewAccessLogEntryNotification object:playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+//         if (currentState == StateBuffering) {
+//             updatePlayerState(StatePlaying);
+//         }
+//         }];
+
+//         [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemFailedToPlayToEndTimeNotification object:playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+//             updatePlayerState(StateError);
+//         }];
+        
+
+//         [player play];
+
+//         // Setup remote commands
+//         setupRemoteCommands();
+//         setupNetworkMonitor();
+//     }
+// }
+
+extern "C" void StartStreamWithArtwork(const char* url, const char* station, void* imageData, int length)
+{
+    NSLog(@"✅ StartStreamWithArtwork_Internal called");
+    @autoreleasepool {
+        NSData *data = [NSData dataWithBytes:imageData length:length];
+
+        UIImage *image = [UIImage imageWithData:data];
+        NSLog(@"Decoded image size: %@", NSStringFromCGSize(image.size));
+
+        // Save for lockscreen display
+        currentFavicon = image;
+
+        NSString *urlStr = [NSString stringWithUTF8String:url];
+        lastStreamUrl = urlStr;
+        currentStationName = [NSString stringWithUTF8String:station];
+
+        StartStream(url); // Reuse existing logic
+    }
+}
+
+extern "C" void StartStreamWithArtwork_Internal(const char* url, const char* station, void* imageData, int length)
+{
+    NSLog(@"✅ StartStreamWithArtwork_Internal called");
+    StartStreamWithArtwork(url, station, imageData, length);
+}
+
+
+
+extern "C" void StopStream()
+{
     if (player) {
-        if (currentState == StatePlaying) {
-            [player pause];  // Stop playing
-            [player replaceCurrentItemWithPlayerItem:nil];  // Clear the stream
-            updatePlayerState(StateStopped);  // Set state to stopped
-            updateNowPlayingLockscreen(@"Stream Stopped");  // Update lock screen text
-        } else {
-            if (lastStreamUrl != nil) {
-                StartStream([lastStreamUrl UTF8String]);  // Restart the stream from the last URL
-                updatePlayerState(StatePlaying);  // Set state to playing
-                updateNowPlayingLockscreen(nowPlayingText);  // Update lock screen with current title
+        [player pause];
+        player = nil;
+        playerItem = nil;
+    }
+    currentFavicon = nil;
+    lastStreamUrl = nil;
+     updatePlayerState(StateStopped);
+}
+
+extern "C" const char* GetPlaybackState()
+{
+
+static const char* state = "STOPPED"; // fallback
+
+    switch (currentState) {
+        case StateInitial:   return "INITIAL"; break;
+        case StatePlaying:   return "PLAYING"; break;
+        case StateBuffering: return "BUFFERING"; break;
+        case StateStopped:   return "STOPPED"; break;
+        case StateError:     return "ERROR"; break;
+        default:             return "STOPPED"; break;
+    }
+    return state;
+}
+
+// Set now playing info (title + optional artwork)
+extern "C" void UpdateNowPlaying(const char* title) {
+    @autoreleasepool {
+        NSMutableDictionary *info = [NSMutableDictionary dictionary];
+
+        if (title) {
+            NSString *titleStr = [NSString stringWithUTF8String:title];
+            if (titleStr && titleStr.length > 0) {
+                [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
             }
         }
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
 }
 
-// Handle Bluetooth headset disconnection
-extern "C" void HandleBluetoothDisconnection() {
-    if (player) {
-        [player pause];  // Pause playback when Bluetooth headset is disconnected
-        [player replaceCurrentItemWithPlayerItem:nil];  // Stop the stream completely
-        updatePlayerState(StateStopped);  // Set state to stopped
-        updateNowPlayingLockscreen(@"Disconnected");  // Update lock screen text
-    }
-}
+// extern "C" const char* GetMetaAsString()
+// {
+//     static char buffer[512];
 
-// Set up remote commands (Play/Pause button handling)
+//     if (!nowPlayingText || nowPlayingText.length == 0) {
+//         strncpy(buffer, "Streaming...", sizeof(buffer) - 1);
+//         buffer[sizeof(buffer) - 1] = '\0';
+//         return buffer;
+//     }
+
+//     const char* utf8 = [nowPlayingText UTF8String];
+//     if (!utf8) {
+//         strncpy(buffer, "Streaming...", sizeof(buffer) - 1);
+//         buffer[sizeof(buffer) - 1] = '\0';
+//         return buffer;
+//     }
+
+//     strncpy(buffer, utf8, sizeof(buffer) - 1);
+//     buffer[sizeof(buffer) - 1] = '\0';
+//     return buffer;
+// }
+
+
+
+// extern "C" const char* GetMetaAsString()
+// {
+//     return [nowPlayingText UTF8String];
+// }
+
+
 void setupRemoteCommands(void) {
     MPRemoteCommandCenter *remote = [MPRemoteCommandCenter sharedCommandCenter];
     [remote.playCommand setEnabled:YES];
-    [remote.pauseCommand setEnabled:YES];  // Enable pause command as well
+    [remote.pauseCommand setEnabled:YES];
 
-    // Handle play/pause toggle (stop and start)
     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-        TogglePlayback();  // Toggle playback (stop or play)
+        if (player) [player play];
         return MPRemoteCommandHandlerStatusSuccess;
     }];
-    
-    // Handle Bluetooth device disconnect (stop stream)
+
+    [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+        if (player) [player pause];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+
     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionRouteChangeNotification
                                                         object:nil
                                                         queue:[NSOperationQueue mainQueue]
@@ -159,7 +324,47 @@ void setupRemoteCommands(void) {
         AVAudioSessionRouteChangeReason reason = (AVAudioSessionRouteChangeReason)rawReason;
 
         if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
-            HandleBluetoothDisconnection();  // Stop stream when BT headset is disconnected
+            if (player) {
+                [player pause];
+                updatePlayerState(StateStopped);
+            }
         }
     }];
+}
+
+void setupNetworkMonitor(void)
+{
+    if (pathMonitor != nil) return;
+
+    pathMonitor = nw_path_monitor_create();
+    nw_path_monitor_set_update_handler(pathMonitor, ^(nw_path_t path) {
+        if (nw_path_get_status(path) == nw_path_status_satisfied) {
+            if (currentState == StateOffline && lastStreamUrl != nil) {
+                StartStream([lastStreamUrl UTF8String]);
+            }
+        } else {
+            updatePlayerState(StateOffline);
+        }
+    });
+
+    dispatch_queue_t queue = dispatch_queue_create("NetworkMonitor", DISPATCH_QUEUE_SERIAL);
+    nw_path_monitor_set_queue(pathMonitor, queue);
+    nw_path_monitor_start(pathMonitor);
+}
+
+bool IsNetworkReachable(void)
+{
+    NSURL *url = [NSURL URLWithString:@"https://apple.com"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:5.0];
+
+    __block BOOL reachable = false;
+    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+
+    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *res, NSError *error) {
+        reachable = (error == nil);
+        dispatch_semaphore_signal(sem);
+    }] resume];
+
+    dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, 6 * NSEC_PER_SEC));
+    return reachable;
 }
