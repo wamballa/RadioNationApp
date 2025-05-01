@@ -43,7 +43,7 @@ Who         | Does What
 Unity C#    | Calls iOSRadioLauncher.FetchNowPlayingMeta(stationId) via API
 Unity C#    | Updates your UI based on now_playing text
 Unity C#    | Calls iOSRadioLauncher.UpdateLockscreenMeta(string title) to push text to lockscreen
-iOS Obj-C | Only accepts updated metadata and shows it
+iOS Obj-C   | Only accepts updated metadata and shows it
 */
 
 void updatePlayerState(PlaybackState newState) {
@@ -73,6 +73,9 @@ extern "C" void UpdateNowPlayingText(const char* text)
 {
     @autoreleasepool {
         NSString *nowPlaying = [NSString stringWithUTF8String:text];
+        if (nowPlaying == nil || nowPlaying.length == 0) {
+            nowPlaying = @"Streaming..."; // Default text
+        }
         nowPlayingText = nowPlaying;
 
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
@@ -82,24 +85,21 @@ extern "C" void UpdateNowPlayingText(const char* text)
 }
 
 
-// void fetchNowPlaying(NSString *urlStr) {
-//     NSURL *url = [NSURL URLWithString:urlStr];
-//     if (!url) return;
 
-//     [[[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *res, NSError *error) {
-//         if (error) return;
-//         NSError *jsonError;
-//         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
-//         if (jsonError) return;
+// Set now playing info (title + optional artwork)
+extern "C" void UpdateNowPlaying(const char* title) {
+    @autoreleasepool {
+        NSMutableDictionary *info = [NSMutableDictionary dictionary];
 
-//         NSString *title = json[@"now_playing"] ?: @"Streaming...";
-//         nowPlayingText = title;
-
-//         NSMutableDictionary *info = [NSMutableDictionary dictionary];
-//         [info setObject:title forKey:MPMediaItemPropertyTitle];
-//         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
-//     }] resume];
-// }
+        if (title) {
+            NSString *titleStr = [NSString stringWithUTF8String:title];
+            if (titleStr && titleStr.length > 0) {
+                [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
+            }
+        }
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
+    }
+}
 
 extern "C" float GetBufferingPercent() {
     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
@@ -158,47 +158,6 @@ extern "C" void StartStream(const char* url)
 }
 
 
-// extern "C" void StartStream(const char* url)
-// {
-//     NSLog(@"✅ StartStream called");
-
-//     @autoreleasepool {
-//         NSString *urlStr = [NSString stringWithUTF8String:url];
-//         lastStreamUrl = urlStr;
-
-//         if (!IsNetworkReachable()) {
-//             updatePlayerState(StateOffline);
-//             return;
-//         }
-
-//         updatePlayerState(StateBuffering);
-
-//         NSURL *streamURL = [NSURL URLWithString:urlStr];
-//         playerItem = [AVPlayerItem playerItemWithURL:streamURL];
-//         player = [AVPlayer playerWithPlayerItem:playerItem];
-
-//         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-//         [[AVAudioSession sharedInstance] setActive:YES error:nil];
-
-//         [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemNewAccessLogEntryNotification object:playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
-//         if (currentState == StateBuffering) {
-//             updatePlayerState(StatePlaying);
-//         }
-//         }];
-
-//         [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemFailedToPlayToEndTimeNotification object:playerItem queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
-//             updatePlayerState(StateError);
-//         }];
-        
-
-//         [player play];
-
-//         // Setup remote commands
-//         setupRemoteCommands();
-//         setupNetworkMonitor();
-//     }
-// }
-
 extern "C" void StartStreamWithArtwork(const char* url, const char* station, void* imageData, int length)
 {
     NSLog(@"✅ StartStreamWithArtwork_Internal called");
@@ -255,66 +214,36 @@ static const char* state = "STOPPED"; // fallback
     return state;
 }
 
-// Set now playing info (title + optional artwork)
-extern "C" void UpdateNowPlaying(const char* title) {
+// Update now playing info on the lock screen
+extern "C" void updateNowPlayingLockscreen(NSString *title) {
     @autoreleasepool {
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
+        [info setObject:title forKey:MPMediaItemPropertyTitle];
 
-        if (title) {
-            NSString *titleStr = [NSString stringWithUTF8String:title];
-            if (titleStr && titleStr.length > 0) {
-                [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
-            }
+        if (currentFavicon) {
+            MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
+                return currentFavicon;
+            }];
+            [info setObject:artwork forKey:MPMediaItemPropertyArtwork];
         }
+
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
 }
-
-// extern "C" const char* GetMetaAsString()
-// {
-//     static char buffer[512];
-
-//     if (!nowPlayingText || nowPlayingText.length == 0) {
-//         strncpy(buffer, "Streaming...", sizeof(buffer) - 1);
-//         buffer[sizeof(buffer) - 1] = '\0';
-//         return buffer;
-//     }
-
-//     const char* utf8 = [nowPlayingText UTF8String];
-//     if (!utf8) {
-//         strncpy(buffer, "Streaming...", sizeof(buffer) - 1);
-//         buffer[sizeof(buffer) - 1] = '\0';
-//         return buffer;
-//     }
-
-//     strncpy(buffer, utf8, sizeof(buffer) - 1);
-//     buffer[sizeof(buffer) - 1] = '\0';
-//     return buffer;
-// }
-
-
-
-// extern "C" const char* GetMetaAsString()
-// {
-//     return [nowPlayingText UTF8String];
-// }
 
 
 void setupRemoteCommands(void) {
     MPRemoteCommandCenter *remote = [MPRemoteCommandCenter sharedCommandCenter];
     [remote.playCommand setEnabled:YES];
-    [remote.pauseCommand setEnabled:YES];
+    [remote.pauseCommand setEnabled:YES];  // Enable pause command as well
 
+    // Handle play/pause toggle (stop and start)
     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-        if (player) [player play];
+        TogglePlayback();  // Toggle playback (stop or play)
         return MPRemoteCommandHandlerStatusSuccess;
     }];
-
-    [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-        if (player) [player pause];
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
-
+    
+    // Handle Bluetooth device disconnect (stop stream)
     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionRouteChangeNotification
                                                         object:nil
                                                         queue:[NSOperationQueue mainQueue]
@@ -324,13 +253,11 @@ void setupRemoteCommands(void) {
         AVAudioSessionRouteChangeReason reason = (AVAudioSessionRouteChangeReason)rawReason;
 
         if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
-            if (player) {
-                [player pause];
-                updatePlayerState(StateStopped);
-            }
+            HandleBluetoothDisconnection();  // Stop stream when BT headset is disconnected
         }
     }];
 }
+
 
 void setupNetworkMonitor(void)
 {
