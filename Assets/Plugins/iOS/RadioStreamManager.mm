@@ -59,17 +59,29 @@ void updatePlayerState(PlaybackState newState) {
     if (newState == StatePlaying) {
         metadataTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
             if (currentStationName != nil && currentStationName.length > 0) {
-                // C# side will be responsible for fetching metadata now.
-                NSLog(@"✅ iOS: Timer tick - C# will fetch now_playing via API.");
+                NSString *station = [currentStationName stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+                NSLog(@"[StartStream] station name %@", station);
+                NSString *urlStr = [NSString stringWithFormat:@"https://www.wamballa.com/metadata/?station=%@", station];
+                NSURL *url = [NSURL URLWithString:urlStr];
+
+                NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+                    if (error == nil && data != nil) {
+                        NSError *jsonError = nil;
+                        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+                        if (jsonError == nil && [json objectForKey:@"now_playing"]) {
+                            NSString *nowPlaying = json[@"now_playing"];
+                            if (nowPlaying && nowPlaying.length > 0) {
+                                nowPlayingText = nowPlaying;
+                                UpdateNowPlayingLockscreen([nowPlaying UTF8String]);
+                            }
+                        }
+                    }
+                }];
+                [task resume];
             }
         }];
-
-        // Make sure we restore lock screen meta when playing
-        if (currentStationName != nil) {
-            // Convert NSString to C string (UTF-8) before passing to UpdateNowPlayingLockscreen
-           // UpdateNowPlayingLockscreen([currentStationName UTF8String]);
-        }
     }
+
 
     if (newState == StateStopped || newState == StateOffline || newState == StateError) {
 
@@ -78,6 +90,37 @@ void updatePlayerState(PlaybackState newState) {
         }
     }
 }
+
+// void updatePlayerState(PlaybackState newState) {
+//     currentState = newState;
+
+//     if (metadataTimer) {
+//         [metadataTimer invalidate];
+//         metadataTimer = nil;
+//     }
+
+//     if (newState == StatePlaying) {
+//         metadataTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+//             if (currentStationName != nil && currentStationName.length > 0) {
+//                 // C# side will be responsible for fetching metadata now.
+//                 NSLog(@"✅ iOS: Timer tick - C# will fetch now_playing via API.");
+//             }
+//         }];
+
+//         // Make sure we restore lock screen meta when playing
+//         if (currentStationName != nil) {
+//             // Convert NSString to C string (UTF-8) before passing to UpdateNowPlayingLockscreen
+//            // UpdateNowPlayingLockscreen([currentStationName UTF8String]);
+//         }
+//     }
+
+//     if (newState == StateStopped || newState == StateOffline || newState == StateError) {
+
+//         if (newState != StateStopped) {
+//             [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
+//         }
+//     }
+// }
 
 
 extern "C" void UpdateNowPlayingText(const char* text)
@@ -194,11 +237,45 @@ extern "C" void StartStreamWithArtwork(const char* url, const char* station, voi
 
         NSString *urlStr = [NSString stringWithUTF8String:url];
         lastStreamUrl = urlStr;
-        currentStationName = [NSString stringWithUTF8String:station];
+        NSString *stationStr = [NSString stringWithUTF8String:station];
+        currentStationName = stationStr;
 
+        // Extract station ID from the URL (e.g., ?station=lbc)
+        NSURLComponents *components = [NSURLComponents componentsWithString:urlStr];
+        NSString *stationID = nil;
+        for (NSURLQueryItem *item in components.queryItems) {
+            if ([item.name isEqualToString:@"station"]) {
+                stationID = item.value;
+                break;
+            }
+        }
+        if (stationID) {
+            currentStationName = stationID;
+        }
         StartStream(url); // Reuse existing logic
     }
 }
+
+
+// extern "C" void StartStreamWithArtwork(const char* url, const char* station, void* imageData, int length)
+// {
+//     NSLog(@"✅ StartStreamWithArtwork_Internal called");
+//     @autoreleasepool {
+//         NSData *data = [NSData dataWithBytes:imageData length:length];
+
+//         UIImage *image = [UIImage imageWithData:data];
+//         NSLog(@"Decoded image size: %@", NSStringFromCGSize(image.size));
+
+//         // Save for lockscreen display
+//         currentFavicon = image;
+
+//         NSString *urlStr = [NSString stringWithUTF8String:url];
+//         lastStreamUrl = urlStr;
+//         currentStationName = [NSString stringWithUTF8String:station];
+
+//         StartStream(url); // Reuse existing logic
+//     }
+// }
 
 extern "C" void StartStreamWithArtwork_Internal(const char* url, const char* station, void* imageData, int length)
 {
