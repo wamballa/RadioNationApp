@@ -61,10 +61,15 @@ void updatePlayerState(PlaybackState newState) {
                 NSLog(@"✅ iOS: Timer tick - C# will fetch now_playing via API.");
             }
         }];
+        // Make sure we restore lock screen meta when playing
+        UpdateNowPlayingLockscreen(currentStationName);
     }
 
     if (newState == StateStopped || newState == StateOffline || newState == StateError) {
-        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
+
+        if (newState != StateStopped) {
+            [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
+        }
     }
 }
 
