@@ -11,6 +11,8 @@ bool IsNetworkReachable(void);
 void setupRemoteCommands(void);
 void setupNetworkMonitor(void);
 //void UpdateNowPlayingLockscreen(const char* title);
+void UpdateNowPlayingLockscreen(NSString* title);
+
 
 //extern "C" void StartStream(const char* url);  // ✅ CORRECT
 // extern "C" void StartStream(const char* url);
