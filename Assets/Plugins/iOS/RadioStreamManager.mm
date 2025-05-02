@@ -67,7 +67,7 @@ void updatePlayerState(PlaybackState newState) {
         // Make sure we restore lock screen meta when playing
         if (currentStationName != nil) {
             // Convert NSString to C string (UTF-8) before passing to UpdateNowPlayingLockscreen
-            UpdateNowPlayingLockscreen([currentStationName UTF8String]);
+           // UpdateNowPlayingLockscreen([currentStationName UTF8String]);
         }
     }
 
