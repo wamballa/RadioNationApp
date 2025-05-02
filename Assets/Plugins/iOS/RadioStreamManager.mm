@@ -203,7 +203,6 @@ extern "C" void StopStream()
 
 extern "C" const char* GetPlaybackState()
 {
-
 static const char* state = "STOPPED"; // fallback
 
     switch (currentState) {
@@ -220,7 +219,7 @@ static const char* state = "STOPPED"; // fallback
 void setupRemoteCommands(void) {
     MPRemoteCommandCenter *remote = [MPRemoteCommandCenter sharedCommandCenter];
     [remote.playCommand setEnabled:YES];
-    [remote.pauseCommand setEnabled:NO]; // No pause button, only play/stop
+    [remote.pauseCommand setEnabled:YES]; // No pause button, only play/stop
 
     // Handle play command (toggle between play and stop)
     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
