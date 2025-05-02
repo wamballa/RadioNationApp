@@ -60,7 +60,7 @@ void updatePlayerState(PlaybackState newState) {
 
     if (newState == StatePlaying) {
         NSLog(@"[updatePlayerState] StatePlaying ... currentStationName %@", currentStationName);
-        metadataTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+        metadataTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
             if (currentStationName != nil && currentStationName.length > 0) {
                 NSString *station = [currentStationName stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
                 NSLog(@"[updatePlayerState] station name %@", station);
@@ -84,7 +84,6 @@ void updatePlayerState(PlaybackState newState) {
             }
         }];
     }
-
 
     if (newState == StateStopped || newState == StateOffline || newState == StateError) {
 
