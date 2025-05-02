@@ -10,6 +10,8 @@ void fetchNowPlaying(NSString *urlStr);
 bool IsNetworkReachable(void);
 void setupRemoteCommands(void);
 void setupNetworkMonitor(void);
+void UpdateNowPlayingLockscreen(const char* title);
+
 //extern "C" void StartStream(const char* url);  // ✅ CORRECT
 // extern "C" void StartStream(const char* url);
 
