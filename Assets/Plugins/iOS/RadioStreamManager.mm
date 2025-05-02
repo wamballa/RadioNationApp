@@ -135,6 +135,16 @@ extern "C" void StartStream(const char* url)
 
         updatePlayerState(StateBuffering);
 
+        // Configure the AVAudioSession for background audio playback
+        NSError *error = nil;
+        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+        [audioSession setCategory:AVAudioSessionCategoryPlayback error:&error];
+        [audioSession setActive:YES error:&error];
+
+        if (error) {
+            NSLog(@"Error setting up audio session: %@", error.localizedDescription);
+        }
+
         NSURL *streamURL = [NSURL URLWithString:urlStr];
         playerItem = [AVPlayerItem playerItemWithURL:streamURL];
         player = [AVPlayer playerWithPlayerItem:playerItem];
@@ -154,8 +164,6 @@ extern "C" void StartStream(const char* url)
             }
         }];
 
-        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-        [[AVAudioSession sharedInstance] setActive:YES error:nil];
 
         [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemFailedToPlayToEndTimeNotification
                                                            object:playerItem
