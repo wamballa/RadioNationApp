@@ -235,6 +235,15 @@ void setupRemoteCommands(void) {
         return MPRemoteCommandHandlerStatusSuccess;
     }];
 
+    // Handle pause command
+    [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+        if (player) {
+            [player pause];
+            updatePlayerState(StateStopped);  // Update state to stopped
+        }
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+
     // Handle stop when Bluetooth is disconnected or the button is pressed
     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionRouteChangeNotification
                                                         object:nil
