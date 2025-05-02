@@ -31,69 +31,69 @@ public class iOSRadioLauncher : MonoBehaviour
 #endif
     }
 
-    public static void FetchAndUpdateMeta(string streamingUrl)
-    {
+//     public static void FetchAndUpdateMeta(string streamingUrl)
+//     {
 
-        // Extract the station name from the streaming URL
-        string stationName = ExtractStationNameFromUrl(streamingUrl);
+//         // Extract the station name from the streaming URL
+//         string stationName = ExtractStationNameFromUrl(streamingUrl);
 
-        string metaUrl = $"https://www.wamballa.com/metadata/?station={stationName}";
-        Debug.Log("[iOSRadioLauncher] FetchAndUpdateMeta+ " + metaUrl);
-        RadioPlayer.Instance.StartCoroutine(iOSRadioLauncher.FetchMetaCoroutine(metaUrl));
+//         string metaUrl = $"https://www.wamballa.com/metadata/?station={stationName}";
+//         Debug.Log("[iOSRadioLauncher] FetchAndUpdateMeta+ " + metaUrl);
+//         RadioPlayer.Instance.StartCoroutine(iOSRadioLauncher.FetchMetaCoroutine(metaUrl));
 
-    }
+//     }
 
-    private static string ExtractStationNameFromUrl(string streamingUrl)
-    {
-        // Find the part of the URL after the "=" sign
-        Uri uri = new Uri(streamingUrl);
-        var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
-        string stationName = queryParams["station"];  // Extract the "station" query parameter
+//     private static string ExtractStationNameFromUrl(string streamingUrl)
+//     {
+//         // Find the part of the URL after the "=" sign
+//         Uri uri = new Uri(streamingUrl);
+//         var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+//         string stationName = queryParams["station"];  // Extract the "station" query parameter
 
-        return stationName;
-    }
+//         return stationName;
+//     }
 
-    private static IEnumerator FetchMetaCoroutine(string url)
-    {
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        yield return request.SendWebRequest();
+//     private static IEnumerator FetchMetaCoroutine(string url)
+//     {
+//         UnityWebRequest request = UnityWebRequest.Get(url);
+//         yield return request.SendWebRequest();
 
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-            string json = request.downloadHandler.text;
-            string nowPlaying = ExtractNowPlayingFromJson(json);
-            Debug.Log($"[iOSRadioLauncher] FetchMetaCoroutine: {nowPlaying} + {Time.time}");
-            cachedNowPlaying = nowPlaying;  // Store it for later use
-#if UNITY_IOS && !UNITY_EDITOR
-            UpdateNowPlayingText(nowPlaying);  // Update iOS lock screen with the new metadata
-#endif
-        }
-        else
-        {
-            Debug.LogError("Failed to fetch metadata: " + request.error);
-        }
-    }
+//         if (request.result == UnityWebRequest.Result.Success)
+//         {
+//             string json = request.downloadHandler.text;
+//             string nowPlaying = ExtractNowPlayingFromJson(json);
+//             Debug.Log($"[iOSRadioLauncher] FetchMetaCoroutine: {nowPlaying} + {Time.time}");
+//             cachedNowPlaying = nowPlaying;  // Store it for later use
+// #if UNITY_IOS && !UNITY_EDITOR
+//             UpdateNowPlayingText(nowPlaying);  // Update iOS lock screen with the new metadata
+// #endif
+//         }
+//         else
+//         {
+//             Debug.LogError("Failed to fetch metadata: " + request.error);
+//         }
+//     }
 
-    private static string ExtractNowPlayingFromJson(string json)
-    {
-        try
-        {
-            var wrapper = JsonUtility.FromJson<NowPlayingWrapper>(json);
-            return wrapper?.now_playing ?? "Streaming...";
-        }
-        catch
-        {
-            return "Streaming...";
-        }
-    }
+//     private static string ExtractNowPlayingFromJson(string json)
+//     {
+//         try
+//         {
+//             var wrapper = JsonUtility.FromJson<NowPlayingWrapper>(json);
+//             return wrapper?.now_playing ?? "Streaming...";
+//         }
+//         catch
+//         {
+//             return "Streaming...";
+//         }
+//     }
 
-    public static string CheckiOSMeta()
-    {
-        return cachedNowPlaying;
-    }
+//     public static string CheckiOSMeta()
+//     {
+//         return cachedNowPlaying;
+//     }
 
-    [DllImport("__Internal")]
-    private static extern void UpdateNowPlayingText(string text);
+//     [DllImport("__Internal")]
+//     private static extern void UpdateNowPlayingText(string text);
 
     [DllImport("__Internal")]
     private static extern IntPtr GetNowPlayingText();
