@@ -134,8 +134,9 @@ public class RadioPlayer : MonoBehaviour
         //     iOSRadioLauncher.FetchAndUpdateMeta(currentStreamingURL); // This triggers the API call to update metadata
         //     lastMetadataFetchTime = Time.time; // Update timestamp
         // }
+        string meta = iOSRadioLauncher.GetiOSNowPlaying();
 
-        string meta = iOSRadioLauncher.CheckiOSMeta();
+        // string meta = iOSRadioLauncher.CheckiOSMeta();
         if (string.IsNullOrEmpty(meta))
             meta = "Streaming..."; // fallback if somehow empty
 
@@ -152,12 +153,12 @@ public class RadioPlayer : MonoBehaviour
         UpdateRadioPlayerDetails(details.Item1, details.Item2, details.Item3, details.Item4, details.Item5, details.Item6);
         ChangePlaybackImages();
 
-#if UNITY_IOS && !UNITY_EDITOR
-if (currentState == "PLAYING" && iosRadioLauncher != null)
-{
-    iosRadioLauncher.UpdateLockscreenMeta(details.Item4); // details.Item4 = meta
-}
-#endif
+// #if UNITY_IOS && !UNITY_EDITOR
+// if (currentState == "PLAYING" && iosRadioLauncher != null)
+// {
+//     iosRadioLauncher.UpdateLockscreenMeta(details.Item4); // details.Item4 = meta
+// }
+// #endif
 
     }
     // switch (currentState)

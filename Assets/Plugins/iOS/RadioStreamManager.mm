@@ -138,15 +138,19 @@ extern "C" void UpdateNowPlayingText(const char* text)
     }
 }
 
-extern "C" void UpdateNowPlayingLockscreen(const char* title) {
+void UpdateNowPlayingLockscreen(NSString* title) {
     @autoreleasepool {
-        if (title == NULL) return;
+        if (title == nil || title.length == 0) return;
 
-        NSString *titleStr = [NSString stringWithUTF8String:title];
-        if (!titleStr || titleStr.length == 0) return;
-
+        // Now using NSString directly for title
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
-        [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
+        [info setObject:title forKey:MPMediaItemPropertyTitle];
+
+        // NSString *titleStr = [NSString stringWithUTF8String:title];
+        // if (!titleStr || titleStr.length == 0) return;
+
+        // NSMutableDictionary *info = [NSMutableDictionary dictionary];
+        // [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
 
         if (currentFavicon) {
             MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
@@ -158,6 +162,12 @@ extern "C" void UpdateNowPlayingLockscreen(const char* title) {
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
 }
+
+extern "C" const char* GetNowPlayingText()
+{
+    return [nowPlayingText UTF8String];
+}
+
 
 extern "C" float GetBufferingPercent() {
     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.

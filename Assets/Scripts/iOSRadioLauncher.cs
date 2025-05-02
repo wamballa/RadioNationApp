@@ -38,20 +38,20 @@ public class iOSRadioLauncher : MonoBehaviour
         string stationName = ExtractStationNameFromUrl(streamingUrl);
 
         string metaUrl = $"https://www.wamballa.com/metadata/?station={stationName}";
-        Debug.Log("[iOSRadioLauncher] FetchAndUpdateMeta+ "+metaUrl);
+        Debug.Log("[iOSRadioLauncher] FetchAndUpdateMeta+ " + metaUrl);
         RadioPlayer.Instance.StartCoroutine(iOSRadioLauncher.FetchMetaCoroutine(metaUrl));
 
     }
 
     private static string ExtractStationNameFromUrl(string streamingUrl)
-{
-    // Find the part of the URL after the "=" sign
-    Uri uri = new Uri(streamingUrl);
-    var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
-    string stationName = queryParams["station"];  // Extract the "station" query parameter
+    {
+        // Find the part of the URL after the "=" sign
+        Uri uri = new Uri(streamingUrl);
+        var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        string stationName = queryParams["station"];  // Extract the "station" query parameter
 
-    return stationName;
-}
+        return stationName;
+    }
 
     private static IEnumerator FetchMetaCoroutine(string url)
     {
@@ -96,42 +96,55 @@ public class iOSRadioLauncher : MonoBehaviour
     private static extern void UpdateNowPlayingText(string text);
 
     [DllImport("__Internal")]
-    private static extern void UpdateNowPlayingLockscreen(string title);
+    private static extern IntPtr GetNowPlayingText();
 
-    public void UpdateLockscreenMeta(string title)
+    public static string GetiOSNowPlaying()
     {
 #if UNITY_IOS && !UNITY_EDITOR
-    if (!string.IsNullOrEmpty(title))
-        UpdateNowPlayingLockscreen(title);
+    IntPtr ptr = GetNowPlayingText();
+    return Marshal.PtrToStringUTF8(ptr);
+#else
+        return "Streaming...";
 #endif
     }
 
+    // [DllImport("__Internal")]
+    //     private static extern void UpdateNowPlayingLockscreen(string title);
 
-//     public void FetchAndUpdateMeta(string stationName)
-//     {
-//         string url = $"https://www.wamballa.com/metadata/?station={stationName}";
-//         StartCoroutine(FetchMetaCoroutine(url));
-//     }
+    //     public void UpdateLockscreenMeta(string title)
+    //     {
+    // #if UNITY_IOS && !UNITY_EDITOR
+    //     if (!string.IsNullOrEmpty(title))
+    //         UpdateNowPlayingLockscreen(title);
+    // #endif
+    //     }
 
-//     private IEnumerator FetchMetaCoroutine(string url)
-//     {
-//         UnityWebRequest request = UnityWebRequest.Get(url);
-//         yield return request.SendWebRequest();
 
-//         if (request.result == UnityWebRequest.Result.Success)
-//         {
-//             string json = request.downloadHandler.text;
-//             string nowPlaying = ExtractNowPlayingFromJson(json);
-//             cachedNowPlaying = nowPlaying;
-// #if UNITY_IOS && !UNITY_EDITOR
-//             UpdateNowPlayingText(nowPlaying);
-// #endif
-//         }
-//         else
-//         {
-//             Debug.LogError("Failed to fetch metadata: " + request.error);
-//         }
-//     }
+    //     public void FetchAndUpdateMeta(string stationName)
+    //     {
+    //         string url = $"https://www.wamballa.com/metadata/?station={stationName}";
+    //         StartCoroutine(FetchMetaCoroutine(url));
+    //     }
+
+    //     private IEnumerator FetchMetaCoroutine(string url)
+    //     {
+    //         UnityWebRequest request = UnityWebRequest.Get(url);
+    //         yield return request.SendWebRequest();
+
+    //         if (request.result == UnityWebRequest.Result.Success)
+    //         {
+    //             string json = request.downloadHandler.text;
+    //             string nowPlaying = ExtractNowPlayingFromJson(json);
+    //             cachedNowPlaying = nowPlaying;
+    // #if UNITY_IOS && !UNITY_EDITOR
+    //             UpdateNowPlayingText(nowPlaying);
+    // #endif
+    //         }
+    //         else
+    //         {
+    //             Debug.LogError("Failed to fetch metadata: " + request.error);
+    //         }
+    //     }
 
 
 
@@ -159,15 +172,15 @@ public class iOSRadioLauncher : MonoBehaviour
 
 
 
-//     [DllImport("__Internal")]
-//     private static extern void UpdateNowPlaying(string title);
+    //     [DllImport("__Internal")]
+    //     private static extern void UpdateNowPlaying(string title);
 
-//     public static void SetNowPlaying(string title)
-//     {
-// #if UNITY_IOS && !UNITY_EDITOR
-//         UpdateNowPlaying(title);
-// #endif
-//     }
+    //     public static void SetNowPlaying(string title)
+    //     {
+    // #if UNITY_IOS && !UNITY_EDITOR
+    //         UpdateNowPlaying(title);
+    // #endif
+    //     }
 
     public static void StartNativeStream(string url, string stationName, Texture2D favicon)
     {
