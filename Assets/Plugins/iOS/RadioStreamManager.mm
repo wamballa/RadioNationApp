@@ -59,10 +59,11 @@ void updatePlayerState(PlaybackState newState) {
     }
 
     if (newState == StatePlaying) {
+        NSLog(@"[updatePlayerState] StatePlaying ... currentStationName %@", currentStationName);
         metadataTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
             if (currentStationName != nil && currentStationName.length > 0) {
                 NSString *station = [currentStationName stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-                NSLog(@"[StartStream] station name %@", station);
+                NSLog(@"[updatePlayerState] station name %@", station);
                 NSString *urlStr = [NSString stringWithFormat:@"https://www.wamballa.com/metadata/?station=%@", station];
                 NSURL *url = [NSURL URLWithString:urlStr];
 
