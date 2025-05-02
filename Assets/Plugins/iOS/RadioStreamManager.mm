@@ -74,7 +74,7 @@ void updatePlayerState(PlaybackState newState) {
                             NSString *nowPlaying = json[@"now_playing"];
                             if (nowPlaying && nowPlaying.length > 0) {
                                 nowPlayingText = nowPlaying;
-                                UpdateNowPlayingLockscreen([nowPlaying UTF8String]);
+                                UpdateNowPlayingLockscreen(nowPlaying);
                             }
                         }
                     }
