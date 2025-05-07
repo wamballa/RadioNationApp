@@ -8,14 +8,11 @@ public class Monetisation : MonoBehaviour
 
     private void Awake()
     {
-        // TEST DEVICES - Get the GAID
-        //IronSource.Agent.validateIntegration(); // ✅ OK on GAID-capable devices
-        //string s = IronSource.Agent.getAdvertiserId();
-        //Log("[Awake] GAID = " + s);
-
         API.Initialize(OnInitialized);
 
         Log("[Awake]  Initialisation =============================================");
+        Log("iOS device ID: " + UnityEngine.iOS.Device.advertisingIdentifier);
+        Log("[Awake]  Initialisation <<<>>>");
 
     }
 
@@ -34,10 +31,6 @@ public class Monetisation : MonoBehaviour
 
     private void ShowBanner()
     {
-        // Push banner 100 pixels down from top of screen
-        //Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(null, bannerAnchor.position);
-        //Gley.MobileAds.API.ShowBanner((int)screenPos.x, (int)screenPos.y, BannerType.Banner);
-        //API.ShowBanner(bannerPositionX:0, bannerPositionY:500, bannerType:BannerType.Banner);
         Log("[ShowBanner] ShowBanner =============================================");
 
         API.ShowBanner(BannerPosition.Bottom, BannerType.Banner);
