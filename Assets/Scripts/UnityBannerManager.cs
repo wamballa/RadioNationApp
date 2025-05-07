@@ -4,7 +4,7 @@ using UnityEngine.Advertisements;
 public class UnityBannerManager : MonoBehaviour
 {
     [SerializeField] string iosGameId = "5819292";
-    [SerializeField] string bannerPlacementId = "banner"; // Default Unity placement
+    [SerializeField] string bannerPlacementId = "Banner_iOS"; // Default Unity placement
 
     void Start()
     {
