@@ -4,7 +4,7 @@ using System.Collections;
 
 public class UnityBannerManager : MonoBehaviour
 {
-    [SerializeField] string iosGameId = "5819292";
+    [SerializeField] string iosGameId = "5849536";
     [SerializeField] string bannerPlacementId = "Banner_iOS";
     [SerializeField] bool testMode = true;
 
@@ -18,10 +18,23 @@ public class UnityBannerManager : MonoBehaviour
 
     IEnumerator ShowBannerWhenReady()
     {
+        float timeout = 10f;
+        float waited = 0f;
+
         while (!Advertisement.isInitialized)
         {
-            Debug.Log("⏳ Waiting for Unity Ads...");
+            Debug.Log($"⏳ Waiting... isInitialized: {Advertisement.isInitialized} (waited {waited}s)");
+
             yield return new WaitForSeconds(0.5f);
+
+            waited += 0.5f;
+
+            if (waited >= timeout)
+            {
+                Debug.LogError("❌ Timeout: Unity Ads never initialized!");
+                yield break;
+            }
+
         }
 
         Debug.Log("✅ Unity Ads ready — loading banner");
