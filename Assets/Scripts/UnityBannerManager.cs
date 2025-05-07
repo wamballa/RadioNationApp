@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.Advertisements;
+using System.Collections;
 
-public class UnityBannerManager : MonoBehaviour, IUnityAdsInitializationListener
+public class UnityBannerManager : MonoBehaviour
 {
     [SerializeField] string iosGameId = "5819292";
     [SerializeField] string bannerPlacementId = "Banner_iOS";
@@ -10,21 +11,20 @@ public class UnityBannerManager : MonoBehaviour, IUnityAdsInitializationListener
     void Start()
     {
 #if UNITY_IOS
-        if (!Advertisement.isInitialized)
-        {
-            Advertisement.Initialize(iosGameId, testMode, this);
-            Debug.Log("🔁 Initializing Unity Ads...");
-        }
-        else
-        {
-            OnInitializationComplete();
-        }
+        Advertisement.Initialize(iosGameId, testMode);
+        StartCoroutine(ShowBannerWhenReady());
 #endif
     }
 
-    public void OnInitializationComplete()
+    IEnumerator ShowBannerWhenReady()
     {
-        Debug.Log("✅ Unity Ads initialized — now loading banner");
+        while (!Advertisement.isInitialized)
+        {
+            Debug.Log("⏳ Waiting for Unity Ads...");
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        Debug.Log("✅ Unity Ads ready — loading banner");
 
         Advertisement.Banner.SetPosition(BannerPosition.BOTTOM_CENTER);
 
@@ -42,10 +42,5 @@ public class UnityBannerManager : MonoBehaviour, IUnityAdsInitializationListener
         };
 
         Advertisement.Banner.Load(bannerPlacementId, options);
-    }
-
-    public void OnInitializationFailed(UnityAdsInitializationError error, string message)
-    {
-        Debug.LogError($"❌ Unity Ads init failed: {error.ToString()} - {message}");
     }
 }
