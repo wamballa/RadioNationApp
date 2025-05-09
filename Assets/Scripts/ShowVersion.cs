@@ -21,10 +21,25 @@ public class ShowVersion : MonoBehaviour
         var pkgInfo = pm.Call<AndroidJavaObject>("getPackageInfo", pkgName, 0);
         return pkgInfo.Get<int>("versionCode");
     }
+#elif UNITY_IOS && !UNITY_EDITOR
+    return int.Parse(GetiOSBuildNumber());
 #elif UNITY_EDITOR
-    return UnityEditor.PlayerSettings.Android.bundleVersionCode; // Editor fallback
+    return UnityEditor.PlayerSettings.iOS.buildNumber != null
+        ? int.Parse(UnityEditor.PlayerSettings.iOS.buildNumber)
+        : 0;
 #else
-    return 0;
+        return 0;
 #endif
     }
+
+#if UNITY_IOS && !UNITY_EDITOR
+[System.Runtime.InteropServices.DllImport("__Internal")]
+private static extern string _getCFBundleVersion();
+
+string GetiOSBuildNumber()
+{
+    return _getCFBundleVersion();
+}
+#endif
+
 }
