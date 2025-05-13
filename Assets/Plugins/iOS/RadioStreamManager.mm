@@ -15,6 +15,9 @@ USE CASES COVERED:
 ✅ Pause playback when Bluetooth disconnects -> setupRemoteCommands() + AVAudioSessionRouteChangeNotification
 ✅ Auto-reconnect when back online -> setupNetworkMonitor() + StartStream()
 ✅ Check network reachability before streaming -> IsNetworkReachable()
+✅ Track interruption reasons -> AVAudioSessionInterruptionNotification (logs stored in lastErrorReason)
+✅ Track StopStream reason -> StopStream() sets lastErrorReason
+✅ Track Bluetooth disconnect as a stop reason -> AVAudioSessionRouteChangeNotification sets lastErrorReason
 
 USE CASES NOT YET COVERED:
 ❌ Real buffering percent (AVPlayer doesn’t expose this easily)
@@ -66,6 +69,29 @@ static NSTimer *metadataTimer = nil;
 static NSString *nowPlayingText = @"Ready to go...";
 static UIImage *currentFavicon = nil;
 static NSString *currentStationName = @"";
+static NSString *lastErrorReason = @"No error";
+
+// Interruption handling
+__attribute__((constructor)) static void setupInterruptionNotifications() {
+    [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionInterruptionNotification
+                                                      object:nil
+                                                       queue:[NSOperationQueue mainQueue]
+                                                  usingBlock:^(NSNotification * _Nonnull note) {
+        NSDictionary *info = note.userInfo;
+        NSInteger type = [info[AVAudioSessionInterruptionTypeKey] integerValue];
+        if (type == AVAudioSessionInterruptionTypeBegan) {
+            lastErrorReason = @"Audio interrupted (e.g. call, Siri, or other app)";
+            if (player) [player pause];
+            updatePlayerState(StateStopped);
+        }
+    }];
+}
+
+extern "C" const char* GetLastPlaybackError() {
+    return [lastErrorReason UTF8String];
+}
+
+
 
 
 #pragma mark - Playback Control
@@ -197,6 +223,9 @@ extern "C" void StartStream(const char* url)
                     updatePlayerState(StatePlaying);
                 }
             } else if (item.status == AVPlayerItemStatusFailed) {
+                NSError *error = item.error;
+                lastErrorReason = error ? error.localizedDescription : @"Unknown error";
+                NSLog(@"[AVPlayerItemStatusFailed] %@", lastErrorReason);
                 updatePlayerState(StateError);
             }
         }];
@@ -267,7 +296,8 @@ extern "C" void StopStream()
     }
     currentFavicon = nil;
     lastStreamUrl = nil;
-     updatePlayerState(StateStopped);
+    lastErrorReason = @"Stopped by user";
+    updatePlayerState(StateStopped);
 }
 
 extern "C" const char* GetPlaybackState()
@@ -325,6 +355,7 @@ void setupRemoteCommands(void) {
         if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
             if (player) {
                 [player pause];  // Pause playback when Bluetooth headset is disconnected
+                lastErrorReason = @"Bluetooth device disconnected";
                 updatePlayerState(StateStopped);  // Update state to stopped
             }
         }
