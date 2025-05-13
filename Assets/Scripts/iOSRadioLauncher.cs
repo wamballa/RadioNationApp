@@ -31,8 +31,19 @@ public class iOSRadioLauncher : MonoBehaviour
 #endif
     }
 
+#if UNITY_IOS && !UNITY_EDITOR
     [DllImport("__Internal")]
-    public static extern string GetLastPlaybackError();
+    private static extern string GetLastPlaybackError();
+#endif
+
+    public static string GetLastPlaybackErrorMessage()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+    return GetLastPlaybackError();
+#else
+        return "Unavailable in Editor";
+#endif
+    }
 
     [DllImport("__Internal")]
     private static extern IntPtr GetNowPlayingText();

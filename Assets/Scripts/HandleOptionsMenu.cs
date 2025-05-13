@@ -37,8 +37,8 @@ public class HandleOptionsMenu : MonoBehaviour
     {
         if (isDebugActive)
         {
-            debugText.text = iOSRadioLauncher.GetLastPlaybackError();
-            Debug.Log("[HandleOptionsMenu] Debug Panel: "+iOSRadioLauncher.GetLastPlaybackError());
+            debugText.text = iOSRadioLauncher.GetLastPlaybackErrorMessage();
+            Debug.Log("[HandleOptionsMenu] Debug Panel: "+iOSRadioLauncher.GetLastPlaybackErrorMessage());
         }
     }
 
