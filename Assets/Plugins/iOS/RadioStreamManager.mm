@@ -1,3 +1,38 @@
+/*
+RadioStreamManager.mm
+
+USE CASES COVERED:
+✅ Start playback with stream URL via Unity -> StartStream()
+✅ Start playback with artwork and station ID -> StartStreamWithArtwork_Internal()
+✅ Stop playback -> StopStream()
+✅ Show "Now Playing" metadata on lockscreen -> UpdateNowPlayingLockscreen()
+✅ Periodically fetch metadata while playing -> updatePlayerState(StatePlaying)
+✅ Send updated "Now Playing" text from Unity -> UpdateNowPlayingText()
+✅ Get current "Now Playing" text -> GetNowPlayingText()
+✅ Expose buffering percent (hardcoded) -> GetBufferingPercent()
+✅ Get current playback state as string -> GetPlaybackState()
+✅ Setup media controls on lockscreen -> setupRemoteCommands()
+✅ Pause playback when Bluetooth disconnects -> setupRemoteCommands() + AVAudioSessionRouteChangeNotification
+✅ Auto-reconnect when back online -> setupNetworkMonitor() + StartStream()
+✅ Check network reachability before streaming -> IsNetworkReachable()
+
+USE CASES NOT YET COVERED:
+❌ Real buffering percent (AVPlayer doesn’t expose this easily)
+❌ Album artwork update from metadata (currently only supports favicon from Unity)
+❌ Support for pause/resume lifecycle across app state changes
+❌ AirPlay handling
+❌ Background audio reconnection retries (currently only reconnects if network changes)
+❌ Display of artist/track/album info separately
+*/
+
+/*
+Who         | Does What
+Unity C#    | Calls iOSRadioLauncher.FetchNowPlayingMeta(stationId) via API
+Unity C#    | Updates your UI based on now_playing text
+Unity C#    | Calls iOSRadioLauncher.UpdateLockscreenMeta(string title) to push text to lockscreen
+iOS Obj-C   | Only accepts updated metadata and shows it
+*/
+
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <UIKit/UIKit.h>
@@ -10,14 +45,7 @@ void fetchNowPlaying(NSString *urlStr);
 bool IsNetworkReachable(void);
 void setupRemoteCommands(void);
 void setupNetworkMonitor(void);
-//void UpdateNowPlayingLockscreen(const char* title);
 void UpdateNowPlayingLockscreen(NSString* title);
-
-
-//extern "C" void StartStream(const char* url);  // ✅ CORRECT
-// extern "C" void StartStream(const char* url);
-
-
 
 // --- State tracking ---å
 typedef NS_ENUM(NSInteger, PlaybackState) {
@@ -41,14 +69,6 @@ static NSString *currentStationName = @"";
 
 
 #pragma mark - Playback Control
-
-/*
-Who         | Does What
-Unity C#    | Calls iOSRadioLauncher.FetchNowPlayingMeta(stationId) via API
-Unity C#    | Updates your UI based on now_playing text
-Unity C#    | Calls iOSRadioLauncher.UpdateLockscreenMeta(string title) to push text to lockscreen
-iOS Obj-C   | Only accepts updated metadata and shows it
-*/
 
 void updatePlayerState(PlaybackState newState) {
     currentState = newState;
@@ -93,38 +113,6 @@ void updatePlayerState(PlaybackState newState) {
     }
 }
 
-// void updatePlayerState(PlaybackState newState) {
-//     currentState = newState;
-
-//     if (metadataTimer) {
-//         [metadataTimer invalidate];
-//         metadataTimer = nil;
-//     }
-
-//     if (newState == StatePlaying) {
-//         metadataTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
-//             if (currentStationName != nil && currentStationName.length > 0) {
-//                 // C# side will be responsible for fetching metadata now.
-//                 NSLog(@"✅ iOS: Timer tick - C# will fetch now_playing via API.");
-//             }
-//         }];
-
-//         // Make sure we restore lock screen meta when playing
-//         if (currentStationName != nil) {
-//             // Convert NSString to C string (UTF-8) before passing to UpdateNowPlayingLockscreen
-//            // UpdateNowPlayingLockscreen([currentStationName UTF8String]);
-//         }
-//     }
-
-//     if (newState == StateStopped || newState == StateOffline || newState == StateError) {
-
-//         if (newState != StateStopped) {
-//             [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
-//         }
-//     }
-// }
-
-
 extern "C" void UpdateNowPlayingText(const char* text)
 {
     @autoreleasepool {
@@ -147,12 +135,6 @@ void UpdateNowPlayingLockscreen(NSString* title) {
         // Now using NSString directly for title
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
         [info setObject:title forKey:MPMediaItemPropertyTitle];
-
-        // NSString *titleStr = [NSString stringWithUTF8String:title];
-        // if (!titleStr || titleStr.length == 0) return;
-
-        // NSMutableDictionary *info = [NSMutableDictionary dictionary];
-        // [info setObject:titleStr forKey:MPMediaItemPropertyTitle];
 
         if (currentFavicon) {
             MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
@@ -268,27 +250,6 @@ extern "C" void StartStreamWithArtwork(const char* url, const char* station, voi
     }
 }
 
-
-// extern "C" void StartStreamWithArtwork(const char* url, const char* station, void* imageData, int length)
-// {
-//     NSLog(@"✅ StartStreamWithArtwork_Internal called");
-//     @autoreleasepool {
-//         NSData *data = [NSData dataWithBytes:imageData length:length];
-
-//         UIImage *image = [UIImage imageWithData:data];
-//         NSLog(@"Decoded image size: %@", NSStringFromCGSize(image.size));
-
-//         // Save for lockscreen display
-//         currentFavicon = image;
-
-//         NSString *urlStr = [NSString stringWithUTF8String:url];
-//         lastStreamUrl = urlStr;
-//         currentStationName = [NSString stringWithUTF8String:station];
-
-//         StartStream(url); // Reuse existing logic
-//     }
-// }
-
 extern "C" void StartStreamWithArtwork_Internal(const char* url, const char* station, void* imageData, int length)
 {
     NSLog(@"✅ StartStreamWithArtwork_Internal called");
@@ -369,39 +330,6 @@ void setupRemoteCommands(void) {
         }
     }];
 }
-
-
-// void setupRemoteCommands(void) {
-//     MPRemoteCommandCenter *remote = [MPRemoteCommandCenter sharedCommandCenter];
-//     [remote.playCommand setEnabled:YES];
-//     [remote.pauseCommand setEnabled:YES];
-
-//     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-//         if (player) [player play];
-//         return MPRemoteCommandHandlerStatusSuccess;
-//     }];
-
-//     [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-//         if (player) [player pause];
-//         return MPRemoteCommandHandlerStatusSuccess;
-//     }];
-
-//     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionRouteChangeNotification
-//                                                         object:nil
-//                                                         queue:[NSOperationQueue mainQueue]
-//                                                     usingBlock:^(NSNotification * _Nonnull note) {
-//         NSDictionary *info = note.userInfo;
-//         NSUInteger rawReason = [info[AVAudioSessionRouteChangeReasonKey] unsignedIntegerValue];
-//         AVAudioSessionRouteChangeReason reason = (AVAudioSessionRouteChangeReason)rawReason;
-
-//         if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
-//             if (player) {
-//                 [player pause];
-//                 updatePlayerState(StateStopped);
-//             }
-//         }
-//     }];
-// }
 
 void setupNetworkMonitor(void)
 {
