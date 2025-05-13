@@ -9,7 +9,7 @@ public class HandleOptionsMenu : MonoBehaviour
     public GameObject optionsMenu;
     public FavouritesManager favouritesManager;
 
-    [Header ("Option Menu Buttons")]
+    [Header("Option Menu Buttons")]
     public Button optionsOpenButton;
     public Button optionsCloseButton;
     public Button toggleDebugButton;
@@ -17,6 +17,7 @@ public class HandleOptionsMenu : MonoBehaviour
 
     private bool isDebugActive = false;
     public TMP_Text debugText;
+    public iOSRadioLauncher iosRadioLauncher;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -28,12 +29,17 @@ public class HandleOptionsMenu : MonoBehaviour
         if (debugMenu != null) debugMenu.SetActive(isDebugActive);
         if (toggleDebugButton != null) toggleDebugButton.onClick.AddListener(OnToggleDebugMenu);
         if (clearFavouritesButton != null) clearFavouritesButton.onClick.AddListener(favouritesManager.OnClearFavourites);
+        debugText.text = "Let me debug you ...";
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isDebugActive) debugText.text = iOSRadioLauncher.GetLastPlaybackError();
+        if (isDebugActive)
+        {
+            debugText.text = iOSRadioLauncher.GetLastPlaybackError();
+            Debug.Log("[HandleOptionsMenu] Debug Panel: "+iOSRadioLauncher.GetLastPlaybackError());
+        }
     }
 
     private void OnToggleDebugMenu()
