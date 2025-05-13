@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class HandleOptionsMenu : MonoBehaviour
 {
@@ -17,7 +18,8 @@ public class HandleOptionsMenu : MonoBehaviour
 
     private bool isDebugActive = false;
     public TMP_Text debugText;
-    public iOSRadioLauncher iosRadioLauncher;
+    private string lastLoggedError = "";
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -35,10 +37,16 @@ public class HandleOptionsMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (true)
+
+        string currentError = iOSRadioLauncher.GetLastPlaybackErrorMessage();
+
+        if (!string.Equals(debugText.text, currentError))
         {
-            debugText.text = iOSRadioLauncher.GetLastPlaybackErrorMessage();
-            Debug.Log("[HandleOptionsMenu] Debug Panel: "+iOSRadioLauncher.GetLastPlaybackErrorMessage());
+            string timestamp = DateTime.Now.ToString("HH:mm");
+            string line = $"[{timestamp}] {currentError}\n";
+            debugText.text += line;
+            lastLoggedError = currentError;
+
         }
     }
 

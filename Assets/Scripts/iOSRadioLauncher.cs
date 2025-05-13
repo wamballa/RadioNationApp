@@ -33,13 +33,14 @@ public class iOSRadioLauncher : MonoBehaviour
 
 #if UNITY_IOS && !UNITY_EDITOR
     [DllImport("__Internal")]
-    private static extern string GetLastPlaybackError();
+    private static extern IntPtr GetLastPlaybackError();
 #endif
 
     public static string GetLastPlaybackErrorMessage()
     {
 #if UNITY_IOS && !UNITY_EDITOR
-    return GetLastPlaybackError();
+    IntPtr ptr = GetLastPlaybackError();
+    return Marshal.PtrToStringUTF8(ptr);
 #else
         return "Unavailable in Editor";
 #endif
