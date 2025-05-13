@@ -71,29 +71,6 @@ static UIImage *currentFavicon = nil;
 static NSString *currentStationName = @"";
 static NSString *lastErrorReason = @"No error";
 
-// Interruption handling
-__attribute__((constructor)) static void setupInterruptionNotifications() {
-    [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionInterruptionNotification
-                                                      object:nil
-                                                       queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:^(NSNotification * _Nonnull note) {
-        NSDictionary *info = note.userInfo;
-        NSInteger type = [info[AVAudioSessionInterruptionTypeKey] integerValue];
-        if (type == AVAudioSessionInterruptionTypeBegan) {
-            lastErrorReason = @"Audio interrupted (e.g. call, Siri, or other app)";
-            if (player) [player pause];
-            updatePlayerState(StateStopped);
-        }
-    }];
-}
-
-extern "C" const char* GetLastPlaybackError() {
-    return [lastErrorReason UTF8String];
-}
-
-
-
-
 #pragma mark - Playback Control
 
 void updatePlayerState(PlaybackState newState) {
@@ -171,6 +148,26 @@ void UpdateNowPlayingLockscreen(NSString* title) {
 
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
+}
+
+// Interruption handling
+__attribute__((constructor)) static void setupInterruptionNotifications() {
+    [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionInterruptionNotification
+                                                      object:nil
+                                                       queue:[NSOperationQueue mainQueue]
+                                                  usingBlock:^(NSNotification * _Nonnull note) {
+        NSDictionary *info = note.userInfo;
+        NSInteger type = [info[AVAudioSessionInterruptionTypeKey] integerValue];
+        if (type == AVAudioSessionInterruptionTypeBegan) {
+            lastErrorReason = @"Audio interrupted (e.g. call, Siri, or other app)";
+            if (player) [player pause];
+            updatePlayerState(StateStopped);
+        }
+    }];
+}
+
+extern "C" const char* GetLastPlaybackError() {
+    return [lastErrorReason UTF8String];
 }
 
 extern "C" const char* GetNowPlayingText()
