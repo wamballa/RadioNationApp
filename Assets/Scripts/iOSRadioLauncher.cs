@@ -32,7 +32,7 @@ public class iOSRadioLauncher : MonoBehaviour
     }
 
     [DllImport("__Internal")]
-    private static extern string GetLastPlaybackError();
+    public static extern string GetLastPlaybackError();
 
     [DllImport("__Internal")]
     private static extern IntPtr GetNowPlayingText();

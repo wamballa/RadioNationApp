@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class HandleOptionsMenu : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class HandleOptionsMenu : MonoBehaviour
     public Button clearFavouritesButton;
 
     private bool isDebugActive = false;
+    public TMP_Text debugText;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -31,7 +33,7 @@ public class HandleOptionsMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (isDebugActive) debugText.text = iOSRadioLauncher.GetLastPlaybackError();
     }
 
     private void OnToggleDebugMenu()
