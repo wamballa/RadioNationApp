@@ -35,7 +35,7 @@ public class HandleOptionsMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isDebugActive)
+        if (true)
         {
             debugText.text = iOSRadioLauncher.GetLastPlaybackErrorMessage();
             Debug.Log("[HandleOptionsMenu] Debug Panel: "+iOSRadioLauncher.GetLastPlaybackErrorMessage());
