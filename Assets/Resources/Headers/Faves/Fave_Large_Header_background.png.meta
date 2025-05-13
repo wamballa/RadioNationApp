@@ -160,7 +160,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Fave_Large_Header_background_0: -5260338440819531269
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
