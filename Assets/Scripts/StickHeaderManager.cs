@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +16,8 @@ public class StickHeaderManager : MonoBehaviour
 
     int currentPanelIndex = 0;
     Vector2 currentPos;
+
+    private int lastPanelIndex = -1;
 
 
     private void Start()
@@ -63,23 +66,69 @@ public class StickHeaderManager : MonoBehaviour
     {
         foreach (StickyHeaderController controller in stickyControllers)
         {
-                controller.SetYPos(pos);
+            controller.SetYPos(pos);
         }
     }
 
     public void OnPanelCentred(int currentButtonIndex, int previousButtonIndex)
     {
-        Log("OnPanelCentred: " + currentButtonIndex + " " + stickyControllers[currentButtonIndex].name);
-        currentPanelIndex = currentButtonIndex; 
+        if (currentButtonIndex == lastPanelIndex) return;
+        lastPanelIndex = currentButtonIndex;
 
-        foreach (StickyHeaderController controller in stickyControllers)
-        {
-            controller.SetActive(false);
-        }
-        if (currentButtonIndex == 1) stickyControllers[currentButtonIndex].ResetView();
-        stickyControllers[currentButtonIndex].SetActive(true);
+        Log($"OnPanelCentred: {currentButtonIndex} {stickyControllers[currentButtonIndex].name}");
+        currentPanelIndex = currentButtonIndex;
 
+        if (currentButtonIndex == 1) // favouritesß
+            stickyControllers[currentButtonIndex].ResetView();
+
+        HidePanels(currentButtonIndex);
     }
+
+    private void HidePanels(int currentPanel)
+    {
+        int count = stickyControllers.Count;
+        int previous = (currentPanel - 1 + count) % count;
+        int next = (currentPanel + 1) % count;
+
+        for (int i = 0; i < count; i++)
+        {
+            bool shouldBeActive = (i == currentPanel || i == previous || i == next);
+            stickyControllers[i].gameObject.SetActive(shouldBeActive);
+        }
+    }
+
+
+    // public void OnPanelCentred(int currentButtonIndex, int previousButtonIndex)
+    // {
+    //     Log("OnPanelCentred: " + currentButtonIndex + " " + stickyControllers[currentButtonIndex].name);
+    //     currentPanelIndex = currentButtonIndex; 
+
+    //     foreach (StickyHeaderController controller in stickyControllers)
+    //     {
+    //         controller.SetActive(false);
+    //     }
+    //     if (currentButtonIndex == 1) stickyControllers[currentButtonIndex].ResetView();
+    //     stickyControllers[currentButtonIndex].SetActive(true);
+
+    //     HidePanels(currentButtonIndex);
+    // }
+
+    // private void HidePanels(int currentPanel)
+    // {
+
+    //     for (int i = 0; i < stickyControllers.Count; i++) {
+    //         stickyControllers[i].gameObject.SetActive(false);
+    //     }
+
+    //     int nextPanel = currentPanel + 1;
+    //     if (nextPanel > stickyControllers.Count) nextPanel = 0;
+    //     int previousPanel = currentPanel - 1;
+    //     if (previousPanel < 0) previousPanel = stickyControllers.Count;
+
+    //     stickyControllers[currentPanel].gameObject.SetActive(true);
+    //     stickyControllers[nextPanel - 1].gameObject.SetActive(true);
+    //     stickyControllers[previousPanel + 1].gameObject.SetActive(true);
+    // }
 
     public void OnPanelSelected(int currentButtonIndex)
     {
@@ -91,9 +140,9 @@ public class StickHeaderManager : MonoBehaviour
     {
         // potential to optimise by only updating YPos of Scroll Rects when swiped horizontally
         // accessed via On Value Change in Horizontal Scroll View scroll rect
-        if (Mathf.Abs(v.x) > 0) 
+        if (Mathf.Abs(v.x) > 0)
         {
-            
+
 
         }
     }
@@ -101,13 +150,13 @@ public class StickHeaderManager : MonoBehaviour
     void Log(object message)
     {
         if (logToConsole)
-            Debug.Log("[StickyHeaderManager] "+message);
+            Debug.Log("[StickyHeaderManager] " + message);
     }
 
     void LogError(object message)
     {
         if (logToConsole)
-            Debug.LogError("[StickyHeaderManager] "+message);
+            Debug.LogError("[StickyHeaderManager] " + message);
     }
 
 }

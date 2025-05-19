@@ -42,7 +42,7 @@ public class HandleOptionsMenu : MonoBehaviour
 
         if (!string.Equals(debugText.text, currentError))
         {
-            string timestamp = DateTime.Now.ToString("HH:mm");
+            string timestamp = DateTime.Now.ToString("HH:mm:ss");
             string line = $"[{timestamp}] {currentError}\n";
             debugText.text += line;
             lastLoggedError = currentError;
