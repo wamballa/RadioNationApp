@@ -142,7 +142,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 1.1.35
+  bundleVersion: 1.1.36
   preloadedAssets:
   - {fileID: 11400000, guid: 7509ee91551bb02449d502457cd43920, type: 2}
   metroInputSource: 0
@@ -174,7 +174,7 @@ PlayerSettings:
   buildNumber:
     Standalone: 0
     VisionOS: 0
-    iPhone: 172
+    iPhone: 173
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
   AndroidBundleVersionCode: 6
@@ -838,7 +838,7 @@ PlayerSettings:
     Android: LEVELPLAY_DEPENDENCIES_INSTALLED
     Standalone: LEVELPLAY_DEPENDENCIES_INSTALLED
     Windows Store Apps: 
-    iPhone: GLEY_UNITYADS
+    iPhone: 
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
