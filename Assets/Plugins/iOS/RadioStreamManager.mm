@@ -75,6 +75,7 @@ static NSString *lastErrorReason = @"No error";
 
 void updatePlayerState(PlaybackState newState) {
     currentState = newState;
+    syncPlaybackStateToNowPlaying(newState);
 
     if (metadataTimer) {
         [metadataTimer invalidate];
@@ -114,6 +115,16 @@ void updatePlayerState(PlaybackState newState) {
             [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
         }
     }
+
+    MPNowPlayingPlaybackState playbackState;
+    switch (newState) {
+        case StatePlaying:   playbackState = MPNowPlayingPlaybackStatePlaying; break;
+        case StateStopped:   playbackState = MPNowPlayingPlaybackStateStopped; break;
+        case StateBuffering: playbackState = MPNowPlayingPlaybackStateInterrupted; break;
+        default:             playbackState = MPNowPlayingPlaybackStatePaused; break;
+    }
+    [MPNowPlayingInfoCenter defaultCenter].playbackState = playbackState;
+
 }
 
 extern "C" void UpdateNowPlayingText(const char* text)
@@ -150,6 +161,13 @@ void UpdateNowPlayingLockscreen(NSString* title) {
     }
 }
 
+// Thread-safe setter for lastErrorReason
+static void SetLastErrorReason(NSString *reason) {
+    @synchronized(lastErrorReason) {
+        lastErrorReason = reason ? [reason copy] : @"Unknown";
+    }
+}
+
 // Interruption handling
 __attribute__((constructor)) static void setupInterruptionNotifications() {
     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionInterruptionNotification
@@ -159,7 +177,8 @@ __attribute__((constructor)) static void setupInterruptionNotifications() {
         NSDictionary *info = note.userInfo;
         NSInteger type = [info[AVAudioSessionInterruptionTypeKey] integerValue];
         if (type == AVAudioSessionInterruptionTypeBegan) {
-            lastErrorReason = @"Audio interrupted (e.g. call, Siri, or other app)";
+            SetLastErrorReason(@"Audio interrupted (e.g. call, Siri, or other app)");
+            //lastErrorReason = @"Audio interrupted (e.g. call, Siri, or other app)";
             if (player) [player pause];
             updatePlayerState(StateStopped);
         }
@@ -173,6 +192,18 @@ extern "C" const char* GetLastPlaybackError() {
 extern "C" const char* GetNowPlayingText()
 {
     return [nowPlayingText UTF8String];
+}
+
+static void syncPlaybackStateToNowPlaying(PlaybackState state) {
+    MPNowPlayingPlaybackState playbackState;
+    switch (state) {
+        case StatePlaying:   playbackState = MPNowPlayingPlaybackStatePlaying; break;
+        case StateStopped:   playbackState = MPNowPlayingPlaybackStateStopped; break;
+        case StateBuffering: playbackState = MPNowPlayingPlaybackStateInterrupted; break;
+        case StateError:     playbackState = MPNowPlayingPlaybackStatePaused; break;
+        default:             playbackState = MPNowPlayingPlaybackStatePaused; break;
+    }
+    [MPNowPlayingInfoCenter defaultCenter].playbackState = playbackState;
 }
 
 
@@ -295,6 +326,7 @@ extern "C" void StopStream()
     lastStreamUrl = nil;
     lastErrorReason = @"Stopped by user";
     updatePlayerState(StateStopped);
+    [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStateStopped;
 }
 
 extern "C" const char* GetPlaybackState()
@@ -323,9 +355,11 @@ void setupRemoteCommands(void) {
             if (currentState == StatePlaying) {
                 [player pause];  // Stop playing if already playing
                 updatePlayerState(StateStopped);  // Update state to stopped
+                [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused;
             } else {
                 [player play];  // Start playing if currently stopped
                 updatePlayerState(StatePlaying);  // Update state to playing
+                [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePlaying;
             }
         }
         return MPRemoteCommandHandlerStatusSuccess;
