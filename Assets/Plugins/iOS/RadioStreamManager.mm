@@ -73,6 +73,18 @@ static NSString *lastErrorReason = @"No error";
 
 #pragma mark - Playback Control
 
+static void syncPlaybackStateToNowPlaying(PlaybackState state) {
+    MPNowPlayingPlaybackState playbackState;
+    switch (state) {
+        case StatePlaying:   playbackState = MPNowPlayingPlaybackStatePlaying; break;
+        case StateStopped:   playbackState = MPNowPlayingPlaybackStateStopped; break;
+        case StateBuffering: playbackState = MPNowPlayingPlaybackStateInterrupted; break;
+        case StateError:     playbackState = MPNowPlayingPlaybackStatePaused; break;
+        default:             playbackState = MPNowPlayingPlaybackStatePaused; break;
+    }
+    [MPNowPlayingInfoCenter defaultCenter].playbackState = playbackState;
+}
+
 void updatePlayerState(PlaybackState newState) {
     currentState = newState;
     syncPlaybackStateToNowPlaying(newState);
@@ -192,18 +204,6 @@ extern "C" const char* GetLastPlaybackError() {
 extern "C" const char* GetNowPlayingText()
 {
     return [nowPlayingText UTF8String];
-}
-
-static void syncPlaybackStateToNowPlaying(PlaybackState state) {
-    MPNowPlayingPlaybackState playbackState;
-    switch (state) {
-        case StatePlaying:   playbackState = MPNowPlayingPlaybackStatePlaying; break;
-        case StateStopped:   playbackState = MPNowPlayingPlaybackStateStopped; break;
-        case StateBuffering: playbackState = MPNowPlayingPlaybackStateInterrupted; break;
-        case StateError:     playbackState = MPNowPlayingPlaybackStatePaused; break;
-        default:             playbackState = MPNowPlayingPlaybackStatePaused; break;
-    }
-    [MPNowPlayingInfoCenter defaultCenter].playbackState = playbackState;
 }
 
 
