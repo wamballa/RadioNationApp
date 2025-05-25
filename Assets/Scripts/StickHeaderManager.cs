@@ -72,6 +72,12 @@ public class StickHeaderManager : MonoBehaviour
 
     public void OnPanelCentred(int currentButtonIndex, int previousButtonIndex)
     {
+
+        // Tried to optimise speed of UI here
+        // but not sure it made much differene
+
+        return;
+
         if (currentButtonIndex == lastPanelIndex) return;
         lastPanelIndex = currentButtonIndex;
 
