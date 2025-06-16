@@ -361,6 +361,9 @@ void setupRemoteCommands(void) {
                 updatePlayerState(StatePlaying);  // Update state to playing
                 [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePlaying;
             }
+        }  else if (lastStreamUrl != nil && lastStreamUrl.length > 0) {
+        // If player is nil (fully stopped), restart stream from last URL
+        StartStream([lastStreamUrl UTF8String]);
         }
         return MPRemoteCommandHandlerStatusSuccess;
     }];
