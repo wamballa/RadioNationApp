@@ -388,7 +388,7 @@ MonoBehaviour:
         required: 0
       testMode: 0
       testDevice: 
-  debugMode: 0
+  debugMode: 1
   usePlaymaker: 0
   useUnityVisualScripting: 0
   enableATT: 0

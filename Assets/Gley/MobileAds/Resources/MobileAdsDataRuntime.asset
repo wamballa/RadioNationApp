@@ -86,7 +86,7 @@ MonoBehaviour:
       testMode: 0
       testDevice: 
     directedForChildren: 0
-  debugMode: 0
+  debugMode: 1
   enableATT: 0
   nativePopupText: We will use your data to provide a better and personalized ad
     experience.
