@@ -377,6 +377,9 @@ void setupRemoteCommands(void) {
             NSLog(@"✅ pauseCommand");
             [player pause];
             updatePlayerState(StateStopped);  // Update state to stopped
+            [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused; // <-- ADD THIS if missing
+            UpdateNowPlayingText([nowPlayingText UTF8String]); // <--- add this line
+
         }
         return MPRemoteCommandHandlerStatusSuccess;
     }];
