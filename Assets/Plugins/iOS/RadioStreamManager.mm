@@ -150,7 +150,6 @@ extern "C" void UpdateNowPlayingText(const char* text)
 
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
         [info setObject:nowPlaying forKey:MPMediaItemPropertyTitle];
-        [info setObject:@0.0 forKey:MPNowPlayingInfoPropertyPlaybackRate]; // <--- add this line, 0.0 if paused/stopped
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
 }
@@ -169,7 +168,7 @@ void UpdateNowPlayingLockscreen(NSString* title) {
             }];
             [info setObject:artwork forKey:MPMediaItemPropertyArtwork];
         }
-        [info setObject:@1.0 forKey:MPNowPlayingInfoPropertyPlaybackRate]; // <--- add this line, 1.0 if playing, 0.0 if paused
+
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
 }
@@ -194,14 +193,6 @@ __attribute__((constructor)) static void setupInterruptionNotifications() {
             //lastErrorReason = @"Audio interrupted (e.g. call, Siri, or other app)";
             if (player) [player pause];
             updatePlayerState(StateStopped);
-        } else if (type == AVAudioSessionInterruptionTypeEnded) {
-            NSNumber *option = info[AVAudioSessionInterruptionOptionKey];
-            if (option.integerValue & AVAudioSessionInterruptionOptionShouldResume) {
-                NSError *err = nil;
-                [[AVAudioSession sharedInstance] setActive:YES error:&err];
-                setupRemoteCommands(); // <-- add this!
-                // Optional: Resume playback if you want auto-resume.
-            }
         }
     }];
 }
@@ -328,10 +319,9 @@ extern "C" void StopStream()
 {
     if (player) {
         [player pause];
-        player = nil;
-        playerItem = nil;
+//        player = nil;
+//        playerItem = nil;
     }
-
     currentFavicon = nil;
     lastStreamUrl = nil;
     lastErrorReason = @"Stopped by user";
@@ -361,12 +351,6 @@ void setupRemoteCommands(void) {
 
     // Handle play command (toggle between play and stop)
     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-
-        // In StartStream and in the play command handler
-        NSError *err = nil;
-        [[AVAudioSession sharedInstance] setActive:YES error:&err];
-        if (err) NSLog(@"[AVAudioSession] setActive error: %@", err.localizedDescription);
-
         if (player) {
             if (currentState == StatePlaying) {
                 NSLog(@"✅ setupRemoteCommands Stop playing if already playing");
@@ -390,12 +374,8 @@ void setupRemoteCommands(void) {
     // Handle pause command
     [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
         if (player) {
-            NSLog(@"✅ pauseCommand");
             [player pause];
             updatePlayerState(StateStopped);  // Update state to stopped
-            [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused; // <-- ADD THIS if missing
-            UpdateNowPlayingText([nowPlayingText UTF8String]); // <--- add this line
-
         }
         return MPRemoteCommandHandlerStatusSuccess;
     }];
@@ -416,9 +396,6 @@ void setupRemoteCommands(void) {
                 updatePlayerState(StateStopped);  // Update state to stopped
             }
         }
-        NSError *err = nil;
-        [[AVAudioSession sharedInstance] setActive:YES error:&err];
-        setupRemoteCommands();
     }];
 }
 
