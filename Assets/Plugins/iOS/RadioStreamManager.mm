@@ -99,7 +99,7 @@ void updatePlayerState(PlaybackState newState) {
         metadataTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
             if (currentStationName != nil && currentStationName.length > 0) {
                 NSString *station = [currentStationName stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-                NSLog(@"[updatePlayerState] station name %@", station);
+                // NSLog(@"[updatePlayerState] station name %@", station);
                 NSString *urlStr = [NSString stringWithFormat:@"https://www.wamballa.com/metadata/?station=%@", station];
                 NSURL *url = [NSURL URLWithString:urlStr];
 
@@ -374,6 +374,7 @@ void setupRemoteCommands(void) {
     // Handle pause command
     [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
         if (player) {
+            NSLog(@"✅ pauseCommand");
             [player pause];
             updatePlayerState(StateStopped);  // Update state to stopped
         }
