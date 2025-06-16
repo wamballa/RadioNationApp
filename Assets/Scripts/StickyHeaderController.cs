@@ -49,7 +49,7 @@ public class StickyHeaderController : MonoBehaviour
 
         //print($"{transform.name}    Height = " + height);
 
-        SetActive(isActive);
+        // SetActive(isActive);
 
         OnCollapseOrExpandChanged?.Invoke(false, scrollRect.content.anchoredPosition);
 

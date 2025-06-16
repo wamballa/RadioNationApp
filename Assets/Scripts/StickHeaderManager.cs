@@ -70,54 +70,54 @@ public class StickHeaderManager : MonoBehaviour
         }
     }
 
-    public void OnPanelCentred(int currentButtonIndex, int previousButtonIndex)
-    {
-
-        // Tried to optimise speed of UI here
-        // but not sure it made much differene
-
-        return;
-
-        if (currentButtonIndex == lastPanelIndex) return;
-        lastPanelIndex = currentButtonIndex;
-
-        Log($"OnPanelCentred: {currentButtonIndex} {stickyControllers[currentButtonIndex].name}");
-        currentPanelIndex = currentButtonIndex;
-
-        if (currentButtonIndex == 1) // favouritesß
-            stickyControllers[currentButtonIndex].ResetView();
-
-        //HidePanels(currentButtonIndex);
-    }
-
-    private void HidePanels(int currentPanel)
-    {
-        int count = stickyControllers.Count;
-        int previous = (currentPanel - 1 + count) % count;
-        int next = (currentPanel + 1) % count;
-
-        for (int i = 0; i < count; i++)
-        {
-            bool shouldBeActive = (i == currentPanel || i == previous || i == next);
-            stickyControllers[i].gameObject.SetActive(shouldBeActive);
-        }
-    }
-
-
     // public void OnPanelCentred(int currentButtonIndex, int previousButtonIndex)
     // {
-    //     Log("OnPanelCentred: " + currentButtonIndex + " " + stickyControllers[currentButtonIndex].name);
-    //     currentPanelIndex = currentButtonIndex; 
 
-    //     foreach (StickyHeaderController controller in stickyControllers)
-    //     {
-    //         controller.SetActive(false);
-    //     }
-    //     if (currentButtonIndex == 1) stickyControllers[currentButtonIndex].ResetView();
-    //     stickyControllers[currentButtonIndex].SetActive(true);
+    //     // Tried to optimise speed of UI here
+    //     // but not sure it made much differene
 
-    //     HidePanels(currentButtonIndex);
+    //     return;
+
+    //     if (currentButtonIndex == lastPanelIndex) return;
+    //     lastPanelIndex = currentButtonIndex;
+
+    //     Log($"OnPanelCentred: {currentButtonIndex} {stickyControllers[currentButtonIndex].name}");
+    //     currentPanelIndex = currentButtonIndex;
+
+    //     if (currentButtonIndex == 1) // favouritesß
+    //         stickyControllers[currentButtonIndex].ResetView();
+
+    //     //HidePanels(currentButtonIndex);
     // }
+
+    // private void HidePanels(int currentPanel)
+    // {
+    //     int count = stickyControllers.Count;
+    //     int previous = (currentPanel - 1 + count) % count;
+    //     int next = (currentPanel + 1) % count;
+
+    //     for (int i = 0; i < count; i++)
+    //     {
+    //         bool shouldBeActive = (i == currentPanel || i == previous || i == next);
+    //         stickyControllers[i].gameObject.SetActive(shouldBeActive);
+    //     }
+    // }
+
+
+    public void OnPanelCentred(int currentButtonIndex, int previousButtonIndex)
+    {
+        Log("OnPanelCentred: " + currentButtonIndex + " " + stickyControllers[currentButtonIndex].name);
+        currentPanelIndex = currentButtonIndex; 
+
+        foreach (StickyHeaderController controller in stickyControllers)
+        {
+            controller.SetActive(false);
+        }
+        if (currentButtonIndex == 1) stickyControllers[currentButtonIndex].ResetView();
+        stickyControllers[currentButtonIndex].SetActive(true);
+
+        // HidePanels(currentButtonIndex);
+    }
 
     // private void HidePanels(int currentPanel)
     // {
