@@ -353,17 +353,20 @@ void setupRemoteCommands(void) {
     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
         if (player) {
             if (currentState == StatePlaying) {
+                NSLog(@"✅ setupRemoteCommands Stop playing if already playing");
                 [player pause];  // Stop playing if already playing
                 updatePlayerState(StateStopped);  // Update state to stopped
                 [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused;
             } else {
+                NSLog(@"✅ setupRemoteCommands Start playing if currently stopped");
                 [player play];  // Start playing if currently stopped
                 updatePlayerState(StatePlaying);  // Update state to playing
                 [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePlaying;
             }
         }  else if (lastStreamUrl != nil && lastStreamUrl.length > 0) {
-        // If player is nil (fully stopped), restart stream from last URL
-        StartStream([lastStreamUrl UTF8String]);
+            NSLog(@"✅ setupRemoteCommands If player is nil (fully stopped), restart stream from last URL");
+            // If player is nil (fully stopped), restart stream from last URL
+            StartStream([lastStreamUrl UTF8String]);
         }
         return MPRemoteCommandHandlerStatusSuccess;
     }];
