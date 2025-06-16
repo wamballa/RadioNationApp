@@ -87,7 +87,7 @@ public class StickHeaderManager : MonoBehaviour
         if (currentButtonIndex == 1) // favouritesß
             stickyControllers[currentButtonIndex].ResetView();
 
-        HidePanels(currentButtonIndex);
+        //HidePanels(currentButtonIndex);
     }
 
     private void HidePanels(int currentPanel)
