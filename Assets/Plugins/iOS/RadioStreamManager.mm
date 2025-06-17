@@ -206,6 +206,10 @@ extern "C" const char* GetNowPlayingText()
     return [nowPlayingText UTF8String];
 }
 
+extern "C" const char* GetLastStreamUrlText()
+{
+    return [lastStreamUrl UTF8String];
+}
 
 extern "C" float GetBufferingPercent() {
     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
@@ -322,8 +326,9 @@ extern "C" void StopStream()
 //        player = nil;
 //        playerItem = nil;
     }
-    currentFavicon = nil;
-    lastStreamUrl = nil;
+    // currentFavicon = nil;
+    // lastStreamUrl = nil;
+
     lastErrorReason = @"Stopped by user";
     updatePlayerState(StateStopped);
     [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStateStopped;

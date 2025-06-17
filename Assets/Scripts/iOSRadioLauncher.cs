@@ -20,7 +20,8 @@ public class iOSRadioLauncher : MonoBehaviour
     {
 #if UNITY_IOS && !UNITY_EDITOR
             string state = iOSRadioLauncher.CheckiOSPlaybackState();
-            debugTextforIOSState.text = state;
+            string url = iOSRadioLauncher.GetLastStreamUrl_Text();
+            debugTextforIOSState.text = "State = "+ state+"     Last URL = "+url;
             if (state == "PLAYING")
             {
                 playbackTime += Time.deltaTime;
@@ -118,6 +119,19 @@ public class iOSRadioLauncher : MonoBehaviour
     return Marshal.PtrToStringAnsi(strPtr);
 #else
         return "STOPPED";
+#endif
+    }
+
+    [DllImport("__Internal")]
+    private static extern System.IntPtr GetLastStreamUrlText();
+
+    public static string GetLastStreamUrl_Text()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+    IntPtr strPtr = GetLastStreamUrlText();
+    return Marshal.PtrToStringAnsi(strPtr);
+#else
+        return "EMPTY";
 #endif
     }
 
