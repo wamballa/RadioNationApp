@@ -182,8 +182,13 @@ static void SetLastErrorReason(NSString *reason) {
 }
 
 static void SetLastConsoleLog(NSString *log) {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"HH:mm:ss"];
+    NSString *currentTime = [formatter stringFromDate:[NSDate date]];
+    NSString *logWithTime = [NSString stringWithFormat:@"%@ %@", currentTime, (log ?: @"No Log")];
+
     @synchronized(lastConsoleLog) {
-        lastConsoleLog = log ? [log copy] : @"No Log";
+        lastConsoleLog = [logWithTime copy];
     }
 }
 
@@ -398,7 +403,7 @@ void setupRemoteCommands(void) {
     [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
         if (player) {
             [player pause];
-            SetLastConsoleLog(@"[setupRemoteCommands] User press Button on BT Headset to stop playback");
+            SetLastConsoleLog(@"[setupRemoteCommands] User press Button on BT Headset to stop");
             updatePlayerState(StateStopped);  // Update state to stopped
         }
         return MPRemoteCommandHandlerStatusSuccess;
