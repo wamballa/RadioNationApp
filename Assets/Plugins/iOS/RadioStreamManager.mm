@@ -70,6 +70,7 @@ static NSString *nowPlayingText = @"Ready to go...";
 static UIImage *currentFavicon = nil;
 static NSString *currentStationName = @"";
 static NSString *lastErrorReason = @"No error";
+static NSString *lastConsoleLog = @"No log";
 
 #pragma mark - Playback Control
 
@@ -180,6 +181,12 @@ static void SetLastErrorReason(NSString *reason) {
     }
 }
 
+static void SetLastConsoleLog(NSString *log) {
+    @synchronized(lastConsoleLog) {
+        lastConsoleLog = log ? [log copy] : @"No Log";
+    }
+}
+
 // Interruption handling
 __attribute__((constructor)) static void setupInterruptionNotifications() {
     [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioSessionInterruptionNotification
@@ -201,6 +208,10 @@ extern "C" const char* GetLastPlaybackError() {
     return [lastErrorReason UTF8String];
 }
 
+extern "C" const char* GetLastConsoleLog() {
+    return [lastConsoleLog UTF8String];
+}
+
 extern "C" const char* GetNowPlayingText()
 {
     return [nowPlayingText UTF8String];
@@ -212,6 +223,10 @@ extern "C" const char* GetLastStreamUrlText()
 }
 
 extern "C" float GetBufferingPercent() {
+    return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
+}
+
+extern "C" float GetConsoleLogFromIOS() {
     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
 }
 
@@ -359,17 +374,20 @@ void setupRemoteCommands(void) {
         if (player) {
             if (currentState == StatePlaying) {
                 NSLog(@"✅ setupRemoteCommands Stop playing if already playing");
+                SetLastConsoleLog(@"setupRemoteCommands Stop playing if already playing");
                 [player pause];  // Stop playing if already playing
                 updatePlayerState(StateStopped);  // Update state to stopped
                 [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused;
             } else {
                 NSLog(@"✅ setupRemoteCommands Start playing if currently stopped");
+                SetLastConsoleLog(@"setupRemoteCommands Start playing if currently stopped");
                 [player play];  // Start playing if currently stopped
                 updatePlayerState(StatePlaying);  // Update state to playing
                 [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePlaying;
             }
         }  else if (lastStreamUrl != nil && lastStreamUrl.length > 0) {
             NSLog(@"✅ setupRemoteCommands If player is nil (fully stopped), restart stream from last URL");
+            SetLastConsoleLog(@"setupRemoteCommands If player is nil (fully stopped), restart stream from last URL")
             // If player is nil (fully stopped), restart stream from last URL
             StartStream([lastStreamUrl UTF8String]);
         }
@@ -397,7 +415,8 @@ void setupRemoteCommands(void) {
         if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
             if (player) {
                 [player pause];  // Pause playback when Bluetooth headset is disconnected
-                lastErrorReason = @"Bluetooth device disconnected";
+                SetLastErrorReason(@"Bluetooth device disconnected");
+                // lastErrorReason = @"Bluetooth device disconnected";
                 updatePlayerState(StateStopped);  // Update state to stopped
             }
         }

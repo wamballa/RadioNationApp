@@ -21,7 +21,8 @@ public class iOSRadioLauncher : MonoBehaviour
 #if UNITY_IOS && !UNITY_EDITOR
             string state = iOSRadioLauncher.CheckiOSPlaybackState();
             string url = iOSRadioLauncher.GetLastStreamUrl_Text();
-            debugTextforIOSState.text = "State = "+ state+"     Last URL = "+url;
+            string error = iOSRadioLauncher.GetLastPlaybackErrorMessage();
+            debugTextforIOSState.text = "State = "+ state+"\nLast URL = "+url+"\nError: "+error;
             if (state == "PLAYING")
             {
                 playbackTime += Time.deltaTime;
