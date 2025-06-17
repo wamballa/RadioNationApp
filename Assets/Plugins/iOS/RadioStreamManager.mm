@@ -398,6 +398,7 @@ void setupRemoteCommands(void) {
     [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
         if (player) {
             [player pause];
+            SetLastConsoleLog(@"[setupRemoteCommands] User press Button on BT Headset to stop playback");
             updatePlayerState(StateStopped);  // Update state to stopped
         }
         return MPRemoteCommandHandlerStatusSuccess;
