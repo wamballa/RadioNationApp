@@ -3,12 +3,13 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Networking;
+using TMPro;
 
 public class iOSRadioLauncher : MonoBehaviour
 {
     private float playbackTime = 0;
     public static string cachedNowPlaying = "Streaming...";
-
+    public TMP_Text debugTextforIOSState;
 
     private void Start()
     {
@@ -19,7 +20,7 @@ public class iOSRadioLauncher : MonoBehaviour
     {
 #if UNITY_IOS && !UNITY_EDITOR
             string state = iOSRadioLauncher.CheckiOSPlaybackState();
-
+            debugTextforIOSState.text = state;
             if (state == "PLAYING")
             {
                 playbackTime += Time.deltaTime;
