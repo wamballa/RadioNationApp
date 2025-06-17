@@ -253,12 +253,19 @@ extern "C" void StartStream(const char* url)
         // Configure the AVAudioSession for background audio playback
         NSError *error = nil;
         AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-        [audioSession setCategory:AVAudioSessionCategoryPlayback error:&error];
+        [audioSession setCategory:AVAudioSessionCategoryPlayback
+              withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP
+                    error:&error];
         [audioSession setActive:YES error:&error];
 
         if (error) {
             NSLog(@"Error setting up audio session: %@", error.localizedDescription);
         }
+
+        // AVAudioSessionRouteDescription *route = [session currentRoute];
+        // for (AVAudioSessionPortDescription *port in route.outputs) {
+        //     SetLastConsoleLog(@"Current output: %@", port.portType); // Look for BluetoothA2DPOutput, etc.
+        // }
 
         NSURL *streamURL = [NSURL URLWithString:urlStr];
         playerItem = [AVPlayerItem playerItemWithURL:streamURL];
@@ -377,6 +384,7 @@ void setupRemoteCommands(void) {
     // Handle play command (toggle between play and stop)
 
     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+        SetLastConsoleLog(@"[setupRemoteCommands] Button Pressed ");
         if (player && player.rate == 0.0) {
             [player play];
             SetLastConsoleLog(@"[setupRemoteCommands] PLAY Button on BT Headset ");
@@ -415,14 +423,11 @@ void setupRemoteCommands(void) {
 
     // Handle pause command
     [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-        if (player) {
-
-            if (player && player.rate != 0.0){
-                [player pause];
-                SetLastConsoleLog(@"[setupRemoteCommands] User press Button on BT Headset to stop");
-                updatePlayerState(StateStopped);  // Update state to stopped
-                [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused;
-            }
+        if (player && player.rate != 0.0){
+            [player pause];
+            SetLastConsoleLog(@"[setupRemoteCommands] User press Button on BT Headset to stop");
+            updatePlayerState(StateStopped);  // Update state to stopped
+            [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused;
         }
         return MPRemoteCommandHandlerStatusSuccess;
     }];
