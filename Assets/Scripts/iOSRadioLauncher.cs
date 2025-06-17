@@ -22,7 +22,8 @@ public class iOSRadioLauncher : MonoBehaviour
             string state = iOSRadioLauncher.CheckiOSPlaybackState();
             string url = iOSRadioLauncher.GetLastStreamUrl_Text();
             string error = iOSRadioLauncher.GetLastPlaybackErrorMessage();
-            debugTextforIOSState.text = "State = "+ state+"\nLast URL = "+url+"\nError: "+error;
+            string log = iOSRadioLauncher.GetLastConsoleLogMessage();
+            debugTextforIOSState.text = "State = "+ state+"\nLast URL = "+url+"\nError: "+error+"\nLog: "+log;
             if (state == "PLAYING")
             {
                 playbackTime += Time.deltaTime;
@@ -31,6 +32,21 @@ public class iOSRadioLauncher : MonoBehaviour
             {
                 playbackTime = 0f;
             }
+#endif
+    }
+
+#if UNITY_IOS && !UNITY_EDITOR
+    [DllImport("__Internal")]
+    private static extern IntPtr GetLastConsoleLog();
+#endif
+
+    public static string GetLastConsoleLogMessage()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+    IntPtr ptr = GetLastConsoleLog();
+    return Marshal.PtrToStringUTF8(ptr);
+#else
+        return "Logs unavailable in editor";
 #endif
     }
 

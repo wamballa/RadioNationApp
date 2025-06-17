@@ -387,7 +387,7 @@ void setupRemoteCommands(void) {
             }
         }  else if (lastStreamUrl != nil && lastStreamUrl.length > 0) {
             NSLog(@"✅ setupRemoteCommands If player is nil (fully stopped), restart stream from last URL");
-            SetLastConsoleLog(@"setupRemoteCommands If player is nil (fully stopped), restart stream from last URL")
+            SetLastConsoleLog(@"setupRemoteCommands If player is nil (fully stopped), restart stream from last URL");
             // If player is nil (fully stopped), restart stream from last URL
             StartStream([lastStreamUrl UTF8String]);
         }
