@@ -375,37 +375,54 @@ void setupRemoteCommands(void) {
     [remote.pauseCommand setEnabled:YES]; // No pause button, only play/stop
 
     // Handle play command (toggle between play and stop)
+
     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-        SetLastConsoleLog(@"[setupRemoteCommands] PLAY pressed");
-        if (player) {
-            if (currentState == StatePlaying) {
-                NSLog(@"✅ setupRemoteCommands Stop playing if already playing");
-                SetLastConsoleLog(@"setupRemoteCommands Stop playing if already playing");
-                [player pause];  // Stop playing if already playing
-                updatePlayerState(StateStopped);  // Update state to stopped
-                [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused;
-            } else {
-                NSLog(@"✅ setupRemoteCommands Start playing if currently stopped");
-                SetLastConsoleLog(@"setupRemoteCommands Start playing if currently stopped");
-                [player play];  // Start playing if currently stopped
-                updatePlayerState(StatePlaying);  // Update state to playing
-                [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePlaying;
-            }
-        }  else if (lastStreamUrl != nil && lastStreamUrl.length > 0) {
-            NSLog(@"✅ setupRemoteCommands If player is nil (fully stopped), restart stream from last URL");
-            SetLastConsoleLog(@"setupRemoteCommands If player is nil (fully stopped), restart stream from last URL");
-            // If player is nil (fully stopped), restart stream from last URL
-            StartStream([lastStreamUrl UTF8String]);
+        if (player && player.rate == 0.0) {
+            [player play];
+            SetLastConsoleLog(@"[setupRemoteCommands] PLAY Button on BT Headset ");
+            updatePlayerState(StatePlaying);
+            [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePlaying;
         }
         return MPRemoteCommandHandlerStatusSuccess;
     }];
 
+
+
+    // [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+    //     SetLastConsoleLog(@"[setupRemoteCommands] PLAY pressed");
+    //     if (player) {
+    //         if (currentState == StatePlaying) {
+    //             NSLog(@"✅ setupRemoteCommands Stop playing if already playing");
+    //             SetLastConsoleLog(@"setupRemoteCommands Stop playing if already playing");
+    //             [player pause];  // Stop playing if already playing
+    //             updatePlayerState(StateStopped);  // Update state to stopped
+    //             [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused;
+    //         } else {
+    //             NSLog(@"✅ setupRemoteCommands Start playing if currently stopped");
+    //             SetLastConsoleLog(@"setupRemoteCommands Start playing if currently stopped");
+    //             [player play];  // Start playing if currently stopped
+    //             updatePlayerState(StatePlaying);  // Update state to playing
+    //             [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePlaying;
+    //         }
+    //     }  else if (lastStreamUrl != nil && lastStreamUrl.length > 0) {
+    //         NSLog(@"✅ setupRemoteCommands If player is nil (fully stopped), restart stream from last URL");
+    //         SetLastConsoleLog(@"setupRemoteCommands If player is nil (fully stopped), restart stream from last URL");
+    //         // If player is nil (fully stopped), restart stream from last URL
+    //         StartStream([lastStreamUrl UTF8String]);
+    //     }
+    //     return MPRemoteCommandHandlerStatusSuccess;
+    // }];
+
     // Handle pause command
     [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
         if (player) {
-            [player pause];
-            SetLastConsoleLog(@"[setupRemoteCommands] User press Button on BT Headset to stop");
-            updatePlayerState(StateStopped);  // Update state to stopped
+
+            if (player && player.rate != 0.0){
+                [player pause];
+                SetLastConsoleLog(@"[setupRemoteCommands] User press Button on BT Headset to stop");
+                updatePlayerState(StateStopped);  // Update state to stopped
+                [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused;
+            }
         }
         return MPRemoteCommandHandlerStatusSuccess;
     }];
