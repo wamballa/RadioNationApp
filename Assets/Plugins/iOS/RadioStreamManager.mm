@@ -376,6 +376,7 @@ void setupRemoteCommands(void) {
 
     // Handle play command (toggle between play and stop)
     [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+        SetLastConsoleLog(@"[setupRemoteCommands] PLAY pressed");
         if (player) {
             if (currentState == StatePlaying) {
                 NSLog(@"✅ setupRemoteCommands Stop playing if already playing");
