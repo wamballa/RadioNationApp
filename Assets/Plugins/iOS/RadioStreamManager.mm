@@ -179,6 +179,10 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
 
         [info setObject:@(playbackRate) forKey:MPNowPlayingInfoPropertyPlaybackRate]; // <-- KEY LINE!
 
+        if (playbackRate == 0.0f && player) {
+            [info setObject:@(CMTimeGetSeconds(player.currentTime)) forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+
+
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
 }
