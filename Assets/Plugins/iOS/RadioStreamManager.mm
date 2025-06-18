@@ -48,7 +48,7 @@ void fetchNowPlaying(NSString *urlStr);
 bool IsNetworkReachable(void);
 void setupRemoteCommands(void);
 void setupNetworkMonitor(void);
-void UpdateNowPlayingLockscreen(NSString* title);
+void UpdateNowPlayingLockscreen(NSString* title, float playbackRate);
 
 // --- State tracking ---å
 typedef NS_ENUM(NSInteger, PlaybackState) {
