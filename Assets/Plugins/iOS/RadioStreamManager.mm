@@ -112,7 +112,8 @@ void updatePlayerState(PlaybackState newState) {
                             NSString *nowPlaying = json[@"now_playing"];
                             if (nowPlaying && nowPlaying.length > 0) {
                                 nowPlayingText = nowPlaying;
-                                UpdateNowPlayingLockscreen(nowPlaying);
+                                UpdateNowPlayingLockscreen(nowPlaying, 1.0f);
+                                // UpdateNowPlayingLockscreen(nowPlaying);
                             }
                         }
                     }
@@ -120,20 +121,23 @@ void updatePlayerState(PlaybackState newState) {
                 [task resume];
             }
         }];
+    } else {
+        // Covers stopped, offline, error, initial, etc
+        UpdateNowPlayingLockscreen(nowPlayingText, 0.0f);
     }
 
-    if (newState == StateStopped || newState == StateOffline || newState == StateError) {
+    // if (newState == StateStopped || newState == StateOffline || newState == StateError) {
 
-        // Option 1: If you want to keep metadata and only update the rate (best for your case)
-        NSMutableDictionary *info = [NSMutableDictionary dictionaryWithDictionary:[MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo];
-        if (info) {
-            info[MPNowPlayingInfoPropertyPlaybackRate] = @0.0; // <-- Stopped/paused
-            [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
-        }
-        // if (newState != StateStopped) {
-        //     [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
-        // }
-    }
+    //     // Option 1: If you want to keep metadata and only update the rate (best for your case)
+    //     NSMutableDictionary *info = [NSMutableDictionary dictionaryWithDictionary:[MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo];
+    //     if (info) {
+    //         info[MPNowPlayingInfoPropertyPlaybackRate] = @0.0; // <-- Stopped/paused
+    //         [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
+    //     }
+    //     // if (newState != StateStopped) {
+    //     //     [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
+    //     // }
+    // }
 
 }
 
@@ -152,7 +156,7 @@ extern "C" void UpdateNowPlayingText(const char* text)
     }
 }
 
-void UpdateNowPlayingLockscreen(NSString* title) {
+void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
     @autoreleasepool {
         if (title == nil || title.length == 0) return;
 
@@ -166,6 +170,8 @@ void UpdateNowPlayingLockscreen(NSString* title) {
             }];
             [info setObject:artwork forKey:MPMediaItemPropertyArtwork];
         }
+
+        [info setObject:@(playbackRate) forKey:MPNowPlayingInfoPropertyPlaybackRate]; // <-- KEY LINE!
 
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
