@@ -177,23 +177,6 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
     }
 }
 
-// Thread-safe setter for lastErrorReason
-static void SetLastErrorReason(NSString *reason) {
-    @synchronized(lastErrorReason) {
-        lastErrorReason = reason ? [reason copy] : @"Unknown";
-    }
-}
-
-static void SetLastConsoleLog(NSString *log) {
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"HH:mm:ss"];
-    NSString *currentTime = [formatter stringFromDate:[NSDate date]];
-    NSString *logWithTime = [NSString stringWithFormat:@"%@ %@", currentTime, (log ?: @"No Log")];
-
-    @synchronized(lastConsoleLog) {
-        lastConsoleLog = [logWithTime copy];
-    }
-}
 
 // Interruption handling
 __attribute__((constructor)) static void setupInterruptionNotifications() {
@@ -212,14 +195,22 @@ __attribute__((constructor)) static void setupInterruptionNotifications() {
     }];
 }
 
-
-
 extern "C" void StartStream(const char* url)
 {
     NSLog(@"✅ StartStream called");
 
     @autoreleasepool {
         NSString *urlStr = [NSString stringWithUTF8String:url];
+
+        // Only restart if URL is different or player is nil
+        if (player && lastStreamUrl && [lastStreamUrl isEqualToString:urlStr]) {
+            if (player.rate == 0.0) {
+                [player play];
+                updatePlayerState(StatePlaying);
+            }
+            return;
+        }
+
         lastStreamUrl = urlStr;
 
         if (!IsNetworkReachable()) {
@@ -344,20 +335,7 @@ extern "C" void StopStream()
     //[MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStateStopped;
 }
 
-extern "C" const char* GetPlaybackState()
-{
-static const char* state = "STOPPED"; // fallback
 
-    switch (currentState) {
-        case StateInitial:   return "INITIAL"; break;
-        case StatePlaying:   return "PLAYING"; break;
-        case StateBuffering: return "BUFFERING"; break;
-        case StateStopped:   return "STOPPED"; break;
-        case StateError:     return "ERROR"; break;
-        default:             return "STOPPED"; break;
-    }
-    return state;
-}
 
 void setupRemoteCommands(void) {
     MPRemoteCommandCenter *remote = [MPRemoteCommandCenter sharedCommandCenter];
@@ -443,6 +421,25 @@ bool IsNetworkReachable(void)
     return reachable;
 }
 
+// Thread-safe setter for lastErrorReason
+static void SetLastErrorReason(NSString *reason) {
+    @synchronized(lastErrorReason) {
+        lastErrorReason = reason ? [reason copy] : @"Unknown";
+    }
+}
+
+static void SetLastConsoleLog(NSString *log) {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"HH:mm:ss"];
+    NSString *currentTime = [formatter stringFromDate:[NSDate date]];
+    NSString *logWithTime = [NSString stringWithFormat:@"%@ %@", currentTime, (log ?: @"No Log")];
+
+    @synchronized(lastConsoleLog) {
+        lastConsoleLog = [logWithTime copy];
+    }
+}
+
+
 extern "C" const char* GetLastPlaybackError() {
     return [lastErrorReason UTF8String];
 }
@@ -469,7 +466,20 @@ extern "C" float GetConsoleLogFromIOS() {
     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
 }
 
+extern "C" const char* GetPlaybackState()
+{
+static const char* state = "STOPPED"; // fallback
 
+    switch (currentState) {
+        case StateInitial:   return "INITIAL"; break;
+        case StatePlaying:   return "PLAYING"; break;
+        case StateBuffering: return "BUFFERING"; break;
+        case StateStopped:   return "STOPPED"; break;
+        case StateError:     return "ERROR"; break;
+        default:             return "STOPPED"; break;
+    }
+    return state;
+}
     // [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
     //     SetLastConsoleLog(@"[setupRemoteCommands] PLAY pressed");
     //     if (player) {
