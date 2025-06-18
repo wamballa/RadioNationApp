@@ -204,7 +204,6 @@ __attribute__((constructor)) static void setupInterruptionNotifications() {
 extern "C" void StartStream(const char* url)
 {
 
-
     @autoreleasepool {
 
         NSString *urlStr = [NSString stringWithUTF8String:url];
@@ -297,7 +296,7 @@ extern "C" void StartStreamWithArtwork(const char* url, const char* station, voi
         currentFavicon = image;
 
         NSString *urlStr = [NSString stringWithUTF8String:url];
-        lastStreamUrl = urlStr;
+        // lastStreamUrl = urlStr;
         NSString *stationStr = [NSString stringWithUTF8String:station];
         currentStationName = stationStr;
 
@@ -337,6 +336,9 @@ extern "C" void StopStream()
 
     lastErrorReason = @"Stopped by user";
     updatePlayerState(StateStopped);
+
+        // Make sure lockscreen is updated on stop!
+    UpdateNowPlayingLockscreen(nowPlayingText, 0.0f);
 
     // Optionally clear lockscreen controls completely:
     //[[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
