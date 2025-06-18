@@ -129,15 +129,6 @@ void updatePlayerState(PlaybackState newState) {
         }
     }
 
-    MPNowPlayingPlaybackState playbackState;
-    switch (newState) {
-        case StatePlaying:   playbackState = MPNowPlayingPlaybackStatePlaying; break;
-        case StateStopped:   playbackState = MPNowPlayingPlaybackStateStopped; break;
-        case StateBuffering: playbackState = MPNowPlayingPlaybackStateInterrupted; break;
-        default:             playbackState = MPNowPlayingPlaybackStatePaused; break;
-    }
-    [MPNowPlayingInfoCenter defaultCenter].playbackState = playbackState;
-
 }
 
 extern "C" void UpdateNowPlayingText(const char* text)
@@ -209,31 +200,7 @@ __attribute__((constructor)) static void setupInterruptionNotifications() {
     }];
 }
 
-extern "C" const char* GetLastPlaybackError() {
-    return [lastErrorReason UTF8String];
-}
 
-extern "C" const char* GetLastConsoleLog() {
-    return [lastConsoleLog UTF8String];
-}
-
-extern "C" const char* GetNowPlayingText()
-{
-    return [nowPlayingText UTF8String];
-}
-
-extern "C" const char* GetLastStreamUrlText()
-{
-    return [lastStreamUrl UTF8String];
-}
-
-extern "C" float GetBufferingPercent() {
-    return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
-}
-
-extern "C" float GetConsoleLogFromIOS() {
-    return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
-}
 
 extern "C" void StartStream(const char* url)
 {
@@ -389,37 +356,9 @@ void setupRemoteCommands(void) {
             [player play];
             SetLastConsoleLog(@"[setupRemoteCommands] PLAY Button on BT Headset ");
             updatePlayerState(StatePlaying);
-            [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePlaying;
         }
         return MPRemoteCommandHandlerStatusSuccess;
     }];
-
-
-
-    // [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
-    //     SetLastConsoleLog(@"[setupRemoteCommands] PLAY pressed");
-    //     if (player) {
-    //         if (currentState == StatePlaying) {
-    //             NSLog(@"✅ setupRemoteCommands Stop playing if already playing");
-    //             SetLastConsoleLog(@"setupRemoteCommands Stop playing if already playing");
-    //             [player pause];  // Stop playing if already playing
-    //             updatePlayerState(StateStopped);  // Update state to stopped
-    //             [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused;
-    //         } else {
-    //             NSLog(@"✅ setupRemoteCommands Start playing if currently stopped");
-    //             SetLastConsoleLog(@"setupRemoteCommands Start playing if currently stopped");
-    //             [player play];  // Start playing if currently stopped
-    //             updatePlayerState(StatePlaying);  // Update state to playing
-    //             [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePlaying;
-    //         }
-    //     }  else if (lastStreamUrl != nil && lastStreamUrl.length > 0) {
-    //         NSLog(@"✅ setupRemoteCommands If player is nil (fully stopped), restart stream from last URL");
-    //         SetLastConsoleLog(@"setupRemoteCommands If player is nil (fully stopped), restart stream from last URL");
-    //         // If player is nil (fully stopped), restart stream from last URL
-    //         StartStream([lastStreamUrl UTF8String]);
-    //     }
-    //     return MPRemoteCommandHandlerStatusSuccess;
-    // }];
 
     // Handle pause command
     [remote.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
@@ -427,7 +366,6 @@ void setupRemoteCommands(void) {
             [player pause];
             SetLastConsoleLog(@"[setupRemoteCommands] User press Button on BT Headset to stop");
             updatePlayerState(StateStopped);  // Update state to stopped
-            [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused;
         }
         return MPRemoteCommandHandlerStatusSuccess;
     }];
@@ -488,3 +426,55 @@ bool IsNetworkReachable(void)
     dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, 6 * NSEC_PER_SEC));
     return reachable;
 }
+
+extern "C" const char* GetLastPlaybackError() {
+    return [lastErrorReason UTF8String];
+}
+
+extern "C" const char* GetLastConsoleLog() {
+    return [lastConsoleLog UTF8String];
+}
+
+extern "C" const char* GetNowPlayingText()
+{
+    return [nowPlayingText UTF8String];
+}
+
+extern "C" const char* GetLastStreamUrlText()
+{
+    return [lastStreamUrl UTF8String];
+}
+
+extern "C" float GetBufferingPercent() {
+    return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
+}
+
+extern "C" float GetConsoleLogFromIOS() {
+    return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
+}
+
+
+    // [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+    //     SetLastConsoleLog(@"[setupRemoteCommands] PLAY pressed");
+    //     if (player) {
+    //         if (currentState == StatePlaying) {
+    //             NSLog(@"✅ setupRemoteCommands Stop playing if already playing");
+    //             SetLastConsoleLog(@"setupRemoteCommands Stop playing if already playing");
+    //             [player pause];  // Stop playing if already playing
+    //             updatePlayerState(StateStopped);  // Update state to stopped
+    //             [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePaused;
+    //         } else {
+    //             NSLog(@"✅ setupRemoteCommands Start playing if currently stopped");
+    //             SetLastConsoleLog(@"setupRemoteCommands Start playing if currently stopped");
+    //             [player play];  // Start playing if currently stopped
+    //             updatePlayerState(StatePlaying);  // Update state to playing
+    //             [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStatePlaying;
+    //         }
+    //     }  else if (lastStreamUrl != nil && lastStreamUrl.length > 0) {
+    //         NSLog(@"✅ setupRemoteCommands If player is nil (fully stopped), restart stream from last URL");
+    //         SetLastConsoleLog(@"setupRemoteCommands If player is nil (fully stopped), restart stream from last URL");
+    //         // If player is nil (fully stopped), restart stream from last URL
+    //         StartStream([lastStreamUrl UTF8String]);
+    //     }
+    //     return MPRemoteCommandHandlerStatusSuccess;
+    // }];
