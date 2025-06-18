@@ -49,6 +49,8 @@ bool IsNetworkReachable(void);
 void setupRemoteCommands(void);
 void setupNetworkMonitor(void);
 void UpdateNowPlayingLockscreen(NSString* title, float playbackRate);
+static void SetLastErrorReason(NSString *reason);
+static void SetLastConsoleLog(NSString *log);
 
 // --- State tracking ---å
 typedef NS_ENUM(NSInteger, PlaybackState) {
