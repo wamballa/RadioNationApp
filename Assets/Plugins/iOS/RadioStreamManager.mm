@@ -317,15 +317,19 @@ extern "C" void StopStream()
 {
     if (player) {
         [player pause];
-//        player = nil;
-//        playerItem = nil;
+        //         player = nil;
+        //        playerItem = nil;
     }
     // currentFavicon = nil;
     // lastStreamUrl = nil;
 
     lastErrorReason = @"Stopped by user";
     updatePlayerState(StateStopped);
-    [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStateStopped;
+
+    // Optionally clear lockscreen controls completely:
+    //[[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
+
+    //[MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStateStopped;
 }
 
 extern "C" const char* GetPlaybackState()
