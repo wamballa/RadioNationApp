@@ -124,9 +124,15 @@ void updatePlayerState(PlaybackState newState) {
 
     if (newState == StateStopped || newState == StateOffline || newState == StateError) {
 
-        if (newState != StateStopped) {
-            [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
+        // Option 1: If you want to keep metadata and only update the rate (best for your case)
+        NSMutableDictionary *info = [NSMutableDictionary dictionaryWithDictionary:[MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo];
+        if (info) {
+            info[MPNowPlayingInfoPropertyPlaybackRate] = @0.0; // <-- Stopped/paused
+            [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
         }
+        // if (newState != StateStopped) {
+        //     [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
+        // }
     }
 
 }
