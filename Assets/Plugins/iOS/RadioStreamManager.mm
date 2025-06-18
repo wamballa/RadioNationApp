@@ -126,6 +126,8 @@ void updatePlayerState(PlaybackState newState) {
     } else {
         // Covers stopped, offline, error, initial, etc
         UpdateNowPlayingLockscreen(nowPlayingText, 0.0f);
+        [MPNowPlayingInfoCenter defaultCenter].playbackState = MPNowPlayingPlaybackStateStopped;
+
     }
 
     // if (newState == StateStopped || newState == StateOffline || newState == StateError) {
@@ -162,9 +164,11 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
 
     @autoreleasepool {
 
-        SetLastConsoleLog(@"[UpdateNowPlayingLockscreen] ");
+
 
         if (title == nil || title.length == 0) return;
+
+        SetLastConsoleLog(@"[UpdateNowPlayingLockscreen] ");
 
         // Now using NSString directly for title
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
@@ -178,10 +182,6 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
         }
 
         [info setObject:@(playbackRate) forKey:MPNowPlayingInfoPropertyPlaybackRate]; // <-- KEY LINE!
-
-        if (playbackRate == 0.0f && player) {
-            [info setObject:@(CMTimeGetSeconds(player.currentTime)) forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
-        }
 
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
     }
