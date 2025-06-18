@@ -326,6 +326,7 @@ extern "C" void StartStreamWithArtwork_Internal(const char* url, const char* sta
 
 extern "C" void StopStream()
 {
+    NSLog(@"✅ StopStream called");
     if (player) {
         [player pause];
         //         player = nil;
