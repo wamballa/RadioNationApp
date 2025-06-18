@@ -159,7 +159,11 @@ extern "C" void UpdateNowPlayingText(const char* text)
 }
 
 void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
+
     @autoreleasepool {
+
+        SetLastConsoleLog(@"[UpdateNowPlayingLockscreen] ");
+
         if (title == nil || title.length == 0) return;
 
         // Now using NSString directly for title
@@ -199,10 +203,13 @@ __attribute__((constructor)) static void setupInterruptionNotifications() {
 
 extern "C" void StartStream(const char* url)
 {
-    NSLog(@"✅ StartStream called");
+
 
     @autoreleasepool {
+
         NSString *urlStr = [NSString stringWithUTF8String:url];
+
+        NSLog(@"✅ StartStream called.....lastStreamUrl: %@  urlStr: %@", lastStreamUrl, urlStr);
 
         // Only restart if URL is different or player is nil
         if (player && lastStreamUrl && [lastStreamUrl isEqualToString:urlStr]) {
