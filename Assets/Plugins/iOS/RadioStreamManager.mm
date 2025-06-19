@@ -14,6 +14,19 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate);
 static void SetLastErrorReason(NSString *reason);
 static void SetLastConsoleLog(NSString *log);
 
+// static AVPlayer *player = nil;
+// static AVPlayerItem *playerItem = nil;
+// static NSString *lastStreamUrl = nil;
+// static nw_path_monitor_t pathMonitor = nil;
+static NSTimer *metadataTimer = nil;
+static NSString *nowPlayingText = @"Ready to go...";
+static UIImage *currentFavicon = nil;
+static NSString *currentStationName = @"";
+static NSString *lastErrorReason = @"No error";
+static NSString *lastConsoleLog = @"No log";
+
+// #pragma mark - Playback Control
+
 // --- State tracking ---å
 typedef NS_ENUM(NSInteger, PlaybackState) {
     StateInitial,
@@ -49,18 +62,7 @@ extern "C" void SetupAudioSession(void) {
 
 
 
-// static AVPlayer *player = nil;
-// static AVPlayerItem *playerItem = nil;
-// static NSString *lastStreamUrl = nil;
-// static nw_path_monitor_t pathMonitor = nil;
-// static NSTimer *metadataTimer = nil;
-// static NSString *nowPlayingText = @"Ready to go...";
-// static UIImage *currentFavicon = nil;
-// static NSString *currentStationName = @"";
-// static NSString *lastErrorReason = @"No error";
-// static NSString *lastConsoleLog = @"No log";
 
-// #pragma mark - Playback Control
 
 // static void syncPlaybackStateToNowPlaying(PlaybackState state) {
 //     MPNowPlayingPlaybackState playbackState;
