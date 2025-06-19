@@ -48,8 +48,7 @@ extern "C" void SetupAudioSession(void) {
     // Use Playback for background/remote control/Bluetooth support
     BOOL ok = [session setCategory:AVAudioSessionCategoryPlayback
                     mode:AVAudioSessionModeDefault
-                    options:AVAudioSessionCategoryOptionAllowBluetooth |
-                        AVAudioSessionCategoryOptionAllowBluetoothA2DP
+                    options:0
                     error:&error];
     if (!ok) NSLog(@"[AudioSession] Set category error: %@", error.localizedDescription);
 
