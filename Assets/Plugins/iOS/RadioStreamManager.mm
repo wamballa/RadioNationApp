@@ -50,10 +50,21 @@ extern "C" void SetupAudioSession(void) {
                     mode:AVAudioSessionModeDefault
                     options:0
                     error:&error];
-    if (!ok) NSLog(@"[AudioSession] Set category error: %@", error.localizedDescription);
+    if (!ok) {
+        NSLog(@"[AudioSession] Set category error: %@", error.localizedDescription);
+    }
+    else {
+        NSLog(@"Set category SUCCESS");
+    }
 
     ok = [session setActive:YES error:&error];
-    if (!ok) NSLog(@"[AudioSession] Set active error: %@", error.localizedDescription);
+    if (!ok) {
+        NSLog(@"[AudioSession] Set active error: %@", error.localizedDescription);
+    }
+    else {
+        NSLog(@"Set active SUCCESS");
+    }
+
 }
 
 
