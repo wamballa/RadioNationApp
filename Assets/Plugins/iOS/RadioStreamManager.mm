@@ -423,64 +423,64 @@ extern "C" void SetupAudioSession(void) {
 // }
 
 // Thread-safe setter for lastErrorReason
-static void SetLastErrorReason(NSString *reason) {
-    @synchronized(lastErrorReason) {
-        lastErrorReason = reason ? [reason copy] : @"Unknown";
-    }
-}
+// static void SetLastErrorReason(NSString *reason) {
+//     @synchronized(lastErrorReason) {
+//         lastErrorReason = reason ? [reason copy] : @"Unknown";
+//     }
+// }
 
-static void SetLastConsoleLog(NSString *log) {
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"HH:mm:ss"];
-    NSString *currentTime = [formatter stringFromDate:[NSDate date]];
-    NSString *logWithTime = [NSString stringWithFormat:@"%@ %@", currentTime, (log ?: @"No Log")];
+// static void SetLastConsoleLog(NSString *log) {
+//     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+//     [formatter setDateFormat:@"HH:mm:ss"];
+//     NSString *currentTime = [formatter stringFromDate:[NSDate date]];
+//     NSString *logWithTime = [NSString stringWithFormat:@"%@ %@", currentTime, (log ?: @"No Log")];
 
-    @synchronized(lastConsoleLog) {
-        lastConsoleLog = [logWithTime copy];
-    }
-}
+//     @synchronized(lastConsoleLog) {
+//         lastConsoleLog = [logWithTime copy];
+//     }
+// }
 
 
-extern "C" const char* GetLastPlaybackError() {
-    return [lastErrorReason UTF8String];
-}
+// extern "C" const char* GetLastPlaybackError() {
+//     return [lastErrorReason UTF8String];
+// }
 
-extern "C" const char* GetLastConsoleLog() {
-    return [lastConsoleLog UTF8String];
-}
+// extern "C" const char* GetLastConsoleLog() {
+//     return [lastConsoleLog UTF8String];
+// }
 
-extern "C" const char* GetNowPlayingText()
-{
-    return [nowPlayingText UTF8String];
-}
+// extern "C" const char* GetNowPlayingText()
+// {
+//     return [nowPlayingText UTF8String];
+// }
 
-extern "C" const char* GetLastStreamUrlText()
-{
-    return [lastStreamUrl UTF8String];
-}
+// extern "C" const char* GetLastStreamUrlText()
+// {
+//     return [lastStreamUrl UTF8String];
+// }
 
-extern "C" float GetBufferingPercent() {
-    return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
-}
+// extern "C" float GetBufferingPercent() {
+//     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
+// }
 
-extern "C" float GetConsoleLogFromIOS() {
-    return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
-}
+// extern "C" float GetConsoleLogFromIOS() {
+//     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
+// }
 
-extern "C" const char* GetPlaybackState()
-{
-static const char* state = "STOPPED"; // fallback
+// extern "C" const char* GetPlaybackState()
+// {
+//     static const char* state = "STOPPED"; // fallback
 
-    switch (currentState) {
-        case StateInitial:   return "INITIAL"; break;
-        case StatePlaying:   return "PLAYING"; break;
-        case StateBuffering: return "BUFFERING"; break;
-        case StateStopped:   return "STOPPED"; break;
-        case StateError:     return "ERROR"; break;
-        default:             return "STOPPED"; break;
-    }
-    return state;
-}
+//     switch (currentState) {
+//         case StateInitial:   return "INITIAL"; break;
+//         case StatePlaying:   return "PLAYING"; break;
+//         case StateBuffering: return "BUFFERING"; break;
+//         case StateStopped:   return "STOPPED"; break;
+//         case StateError:     return "ERROR"; break;
+//         default:             return "STOPPED"; break;
+//     }
+//     return state;
+// }
     // [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
     //     SetLastConsoleLog(@"[setupRemoteCommands] PLAY pressed");
     //     if (player) {
