@@ -26,7 +26,7 @@ public class iOSRadioLauncher : MonoBehaviour
             // debugTextforIOSState.text = "State = "+ state+"\nLast URL = "+url+"\nError: "+error+"\nLog: "+log;
             
             
-            debugTextforIOSState.text += "Log: "+log +"\n";
+            debugTextforIOSState.text += log +"\n";
             
             if (state == "PLAYING")
             {
