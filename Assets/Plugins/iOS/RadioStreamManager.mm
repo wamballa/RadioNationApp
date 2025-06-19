@@ -6,13 +6,13 @@
 // #import "NSObject+KVOBlock.h"
 
 
-// void fetchNowPlaying(NSString *urlStr);
-// bool IsNetworkReachable(void);
-// void setupRemoteCommands(void);
-// void setupNetworkMonitor(void);
-// void UpdateNowPlayingLockscreen(NSString* title, float playbackRate);
-// static void SetLastErrorReason(NSString *reason);
-// static void SetLastConsoleLog(NSString *log);
+void fetchNowPlaying(NSString *urlStr);
+bool IsNetworkReachable(void);
+void setupRemoteCommands(void);
+void setupNetworkMonitor(void);
+void UpdateNowPlayingLockscreen(NSString* title, float playbackRate);
+static void SetLastErrorReason(NSString *reason);
+static void SetLastConsoleLog(NSString *log);
 
 // --- State tracking ---å
 typedef NS_ENUM(NSInteger, PlaybackState) {
@@ -27,7 +27,7 @@ static PlaybackState currentState = StateInitial;
 
 static BOOL audioSessionSetup = NO;
 
-extern "C" static void SetupAudioSession(void) {
+extern "C" void SetupAudioSession(void) {
     NSError *error = nil;
     AVAudioSession *session = [AVAudioSession sharedInstance];
 
