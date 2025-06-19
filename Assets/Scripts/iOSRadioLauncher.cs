@@ -14,30 +14,41 @@ public class iOSRadioLauncher : MonoBehaviour
     private void Start()
     {
         Debug.Log("[IOSRADIOLAUNCHER] Start: " + CheckiOSPlaybackState());
+        SetUpAudioSessionUnity();
     }
 
-    void Update()
+        [DllImport("__Internal")]
+    private static extern void SetupAudioSession();
+
+    public static void SetUpAudioSessionUnity()
     {
-#if UNITY_IOS && !UNITY_EDITOR
-            string state = iOSRadioLauncher.CheckiOSPlaybackState();
-            // string url = iOSRadioLauncher.GetLastStreamUrl_Text();
-            // string error = iOSRadioLauncher.GetLastPlaybackErrorMessage();
-            string log = iOSRadioLauncher.GetLastConsoleLogMessage();
-            // debugTextforIOSState.text = "State = "+ state+"\nLast URL = "+url+"\nError: "+error+"\nLog: "+log;
-            
-            
-            debugTextforIOSState.text += log +"\n";
-            
-            if (state == "PLAYING")
-            {
-                playbackTime += Time.deltaTime;
-            }
-            else if (state == "STOPPED" || state == "BUFFERING" || state == "ERROR")
-            {
-                playbackTime = 0f;
-            }
-#endif
+        #if UNITY_IOS && !UNITY_EDITOR
+        SetupAudioSession();
+        #endif
     }
+
+//     void Update()
+//     {
+// #if UNITY_IOS && !UNITY_EDITOR
+//             string state = iOSRadioLauncher.CheckiOSPlaybackState();
+//             // string url = iOSRadioLauncher.GetLastStreamUrl_Text();
+//             // string error = iOSRadioLauncher.GetLastPlaybackErrorMessage();
+//             string log = iOSRadioLauncher.GetLastConsoleLogMessage();
+//             // debugTextforIOSState.text = "State = "+ state+"\nLast URL = "+url+"\nError: "+error+"\nLog: "+log;
+            
+            
+//             debugTextforIOSState.text += log +"\n";
+            
+//             if (state == "PLAYING")
+//             {
+//                 playbackTime += Time.deltaTime;
+//             }
+//             else if (state == "STOPPED" || state == "BUFFERING" || state == "ERROR")
+//             {
+//                 playbackTime = 0f;
+//             }
+// #endif
+//     }
 
 #if UNITY_IOS && !UNITY_EDITOR
     [DllImport("__Internal")]
