@@ -16,7 +16,7 @@ static void SetLastConsoleLog(NSString *log);
 
 // static AVPlayer *player = nil;
 // static AVPlayerItem *playerItem = nil;
-// static NSString *lastStreamUrl = nil;
+
 // static nw_path_monitor_t pathMonitor = nil;
 static NSTimer *metadataTimer = nil;
 static NSString *nowPlayingText = @"Ready to go...";
@@ -24,6 +24,7 @@ static UIImage *currentFavicon = nil;
 static NSString *currentStationName = @"";
 static NSString *lastErrorReason = @"No error";
 static NSString *lastConsoleLog = @"No log";
+static NSString *lastStreamUrl = nil;
 
 // #pragma mark - Playback Control
 
