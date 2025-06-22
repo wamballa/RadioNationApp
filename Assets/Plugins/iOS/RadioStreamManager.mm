@@ -14,8 +14,9 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate);
 static void SetLastErrorReason(NSString *reason);
 static void SetLastConsoleLog(NSString *log);
 
-// static AVPlayer *player = nil;
-// static AVPlayerItem *playerItem = nil;
+static AVPlayer *player = nil;
+static AVPlayerItem *playerItem = nil;
+
 
 // static nw_path_monitor_t pathMonitor = nil;
 static NSTimer *metadataTimer = nil;
