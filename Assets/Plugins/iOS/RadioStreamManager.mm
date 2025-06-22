@@ -69,13 +69,15 @@ extern "C" void SetupAudioSession(void) {
 }
 
 extern "C" void StartStream(const char* url) {
+
+
     @autoreleasepool {
         if (player) {
             [player pause];
             player = nil;
             playerItem = nil;
         }
-
+        NSLog(@"[StartStream] Called with URL: %s", url);
         NSString *urlStr = [NSString stringWithUTF8String:url];
         NSURL *streamURL = [NSURL URLWithString:urlStr];
 
@@ -87,7 +89,10 @@ extern "C" void StartStream(const char* url) {
 }
 
 extern "C" void StopStream() {
+
+
     if (player) {
+        NSLog(@"[StopStream] Called");  
         [player pause];
         player = nil;
         playerItem = nil;
