@@ -73,6 +73,7 @@ extern "C" void StartStream(const char* url) {
 
     @autoreleasepool {
         if (player) {
+            NSLog(@"[StartStream] player exists. Pausing!");
             [player pause];
             player = nil;
             playerItem = nil;
