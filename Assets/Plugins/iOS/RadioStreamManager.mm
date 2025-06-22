@@ -67,6 +67,33 @@ extern "C" void SetupAudioSession(void) {
 
 }
 
+extern "C" void StartStream(const char* url) {
+    @autoreleasepool {
+        if (player) {
+            [player pause];
+            player = nil;
+            playerItem = nil;
+        }
+
+        NSString *urlStr = [NSString stringWithUTF8String:url];
+        NSURL *streamURL = [NSURL URLWithString:urlStr];
+
+        playerItem = [AVPlayerItem playerItemWithURL:streamURL];
+        player = [AVPlayer playerWithPlayerItem:playerItem];
+
+        [player play];
+    }
+}
+
+extern "C" void StopStream() {
+    if (player) {
+        [player pause];
+        player = nil;
+        playerItem = nil;
+    }
+}
+
+
 
 
 // static void syncPlaybackStateToNowPlaying(PlaybackState state) {

@@ -17,53 +17,53 @@ public class iOSRadioLauncher : MonoBehaviour
         SetUpAudioSessionUnity();
     }
 
-        [DllImport("__Internal")]
+    [DllImport("__Internal")]
     private static extern void SetupAudioSession();
 
     public static void SetUpAudioSessionUnity()
     {
-        #if UNITY_IOS && !UNITY_EDITOR
+#if UNITY_IOS && !UNITY_EDITOR
         SetupAudioSession();
-        #endif
+#endif
     }
 
-//     void Update()
-//     {
-// #if UNITY_IOS && !UNITY_EDITOR
-//             string state = iOSRadioLauncher.CheckiOSPlaybackState();
-//             // string url = iOSRadioLauncher.GetLastStreamUrl_Text();
-//             // string error = iOSRadioLauncher.GetLastPlaybackErrorMessage();
-//             string log = iOSRadioLauncher.GetLastConsoleLogMessage();
-//             // debugTextforIOSState.text = "State = "+ state+"\nLast URL = "+url+"\nError: "+error+"\nLog: "+log;
-            
-            
-//             debugTextforIOSState.text += log +"\n";
-            
-//             if (state == "PLAYING")
-//             {
-//                 playbackTime += Time.deltaTime;
-//             }
-//             else if (state == "STOPPED" || state == "BUFFERING" || state == "ERROR")
-//             {
-//                 playbackTime = 0f;
-//             }
-// #endif
-//     }
+    //     void Update()
+    //     {
+    // #if UNITY_IOS && !UNITY_EDITOR
+    //             string state = iOSRadioLauncher.CheckiOSPlaybackState();
+    //             // string url = iOSRadioLauncher.GetLastStreamUrl_Text();
+    //             // string error = iOSRadioLauncher.GetLastPlaybackErrorMessage();
+    //             string log = iOSRadioLauncher.GetLastConsoleLogMessage();
+    //             // debugTextforIOSState.text = "State = "+ state+"\nLast URL = "+url+"\nError: "+error+"\nLog: "+log;
 
-// #if UNITY_IOS && !UNITY_EDITOR
-//     [DllImport("__Internal")]
-//     private static extern IntPtr GetLastConsoleLog();
-// #endif
 
-//     public static string GetLastConsoleLogMessage()
-//     {
-// #if UNITY_IOS && !UNITY_EDITOR
-//     IntPtr ptr = GetLastConsoleLog();
-//     return Marshal.PtrToStringUTF8(ptr);
-// #else
-//         return "Logs unavailable in editor";
-// #endif
-//     }
+    //             debugTextforIOSState.text += log +"\n";
+
+    //             if (state == "PLAYING")
+    //             {
+    //                 playbackTime += Time.deltaTime;
+    //             }
+    //             else if (state == "STOPPED" || state == "BUFFERING" || state == "ERROR")
+    //             {
+    //                 playbackTime = 0f;
+    //             }
+    // #endif
+    //     }
+
+    // #if UNITY_IOS && !UNITY_EDITOR
+    //     [DllImport("__Internal")]
+    //     private static extern IntPtr GetLastConsoleLog();
+    // #endif
+
+    //     public static string GetLastConsoleLogMessage()
+    //     {
+    // #if UNITY_IOS && !UNITY_EDITOR
+    //     IntPtr ptr = GetLastConsoleLog();
+    //     return Marshal.PtrToStringUTF8(ptr);
+    // #else
+    //         return "Logs unavailable in editor";
+    // #endif
+    //     }
 
 #if UNITY_IOS && !UNITY_EDITOR
     // [DllImport("__Internal")]
@@ -81,25 +81,31 @@ public class iOSRadioLauncher : MonoBehaviour
 #endif
     }
 
-//     [DllImport("__Internal")]
-//     private static extern IntPtr GetNowPlayingText();
+    //     [DllImport("__Internal")]
+    //     private static extern IntPtr GetNowPlayingText();
 
-//     public static string GetiOSNowPlaying()
-//     {
-// #if UNITY_IOS && !UNITY_EDITOR
-//     IntPtr ptr = GetNowPlayingText();
-//     return Marshal.PtrToStringUTF8(ptr);
-// #else
-//         return "Streaming...";
-// #endif
-//     }
+    //     public static string GetiOSNowPlaying()
+    //     {
+    // #if UNITY_IOS && !UNITY_EDITOR
+    //     IntPtr ptr = GetNowPlayingText();
+    //     return Marshal.PtrToStringUTF8(ptr);
+    // #else
+    //         return "Streaming...";
+    // #endif
+    //     }
 
 
-//     [Serializable]
-//     private class NowPlayingWrapper
-//     {
-//         public string now_playing;
-//     }
+    //     [Serializable]
+    //     private class NowPlayingWrapper
+    //     {
+    //         public string now_playing;
+    //     }
+
+    //     [DllImport("__Internal")]
+    //     private static extern void StartStreamWithArtwork_Internal(string url, string stationName, IntPtr artwork, int length);
+
+    [DllImport("__Internal")]
+    private static extern void StartStream(string url);
 
     public static void StartNativeStream(string url, string stationName, Texture2D favicon)
     {
@@ -117,66 +123,70 @@ public class iOSRadioLauncher : MonoBehaviour
             //     handle.Free();
             // }
 
+            StartStream(url);
+
+            //
+
 #endif
     }
-
-//     [DllImport("__Internal")]
-//     private static extern void StartStreamWithArtwork_Internal(string url, string stationName, IntPtr artwork, int length);
-
-//     [DllImport("__Internal")]
-//     private static extern float GetBufferingPercent();
-
-//     public static float GetiOSBufferingPercent()
-//     {
-// #if UNITY_IOS && !UNITY_EDITOR
-//     return GetBufferingPercent();
-// #else
-//         return 0f;
-// #endif
-//     }
-
-//     public string GetiOSPlaybackTime()
-//     {
-//         TimeSpan timeSpan = TimeSpan.FromSeconds(playbackTime);
-//         return string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
-//     }
-
-
-//     [DllImport("__Internal")]
-//     private static extern System.IntPtr GetPlaybackState();
-
-//     public static string CheckiOSPlaybackState()
-//     {
-// #if UNITY_IOS && !UNITY_EDITOR
-//     IntPtr strPtr = GetPlaybackState();
-//     return Marshal.PtrToStringAnsi(strPtr);
-// #else
-//         return "STOPPED";
-// #endif
-//     }
-
-//     [DllImport("__Internal")]
-//     private static extern System.IntPtr GetLastStreamUrlText();
-
-//     public static string GetLastStreamUrl_Text()
-//     {
-// #if UNITY_IOS && !UNITY_EDITOR
-//     IntPtr strPtr = GetLastStreamUrlText();
-//     return Marshal.PtrToStringAnsi(strPtr);
-// #else
-//         return "EMPTY";
-// #endif
-//     }
-
-    // [DllImport("__Internal")]
-    // private static extern void StopStream();
+    
+    [DllImport("__Internal")]
+    private static extern void StopStream();
 
     public static void StopNativeStream()
     {
 #if UNITY_IOS && !UNITY_EDITOR
-        // StopStream();
+        StopStream();
 #endif
     }
+
+
+//     [DllImport("__Internal")]
+    //     private static extern float GetBufferingPercent();
+
+    //     public static float GetiOSBufferingPercent()
+    //     {
+    // #if UNITY_IOS && !UNITY_EDITOR
+    //     return GetBufferingPercent();
+    // #else
+    //         return 0f;
+    // #endif
+    //     }
+
+    //     public string GetiOSPlaybackTime()
+    //     {
+    //         TimeSpan timeSpan = TimeSpan.FromSeconds(playbackTime);
+    //         return string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+    //     }
+
+
+    //     [DllImport("__Internal")]
+    //     private static extern System.IntPtr GetPlaybackState();
+
+    //     public static string CheckiOSPlaybackState()
+    //     {
+    // #if UNITY_IOS && !UNITY_EDITOR
+    //     IntPtr strPtr = GetPlaybackState();
+    //     return Marshal.PtrToStringAnsi(strPtr);
+    // #else
+    //         return "STOPPED";
+    // #endif
+    //     }
+
+    //     [DllImport("__Internal")]
+    //     private static extern System.IntPtr GetLastStreamUrlText();
+
+    //     public static string GetLastStreamUrl_Text()
+    //     {
+    // #if UNITY_IOS && !UNITY_EDITOR
+    //     IntPtr strPtr = GetLastStreamUrlText();
+    //     return Marshal.PtrToStringAnsi(strPtr);
+    // #else
+    //         return "EMPTY";
+    // #endif
+    //     }
+
+
 
 
 
