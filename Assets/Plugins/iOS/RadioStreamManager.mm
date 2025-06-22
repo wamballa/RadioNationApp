@@ -43,33 +43,16 @@ static PlaybackState currentState = StateInitial;
 static BOOL audioSessionSetup = NO;
 
 extern "C" void SetupAudioSession(void) {
-    
-    NSError *error = nil;
+
+NSError *error = nil;
     AVAudioSession *session = [AVAudioSession sharedInstance];
-
-    // Use Playback for background/remote control/Bluetooth support
-    BOOL ok = [session setCategory:AVAudioSessionCategoryPlayback
-            withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP
-            error:&error];
-
-    if (!ok) {
-        NSLog(@"[AudioSession] Set category error: %@", error.localizedDescription);
-    }
-    else {
-        NSLog(@"Set category SUCCESS");
-    }
-
-    if (error) {
-        NSLog(@"Error setting up audio session: %@", error.localizedDescription);
-    }
-
+    BOOL ok = [session setCategory:AVAudioSessionCategoryPlayback error:&error];
+    if (!ok) NSLog(@"[AudioSession] Set category error: %@", error.localizedDescription);
+    else NSLog(@"Set category SUCCESS");
     ok = [session setActive:YES error:&error];
-    if (!ok) {
-        NSLog(@"[AudioSession] Set active error: %@", error.localizedDescription);
-    }
-    else {
-        NSLog(@"Set active SUCCESS");
-    }
+    if (!ok) NSLog(@"[AudioSession] Set active error: %@", error.localizedDescription);
+    else NSLog(@"Set active SUCCESS");
+
 
 }
 
