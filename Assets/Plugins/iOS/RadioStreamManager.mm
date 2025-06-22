@@ -43,19 +43,24 @@ static PlaybackState currentState = StateInitial;
 static BOOL audioSessionSetup = NO;
 
 extern "C" void SetupAudioSession(void) {
+    
     NSError *error = nil;
     AVAudioSession *session = [AVAudioSession sharedInstance];
 
     // Use Playback for background/remote control/Bluetooth support
     BOOL ok = [session setCategory:AVAudioSessionCategoryPlayback
-                    mode:AVAudioSessionModeDefault
-                    options:0
-                    error:&error];
+            withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP
+            error:&error];
+
     if (!ok) {
         NSLog(@"[AudioSession] Set category error: %@", error.localizedDescription);
     }
     else {
         NSLog(@"Set category SUCCESS");
+    }
+
+    if (error) {
+        NSLog(@"Error setting up audio session: %@", error.localizedDescription);
     }
 
     ok = [session setActive:YES error:&error];
@@ -79,6 +84,19 @@ extern "C" void StartStream(const char* url) {
             playerItem = nil;
         }
         NSLog(@"[StartStream] Called with URL: %s", url);
+
+                // Configure the AVAudioSession for background audio playback
+        NSError *error = nil;
+        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+        [audioSession setCategory:AVAudioSessionCategoryPlayback
+              withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP
+                    error:&error];
+        [audioSession setActive:YES error:&error];
+
+        if (error) {
+            NSLog(@"Error setting up audio session: %@", error.localizedDescription);
+        }
+
         NSString *urlStr = [NSString stringWithUTF8String:url];
         NSURL *streamURL = [NSURL URLWithString:urlStr];
 
