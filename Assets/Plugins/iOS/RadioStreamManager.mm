@@ -1,3 +1,53 @@
+// 1. [] Audio session setup
+
+// Configure and activate AVAudioSession in its own function.
+
+// Test session activation on Unity app launch.
+// (COMPLETE)
+
+// 2. [⬜] Core playback object
+
+// Set up a simple AVPlayer instance for streaming.
+
+// Minimal: Just play/pause/stop.
+
+// No remote commands or metadata yet.
+
+// 3. [⬜] Stream start/stop logic
+
+// Implement StartStream and StopStream to control AVPlayer.
+
+// Ensure starting/stopping a new stream does not duplicate AVAudioSession setup.
+
+// Handle edge cases: new URL, same URL, repeated play/stop.
+
+// 4. [⬜] Lock screen info
+
+// Add/update lock screen “Now Playing” info via MPNowPlayingInfoCenter.
+
+// Show stream title and artwork.
+
+// 5. [⬜] Remote controls
+
+// Integrate MPRemoteCommandCenter for play/pause via Bluetooth/lock screen.
+
+// Make sure play/pause/stop update both AVPlayer and lock screen.
+
+// 6. [⬜] Metadata fetching
+
+// Periodically fetch “Now Playing” metadata and push updates to the lock screen.
+
+// 7. [⬜] Network/interruption handling
+
+// React to network changes, interruptions, and Bluetooth device disconnects.
+
+// 8. [⬜] Testing and final tidy up
+
+// Test all control paths: Unity UI, lock screen, BT headset, interruption, AirPods, etc.
+
+// Comment and clean up.
+
+
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <UIKit/UIKit.h>
@@ -46,12 +96,18 @@ extern "C" void StartStream(const char* url) {
 
     @autoreleasepool {
 
-        if (player) {
-            NSLog(@"[StartStream] player exists. Pausing!");
-            [player pause];
-            player = nil;
-            playerItem = nil;
+        // If already playing same stream, do nothing
+        if (player && lastStreamUrl && [lastStreamUrl isEqualToString:urlStr] && player.rate != 0.0) {
+            NSLog(@"[StartStream] Already playing this stream");
+            return;
         }
+
+        // if (player) {
+        //     NSLog(@"[StartStream] player exists. Pausing!");
+        //     [player pause];
+        //     player = nil;
+        //     playerItem = nil;
+        // }
 
         NSLog(@"[StartStream] Called with URL: %s", url);
 
