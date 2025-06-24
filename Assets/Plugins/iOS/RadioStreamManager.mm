@@ -82,22 +82,27 @@ static void syncPlaybackStateToNowPlaying(PlaybackState state) {
 
 void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
 
-    if (!title || title.length == 0) 
+    @autoreleasepool
     {
-        NSLog(@"[UpdateNowPlayingLockscreen] No title");
-        return;
-    }
+        NSLog(@"[UpdateNowPlayingLockscreen]");
 
-    NSMutableDictionary *info = [NSMutableDictionary dictionary];
-    info[MPMediaItemPropertyTitle] = title;
-    if (currentFavicon) {
-        MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
-            return currentFavicon;
-        }];
-        info[MPMediaItemPropertyArtwork] = artwork;
+        if (!title || title.length == 0) 
+        {
+            NSLog(@"[UpdateNowPlayingLockscreen] No title");
+            return;
+        }
+
+        NSMutableDictionary *info = [NSMutableDictionary dictionary];
+        info[MPMediaItemPropertyTitle] = title;
+        if (currentFavicon) {
+            MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
+                return currentFavicon;
+            }];
+            info[MPMediaItemPropertyArtwork] = artwork;
+        }
+        info[MPNowPlayingInfoPropertyPlaybackRate] = @(playbackRate);
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
     }
-    info[MPNowPlayingInfoPropertyPlaybackRate] = @(playbackRate);
-    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
 }
 
 void updatePlayerState(PlaybackState newState) {
