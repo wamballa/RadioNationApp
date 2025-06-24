@@ -106,6 +106,9 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
 }
 
 void updatePlayerState(PlaybackState newState) {
+
+    NSLog(@"[updatePlayerState]");
+
     currentState = newState;
     syncPlaybackStateToNowPlaying(newState);
 
