@@ -92,7 +92,7 @@ extern "C" void StartStream(const char* url) {
 
         if (player.error) {
             NSLog(@"[AVPlayer] error: %@", player.error);
-}
+        }
     }
 }
 
