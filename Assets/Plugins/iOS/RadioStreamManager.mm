@@ -61,12 +61,12 @@ extern "C" void StartStream(const char* url) {
 
     @autoreleasepool {
 
-        if (player) {
-            NSLog(@"[StartStream] player exists. Pausing!");
-            [player pause];
-            player = nil;
-            playerItem = nil;
-        }
+        // if (player) {
+        //     NSLog(@"[StartStream] player exists. Pausing!");
+        //     [player pause];
+        //     player = nil;
+        //     playerItem = nil;
+        // }
         NSLog(@"[StartStream] Called with URL: %s", url);
 
 
@@ -109,6 +109,7 @@ extern "C" void StartStream(const char* url) {
 
 
         [player play];
+        NSLog(@"[StartStream] PLay now");
     }
 }
 

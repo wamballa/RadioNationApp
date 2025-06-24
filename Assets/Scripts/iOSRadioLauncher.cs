@@ -14,7 +14,7 @@ public class iOSRadioLauncher : MonoBehaviour
     private void Start()
     {
         Debug.Log("[IOSRADIOLAUNCHER] Start ");
-        SetUpAudioSessionUnity();
+        // SetUpAudioSessionUnity();
     }
 
     [DllImport("__Internal")]
