@@ -45,13 +45,13 @@ static BOOL audioSessionSetup = NO;
 extern "C" void SetupAudioSession(void) {
 
 NSError *error = nil;
-    AVAudioSession *session = [AVAudioSession sharedInstance];
-    BOOL ok = [session setCategory:AVAudioSessionCategoryPlayback error:&error];
-    if (!ok) NSLog(@"[AudioSession] Set category error: %@", error.localizedDescription);
-    else NSLog(@"Set category SUCCESS");
-    ok = [session setActive:YES error:&error];
-    if (!ok) NSLog(@"[AudioSession] Set active error: %@", error.localizedDescription);
-    else NSLog(@"Set active SUCCESS");
+    // AVAudioSession *session = [AVAudioSession sharedInstance];
+    // BOOL ok = [session setCategory:AVAudioSessionCategoryPlayback error:&error];
+    // if (!ok) NSLog(@"[AudioSession] Set category error: %@", error.localizedDescription);
+    // else NSLog(@"Set category SUCCESS");
+    // ok = [session setActive:YES error:&error];
+    // if (!ok) NSLog(@"[AudioSession] Set active error: %@", error.localizedDescription);
+    // else NSLog(@"Set active SUCCESS");
 
 
 }
@@ -60,6 +60,7 @@ extern "C" void StartStream(const char* url) {
 
 
     @autoreleasepool {
+
         if (player) {
             NSLog(@"[StartStream] player exists. Pausing!");
             [player pause];
@@ -67,6 +68,8 @@ extern "C" void StartStream(const char* url) {
             playerItem = nil;
         }
         NSLog(@"[StartStream] Called with URL: %s", url);
+
+
 
                 // Configure the AVAudioSession for background audio playback
         NSError *error = nil;
@@ -83,8 +86,29 @@ extern "C" void StartStream(const char* url) {
         NSString *urlStr = [NSString stringWithUTF8String:url];
         NSURL *streamURL = [NSURL URLWithString:urlStr];
 
+        lastStreamUrl = urlStr;
+
         playerItem = [AVPlayerItem playerItemWithURL:streamURL];
         player = [AVPlayer playerWithPlayerItem:playerItem];
+
+        // Observe player item status
+        // [playerItem addObserverForKeyPath:@"status"
+        //                            options:NSKeyValueObservingOptionNew
+        //                            context:nil
+        //                           usingBlock:^(id _Nonnull object, NSDictionary<NSKeyValueChangeKey,id> * _Nonnull change) {
+        //     AVPlayerItem *item = (AVPlayerItem *)object;
+        //     if (item.status == AVPlayerItemStatusReadyToPlay) {
+        //         if (currentState == StateBuffering) {
+        //             updatePlayerState(StatePlaying);
+        //         }
+        //     } else if (item.status == AVPlayerItemStatusFailed) {
+        //         NSError *error = item.error;
+        //         lastErrorReason = error ? error.localizedDescription : @"Unknown error";
+        //         NSLog(@"[AVPlayerItemStatusFailed] %@", lastErrorReason);
+        //         updatePlayerState(StateError);
+        //     }
+        // }];
+
 
         [player play];
     }
