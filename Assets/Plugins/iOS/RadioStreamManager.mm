@@ -41,7 +41,6 @@ void setupNetworkMonitor(void);
 void UpdateNowPlayingLockscreen(NSString* title, float playbackRate);
 static void SetLastErrorReason(NSString *reason);
 static void SetLastConsoleLog(NSString *log);
-void updatePlayerState(PlaybackState newState);
 
 static AVPlayer *player = nil;
 static AVPlayerItem *playerItem = nil;
@@ -69,7 +68,45 @@ typedef NS_ENUM(NSInteger, PlaybackState) {
 };
 static PlaybackState currentState = StateInitial;
 
-static BOOL audioSessionSetup = NO;
+static void syncPlaybackStateToNowPlaying(PlaybackState state) {
+    MPNowPlayingPlaybackState playbackState;
+    switch (state) {
+        case StatePlaying:   playbackState = MPNowPlayingPlaybackStatePlaying; break;
+        case StateStopped:   playbackState = MPNowPlayingPlaybackStateStopped; break;
+        case StateBuffering: playbackState = MPNowPlayingPlaybackStateInterrupted; break;
+        case StateError:     playbackState = MPNowPlayingPlaybackStatePaused; break;
+        default:             playbackState = MPNowPlayingPlaybackStatePaused; break;
+    }
+    [MPNowPlayingInfoCenter defaultCenter].playbackState = playbackState;
+}
+
+void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
+
+    if (!title || title.length == 0) 
+    {
+        NSLog(@"[UpdateNowPlayingLockscreen] No title");
+        return;
+    }
+
+    NSMutableDictionary *info = [NSMutableDictionary dictionary];
+    info[MPMediaItemPropertyTitle] = title;
+    if (currentFavicon) {
+        MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
+            return currentFavicon;
+        }];
+        info[MPMediaItemPropertyArtwork] = artwork;
+    }
+    info[MPNowPlayingInfoPropertyPlaybackRate] = @(playbackRate);
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
+}
+
+void updatePlayerState(PlaybackState newState) {
+    currentState = newState;
+    syncPlaybackStateToNowPlaying(newState);
+
+    float playbackRate = (newState == StatePlaying) ? 1.0f : 0.0f;
+    UpdateNowPlayingLockscreen(currentStationName, playbackRate);
+}
 
 extern "C" void StartStream(const char* url, const char* station, void* imageData, int length) {
 
@@ -153,40 +190,7 @@ extern "C" void StopStream() {
 
 
 
-static void syncPlaybackStateToNowPlaying(PlaybackState state) {
-    MPNowPlayingPlaybackState playbackState;
-    switch (state) {
-        case StatePlaying:   playbackState = MPNowPlayingPlaybackStatePlaying; break;
-        case StateStopped:   playbackState = MPNowPlayingPlaybackStateStopped; break;
-        case StateBuffering: playbackState = MPNowPlayingPlaybackStateInterrupted; break;
-        case StateError:     playbackState = MPNowPlayingPlaybackStatePaused; break;
-        default:             playbackState = MPNowPlayingPlaybackStatePaused; break;
-    }
-    [MPNowPlayingInfoCenter defaultCenter].playbackState = playbackState;
-}
 
-void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
-    if (!title || title.length == 0) return;
-
-    NSMutableDictionary *info = [NSMutableDictionary dictionary];
-    info[MPMediaItemPropertyTitle] = title;
-    if (currentFavicon) {
-        MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
-            return currentFavicon;
-        }];
-        info[MPMediaItemPropertyArtwork] = artwork;
-    }
-    info[MPNowPlayingInfoPropertyPlaybackRate] = @(playbackRate);
-    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
-}
-
-void updatePlayerState(PlaybackState newState) {
-    currentState = newState;
-    syncPlaybackStateToNowPlaying(newState);
-
-    float playbackRate = (newState == StatePlaying) ? 1.0f : 0.0f;
-    UpdateNowPlayingLockscreen(currentStationName, playbackRate);
-}
 
 
 
@@ -563,38 +567,39 @@ void updatePlayerState(PlaybackState newState) {
 //     return [lastConsoleLog UTF8String];
 // }
 
-// extern "C" const char* GetNowPlayingText()
-// {
-//     return [nowPlayingText UTF8String];
-// }
+extern "C" const char* GetNowPlayingText()
+{
+    return [nowPlayingText UTF8String];
+}
 
 // extern "C" const char* GetLastStreamUrlText()
 // {
 //     return [lastStreamUrl UTF8String];
 // }
 
-// extern "C" float GetBufferingPercent() {
-//     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
-// }
+extern "C" float GetBufferingPercent() {
+    return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
+}
 
 // extern "C" float GetConsoleLogFromIOS() {
 //     return 100.0f; // Fake full buffering — iOS AVPlayer doesn't expose buffering easily.
 // }
 
-// extern "C" const char* GetPlaybackState()
-// {
-//     static const char* state = "STOPPED"; // fallback
+extern "C" const char* GetPlaybackState()
+{
+    static const char* state = "STOPPED"; // fallback
 
-//     switch (currentState) {
-//         case StateInitial:   return "INITIAL"; break;
-//         case StatePlaying:   return "PLAYING"; break;
-//         case StateBuffering: return "BUFFERING"; break;
-//         case StateStopped:   return "STOPPED"; break;
-//         case StateError:     return "ERROR"; break;
-//         default:             return "STOPPED"; break;
-//     }
-//     return state;
-// }
+    switch (currentState) {
+        case StateInitial:   return "INITIAL"; break;
+        case StatePlaying:   return "PLAYING"; break;
+        case StateBuffering: return "BUFFERING"; break;
+        case StateStopped:   return "STOPPED"; break;
+        case StateError:     return "ERROR"; break;
+        default:             return "STOPPED"; break;
+    }
+    return state;
+}
+
     // [remote.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
     //     SetLastConsoleLog(@"[setupRemoteCommands] PLAY pressed");
     //     if (player) {

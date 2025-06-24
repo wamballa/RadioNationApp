@@ -119,46 +119,46 @@ public class RadioPlayer : MonoBehaviour
 
     private void HandleStates()
     {
-// #if UNITY_ANDROID && !UNITY_EDITOR
-//     currentState = AndroidRadioLauncher.CheckAndroidPlaybackState();
-// #elif UNITY_IOS && !UNITY_EDITOR
-//     currentState = iOSRadioLauncher.CheckiOSPlaybackState();
-// #else
-//         currentState = "STOPPED";
+#if UNITY_ANDROID && !UNITY_EDITOR
+    currentState = AndroidRadioLauncher.CheckAndroidPlaybackState();
+#elif UNITY_IOS && !UNITY_EDITOR
+    currentState = iOSRadioLauncher.CheckiOSPlaybackState();
+#else
+        currentState = "STOPPED";
+#endif
+
+        // If the state is "PLAYING" and the metadata is not already cached, fetch it
+        // if (currentState == "PLAYING" && Time.time - lastMetadataFetchTime > metadataFetchInterval)
+        // {
+        //     // Fetch metadata from the API based on the current station
+        //     iOSRadioLauncher.FetchAndUpdateMeta(currentStreamingURL); // This triggers the API call to update metadata
+        //     lastMetadataFetchTime = Time.time; // Update timestamp
+        // }
+        string meta = iOSRadioLauncher.GetiOSNowPlaying();
+
+        // string meta = iOSRadioLauncher.CheckiOSMeta();
+        if (string.IsNullOrEmpty(meta))
+            meta = "Streaming..."; // fallback if somehow empty
+
+        var details = currentState switch
+        {
+            "STOPPED" => ("", currentState, 0f, "", currentStation, idleFaviconSprite),
+            "BUFFERING" => ("", currentState, bufferingPercent, "Buffering...", currentStation, currentFaviconSprite),
+            "PLAYING" => ("true", currentState, 1f, meta, currentStation, currentFaviconSprite),
+            "UNAVAILABLE" => ("Unavailable", currentState, 0f, "This station is not available.", currentStation, currentFaviconSprite),
+            "OFFLINE" => ("No Internet", currentState, 0f, "No internet connection.", currentStation, currentFaviconSprite),
+            _ => ("", "STOPPED", 0f, "", currentStation, idleFaviconSprite)
+        };
+
+        UpdateRadioPlayerDetails(details.Item1, details.Item2, details.Item3, details.Item4, details.Item5, details.Item6);
+        ChangePlaybackImages();
+
+// #if UNITY_IOS && !UNITY_EDITOR
+// if (currentState == "PLAYING" && iosRadioLauncher != null)
+// {
+//     iosRadioLauncher.UpdateLockscreenMeta(details.Item4); // details.Item4 = meta
+// }
 // #endif
-
-//         // If the state is "PLAYING" and the metadata is not already cached, fetch it
-//         // if (currentState == "PLAYING" && Time.time - lastMetadataFetchTime > metadataFetchInterval)
-//         // {
-//         //     // Fetch metadata from the API based on the current station
-//         //     iOSRadioLauncher.FetchAndUpdateMeta(currentStreamingURL); // This triggers the API call to update metadata
-//         //     lastMetadataFetchTime = Time.time; // Update timestamp
-//         // }
-//         string meta = iOSRadioLauncher.GetiOSNowPlaying();
-
-//         // string meta = iOSRadioLauncher.CheckiOSMeta();
-//         if (string.IsNullOrEmpty(meta))
-//             meta = "Streaming..."; // fallback if somehow empty
-
-//         var details = currentState switch
-//         {
-//             "STOPPED" => ("", currentState, 0f, "", currentStation, idleFaviconSprite),
-//             "BUFFERING" => ("", currentState, bufferingPercent, "Buffering...", currentStation, currentFaviconSprite),
-//             "PLAYING" => ("true", currentState, 1f, meta, currentStation, currentFaviconSprite),
-//             "UNAVAILABLE" => ("Unavailable", currentState, 0f, "This station is not available.", currentStation, currentFaviconSprite),
-//             "OFFLINE" => ("No Internet", currentState, 0f, "No internet connection.", currentStation, currentFaviconSprite),
-//             _ => ("", "STOPPED", 0f, "", currentStation, idleFaviconSprite)
-//         };
-
-//         UpdateRadioPlayerDetails(details.Item1, details.Item2, details.Item3, details.Item4, details.Item5, details.Item6);
-//         ChangePlaybackImages();
-
-// // #if UNITY_IOS && !UNITY_EDITOR
-// // if (currentState == "PLAYING" && iosRadioLauncher != null)
-// // {
-// //     iosRadioLauncher.UpdateLockscreenMeta(details.Item4); // details.Item4 = meta
-// // }
-// // #endif
 
     }
 
