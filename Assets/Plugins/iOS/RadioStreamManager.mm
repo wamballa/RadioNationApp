@@ -74,9 +74,7 @@ extern "C" void StartStream(const char* url) {
                 // Configure the AVAudioSession for background audio playback
         NSError *error = nil;
         AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-        [audioSession setCategory:AVAudioSessionCategoryPlayback
-              withOptions:AVAudioSessionCategoryOptionAllowBluetooth
-                    error:&error];
+        [audioSession setCategory:AVAudioSessionCategoryPlayback error:&error];
         [audioSession setActive:YES error:&error];
 
         if (error) {
