@@ -1,51 +1,29 @@
-// 1. [] Audio session setup
+// Step-by-Step Plan
+// [✅] Audio session setup
+// Configure and activate AVAudioSession in its own function. Test session activation on Unity app launch.
 
-// Configure and activate AVAudioSession in its own function.
+// [✅] Core playback object
+// Set up a simple AVPlayer instance for streaming. Minimal: Just play/pause/stop. No remote commands or metadata yet.
 
-// Test session activation on Unity app launch.
-// (COMPLETE)
+// [✅] Stream start/stop logic
+// Implement StartStream and StopStream to control AVPlayer. Ensure starting/stopping a new stream does not duplicate AVAudioSession setup. Handle edge cases: new URL, same URL, repeated play/stop.
 
-// 2. [⬜] Core playback object
+// [🟩] Lock screen info
+// Add/update lock screen “Now Playing” info via MPNowPlayingInfoCenter. Show stream title and artwork.
 
-// Set up a simple AVPlayer instance for streaming.
+// [⬜] Remote controls
+// Integrate MPRemoteCommandCenter for play/pause via Bluetooth/lock screen. Make sure play/pause/stop update both AVPlayer and lock screen.
 
-// Minimal: Just play/pause/stop.
-
-// No remote commands or metadata yet.
-
-// 3. [⬜] Stream start/stop logic
-
-// Implement StartStream and StopStream to control AVPlayer.
-
-// Ensure starting/stopping a new stream does not duplicate AVAudioSession setup.
-
-// Handle edge cases: new URL, same URL, repeated play/stop.
-
-// 4. [⬜] Lock screen info
-
-// Add/update lock screen “Now Playing” info via MPNowPlayingInfoCenter.
-
-// Show stream title and artwork.
-
-// 5. [⬜] Remote controls
-
-// Integrate MPRemoteCommandCenter for play/pause via Bluetooth/lock screen.
-
-// Make sure play/pause/stop update both AVPlayer and lock screen.
-
-// 6. [⬜] Metadata fetching
-
+// [⬜] Metadata fetching
 // Periodically fetch “Now Playing” metadata and push updates to the lock screen.
 
-// 7. [⬜] Network/interruption handling
-
+// [⬜] Network/interruption handling
 // React to network changes, interruptions, and Bluetooth device disconnects.
 
-// 8. [⬜] Testing and final tidy up
+// [⬜] Testing and final tidy up
+// Test all control paths: Unity UI, lock screen, BT headset, interruption, AirPods, etc. Comment and clean up.
 
-// Test all control paths: Unity UI, lock screen, BT headset, interruption, AirPods, etc.
 
-// Comment and clean up.
 
 
 #import <AVFoundation/AVFoundation.h>
@@ -92,25 +70,31 @@ static PlaybackState currentState = StateInitial;
 
 static BOOL audioSessionSetup = NO;
 
-extern "C" void StartStream(const char* url) {
+extern "C" void StartStream(const char* url, const char* station, void* imageData, int length)
 
     @autoreleasepool {
 
         NSString *urlStr = [NSString stringWithUTF8String:url];
-        NSURL *streamURL = [NSURL URLWithString:urlStr];
+        NSString *stationStr = [NSString stringWithUTF8String:station];
+
+        // Set favicon
+        if (imageData && length > 0) {
+            NSData *data = [NSData dataWithBytes:imageData length:length];
+            UIImage *image = [UIImage imageWithData:data];
+            currentFavicon = image;
+            NSLog(@"Decoded image size: %@", NSStringFromCGSize(image.size));
+        } else {
+            currentFavicon = nil;
+        }
+
+        // Set station name (use passed string)
+        currentStationName = stationStr ?: @"";
 
         // If already playing same stream, do nothing
         if (player && lastStreamUrl && [lastStreamUrl isEqualToString:urlStr] && player.rate != 0.0) {
             NSLog(@"[StartStream] Already playing this stream");
             return;
         }
-
-        // if (player) {
-        //     NSLog(@"[StartStream] player exists. Pausing!");
-        //     [player pause];
-        //     player = nil;
-        //     playerItem = nil;
-        // }
 
         NSLog(@"[StartStream] Called with URL: %s", url);
 
@@ -122,16 +106,17 @@ extern "C" void StartStream(const char* url) {
 
         if (error) {
             NSLog(@"Error setting up audio session: %@", error.localizedDescription);
-        }
-
-        
+        }  
 
         lastStreamUrl = urlStr;
+        NSURL *streamURL = [NSURL URLWithString:urlStr];
 
         playerItem = [AVPlayerItem playerItemWithURL:streamURL];
         player = [AVPlayer playerWithPlayerItem:playerItem];
 
         [player play];
+
+        updatePlayerState(StatePlaying);
 
         [player.currentItem addObserverForKeyPath:@"status"
                                         options:NSKeyValueObservingOptionNew
@@ -154,30 +139,55 @@ extern "C" void StartStream(const char* url) {
 }
 
 extern "C" void StopStream() {
-
-
     if (player) {
         NSLog(@"[StopStream] Called");  
         [player pause];
         player = nil;
         playerItem = nil;
     }
+    updatePlayerState(StateStopped);
 }
 
 
 
 
-// static void syncPlaybackStateToNowPlaying(PlaybackState state) {
-//     MPNowPlayingPlaybackState playbackState;
-//     switch (state) {
-//         case StatePlaying:   playbackState = MPNowPlayingPlaybackStatePlaying; break;
-//         case StateStopped:   playbackState = MPNowPlayingPlaybackStateStopped; break;
-//         case StateBuffering: playbackState = MPNowPlayingPlaybackStateInterrupted; break;
-//         case StateError:     playbackState = MPNowPlayingPlaybackStatePaused; break;
-//         default:             playbackState = MPNowPlayingPlaybackStatePaused; break;
-//     }
-//     [MPNowPlayingInfoCenter defaultCenter].playbackState = playbackState;
-// }
+static void syncPlaybackStateToNowPlaying(PlaybackState state) {
+    MPNowPlayingPlaybackState playbackState;
+    switch (state) {
+        case StatePlaying:   playbackState = MPNowPlayingPlaybackStatePlaying; break;
+        case StateStopped:   playbackState = MPNowPlayingPlaybackStateStopped; break;
+        case StateBuffering: playbackState = MPNowPlayingPlaybackStateInterrupted; break;
+        case StateError:     playbackState = MPNowPlayingPlaybackStatePaused; break;
+        default:             playbackState = MPNowPlayingPlaybackStatePaused; break;
+    }
+    [MPNowPlayingInfoCenter defaultCenter].playbackState = playbackState;
+}
+
+void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
+    if (!title || title.length == 0) return;
+
+    NSMutableDictionary *info = [NSMutableDictionary dictionary];
+    info[MPMediaItemPropertyTitle] = title;
+    if (currentFavicon) {
+        MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
+            return currentFavicon;
+        }];
+        info[MPMediaItemPropertyArtwork] = artwork;
+    }
+    info[MPNowPlayingInfoPropertyPlaybackRate] = @(playbackRate);
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
+}
+
+void updatePlayerState(PlaybackState newState) {
+    currentState = newState;
+    syncPlaybackStateToNowPlaying(newState);
+
+    float playbackRate = (newState == StatePlaying) ? 1.0f : 0.0f;
+    UpdateNowPlayingLockscreen(currentStationName, playbackRate);
+}
+
+
+
 
 // void updatePlayerState(PlaybackState newState) {
 //     currentState = newState;

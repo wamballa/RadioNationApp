@@ -96,29 +96,22 @@ public class iOSRadioLauncher : MonoBehaviour
     //     private static extern void StartStreamWithArtwork_Internal(string url, string stationName, IntPtr artwork, int length);
 
     [DllImport("__Internal")]
-    private static extern void StartStream(string url);
+    private static extern void StartStream(string url, string stationName, IntPtr artwork, int length);
 
     public static void StartNativeStream(string url, string stationName, Texture2D favicon)
     {
         Debug.Log("[iOSRadioLauncher] StartNativeStream called");
-#if UNITY_IOS && !UNITY_EDITOR
-            // byte[] bytes = favicon.EncodeToPNG();
-            // GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-            // try
-            // {
-            //     IntPtr ptr = handle.AddrOfPinnedObject();
-            //     StartStreamWithArtwork_Internal(url, stationName, ptr, bytes.Length);
-            // }
-            // finally
-            // {
-            //     handle.Free();
-            // }
-
-            StartStream(url);
-
-            //
-
-#endif
+            byte[] bytes = favicon.EncodeToPNG();
+            GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+            try
+            {
+                IntPtr ptr = handle.AddrOfPinnedObject();
+                StartStream(url, stationName, ptr, bytes.Length);
+            }
+            finally
+            {
+                handle.Free();
+            }
     }
     
     [DllImport("__Internal")]
