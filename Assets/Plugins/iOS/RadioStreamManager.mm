@@ -96,6 +96,9 @@ extern "C" void StartStream(const char* url) {
 
     @autoreleasepool {
 
+        NSString *urlStr = [NSString stringWithUTF8String:url];
+        NSURL *streamURL = [NSURL URLWithString:urlStr];
+
         // If already playing same stream, do nothing
         if (player && lastStreamUrl && [lastStreamUrl isEqualToString:urlStr] && player.rate != 0.0) {
             NSLog(@"[StartStream] Already playing this stream");
@@ -121,8 +124,7 @@ extern "C" void StartStream(const char* url) {
             NSLog(@"Error setting up audio session: %@", error.localizedDescription);
         }
 
-        NSString *urlStr = [NSString stringWithUTF8String:url];
-        NSURL *streamURL = [NSURL URLWithString:urlStr];
+        
 
         lastStreamUrl = urlStr;
 
