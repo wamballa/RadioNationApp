@@ -44,7 +44,7 @@ static BOOL audioSessionSetup = NO;
 
 extern "C" void SetupAudioSession(void) {
 
-NSError *error = nil;
+// NSError *error = nil;
     // AVAudioSession *session = [AVAudioSession sharedInstance];
     // BOOL ok = [session setCategory:AVAudioSessionCategoryPlayback error:&error];
     // if (!ok) NSLog(@"[AudioSession] Set category error: %@", error.localizedDescription);
@@ -75,7 +75,7 @@ extern "C" void StartStream(const char* url) {
         NSError *error = nil;
         AVAudioSession *audioSession = [AVAudioSession sharedInstance];
         [audioSession setCategory:AVAudioSessionCategoryPlayback
-              withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP
+              withOptions:AVAudioSessionCategoryOptionAllowBluetooth
                     error:&error];
         [audioSession setActive:YES error:&error];
 
