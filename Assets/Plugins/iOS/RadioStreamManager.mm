@@ -70,7 +70,7 @@ static PlaybackState currentState = StateInitial;
 
 static BOOL audioSessionSetup = NO;
 
-extern "C" void StartStream(const char* url, const char* station, void* imageData, int length)
+extern "C" void StartStream(const char* url, const char* station, void* imageData, int length) {
 
     @autoreleasepool {
 
@@ -139,6 +139,7 @@ extern "C" void StartStream(const char* url, const char* station, void* imageDat
 }
 
 extern "C" void StopStream() {
+
     if (player) {
         NSLog(@"[StopStream] Called");  
         [player pause];
