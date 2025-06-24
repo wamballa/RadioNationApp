@@ -41,6 +41,7 @@ void setupNetworkMonitor(void);
 void UpdateNowPlayingLockscreen(NSString* title, float playbackRate);
 static void SetLastErrorReason(NSString *reason);
 static void SetLastConsoleLog(NSString *log);
+void updatePlayerState(PlaybackState newState);
 
 static AVPlayer *player = nil;
 static AVPlayerItem *playerItem = nil;
