@@ -80,23 +80,29 @@ static void syncPlaybackStateToNowPlaying(PlaybackState state) {
     [MPNowPlayingInfoCenter defaultCenter].playbackState = playbackState;
 }
 
-void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
+void UpdateNowPlayingLockscreen(NSString* title, NSString* station, float playbackRate) {
 
     @autoreleasepool
     {
         NSLog(@"[UpdateNowPlayingLockscreen]");
 
         if (!title || title.length == 0) title = @"Streaming...";
+        if (!station) station = @"Radio";
 
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
 
-        // Set the stream/station title
+        // Title
         [info setObject:title forKey:MPMediaItemPropertyTitle];
+
+        // Station/Artist (recommended even if not a music artist)
+        [info setObject:station forKey:MPMediaItemPropertyArtist];
 
         if (currentFavicon) {
 
-            MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
-                return currentFavicon;
+            MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] 
+                initWithBoundsSize:currentFavicon.size 
+                requestHandler:^UIImage * _Nonnull(CGSize size) {
+                    return currentFavicon;
             }];
             // info[MPMediaItemPropertyArtwork] = artwork;
             [info setObject:artwork forKey:MPMediaItemPropertyArtwork];
@@ -112,6 +118,9 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
         // Optionally, set elapsed time to 0 (live stream)
         [info setObject:@0 forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
 
+        // Optional: Tell iOS this is a live stream
+        [info setObject:@(1) forKey:@"MPNowPlayingInfoPropertyIsLiveStream"];
+
         // Set the info
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
         // [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
@@ -119,6 +128,7 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
 
         // (Optional) Set playback state for lockscreen controls (iOS 13+)
         if (@available(iOS 13.0, *)) {
+            NSLog(@"[UpdateNowPlayingLockscreen] Set Playback Lockscreen Controls");
             MPNowPlayingPlaybackState state = (playbackRate > 0.0)
                 ? MPNowPlayingPlaybackStatePlaying
                 : MPNowPlayingPlaybackStatePaused;
@@ -140,7 +150,7 @@ void updatePlayerState(PlaybackState newState) {
     syncPlaybackStateToNowPlaying(newState);
 
     float playbackRate = (newState == StatePlaying) ? 1.0f : 0.0f;
-    UpdateNowPlayingLockscreen(currentStationName, playbackRate);
+    UpdateNowPlayingLockscreen(currentStationName, currentStationName, playbackRate);
 }
 
 extern "C" void StartStream(const char* url, const char* station, void* imageData, int length) {
