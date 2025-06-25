@@ -90,7 +90,8 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
 
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
 
-        info[MPMediaItemPropertyTitle] = title;
+        // Set the stream/station title
+        [info setObject:title forKey:MPMediaItemPropertyTitle];
 
         if (currentFavicon) {
             MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
@@ -111,7 +112,9 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
         [info setObject:@0 forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
 
         // Set the info
-        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:info];
+        // [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
+
 
         // (Optional) Set playback state for lockscreen controls (iOS 13+)
         if (@available(iOS 13.0, *)) {
