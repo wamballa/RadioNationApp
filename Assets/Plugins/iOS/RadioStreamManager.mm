@@ -94,6 +94,7 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
         [info setObject:title forKey:MPMediaItemPropertyTitle];
 
         if (currentFavicon) {
+
             MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
                 return currentFavicon;
             }];
@@ -156,6 +157,7 @@ extern "C" void StartStream(const char* url, const char* station, void* imageDat
             currentFavicon = image;
             NSLog(@"Decoded image size: %@", NSStringFromCGSize(image.size));
         } else {
+            NSLog(@"[StartStream] No Favicon Image");
             currentFavicon = nil;
         }
 
