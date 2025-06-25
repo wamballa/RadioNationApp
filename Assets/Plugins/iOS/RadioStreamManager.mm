@@ -86,22 +86,45 @@ void UpdateNowPlayingLockscreen(NSString* title, float playbackRate) {
     {
         NSLog(@"[UpdateNowPlayingLockscreen]");
 
-        if (!title || title.length == 0) 
-        {
-            NSLog(@"[UpdateNowPlayingLockscreen] No title");
-            return;
-        }
+        if (!title || title.length == 0) title = @"Streaming...";
 
         NSMutableDictionary *info = [NSMutableDictionary dictionary];
+
         info[MPMediaItemPropertyTitle] = title;
+
         if (currentFavicon) {
             MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:currentFavicon.size requestHandler:^UIImage * _Nonnull(CGSize size) {
                 return currentFavicon;
             }];
-            info[MPMediaItemPropertyArtwork] = artwork;
+            // info[MPMediaItemPropertyArtwork] = artwork;
+            [info setObject:artwork forKey:MPMediaItemPropertyArtwork];
+
         }
-        info[MPNowPlayingInfoPropertyPlaybackRate] = @(playbackRate);
+        else {
+            NSLog(@"[UpdateNowPlayingLockscreen] No favicon");
+        }
+
+        // Set the playback rate (1.0 = playing, 0.0 = paused/stopped)
+        [info setObject:@(playbackRate) forKey:MPNowPlayingInfoPropertyPlaybackRate];
+
+        // Optionally, set elapsed time to 0 (live stream)
+        [info setObject:@0 forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+
+        // Set the info
         [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
+
+        // (Optional) Set playback state for lockscreen controls (iOS 13+)
+        if (@available(iOS 13.0, *)) {
+            MPNowPlayingPlaybackState state = (playbackRate > 0.0)
+                ? MPNowPlayingPlaybackStatePlaying
+                : MPNowPlayingPlaybackStatePaused;
+            [MPNowPlayingInfoCenter defaultCenter].playbackState = state;
+        }
+
+
+
+        // info[MPNowPlayingInfoPropertyPlaybackRate] = @(playbackRate);
+        // [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
     }
 }
 
